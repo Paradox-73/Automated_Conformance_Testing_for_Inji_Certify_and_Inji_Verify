@@ -1,0 +1,43 @@
+# Build output
+target/
+build/
+out/
+dist/
+coverage/
+.gradle/
+*.class
+*.apk
+*.aab
+
+# Node and Python
+node_modules/
+.next/
+.vite/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Go
+/bin/
+*.exe
+*.test
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local machine files, secrets and run state (never in git)
+local.properties
+*.log
+.env
+.env.local
+*.jks
+*.keystore
+*.p12
+*.pem.private
+secrets/
+run/
