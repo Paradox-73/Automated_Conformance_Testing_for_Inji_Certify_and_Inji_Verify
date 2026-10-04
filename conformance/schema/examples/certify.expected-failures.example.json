@@ -1,0 +1,14 @@
+[
+  {
+    "test-name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+    "variant": "*",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "current-block": "*",
+    "condition": "VCIValidateCredentialErrorResponse",
+    "expected-result": "failure",
+    "comment": "Example entry: an unknown credential_configuration_id is answered with a generic error code instead of unknown_credential_configuration.",
+    "owner": "inji",
+    "spec": "OID4VCI-1FINAL-8.3.1",
+    "issue": "docs/findings/certify-unknown-credential-configuration-error.md"
+  }
+]

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inji-conformance"
+version = "0.1.0"
+description = "Runs the OpenID conformance suite against Inji Certify and Inji Verify and gates on a benchmark"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Team Badmosip" }]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+]
+# Runtime dependencies. httpx and pyparsing are what the vendored run-test-plan.py and conformance.py import;
+# jinja2 renders the HTML report (inji_conformance.report); pillow draws the evidence image a REVIEW module needs;
+# jsonschema validates results.json, the run manifest and the benchmark files against conformance/schema/.
+dependencies = [
+    "httpx>=0.27,<1",
+    "pyparsing>=3.1,<4",
+    "jinja2>=3.1,<4",
+    "pillow>=10.3",
+    "jsonschema>=4.21,<5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "respx>=0.21,<1",
+    "ruff>=0.6,<1",
+]
+
+[project.scripts]
+inji-conformance = "inji_conformance.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, pep8-naming, pyupgrade, bugbear, simplify, comprehensions, return checks, ruff.
+select = ["E", "W", "F", "I", "N", "UP", "B", "SIM", "C4", "RET", "RUF"]

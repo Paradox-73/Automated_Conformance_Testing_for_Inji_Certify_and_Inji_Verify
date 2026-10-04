@@ -1,0 +1,14 @@
+[
+  {
+    "test-name": "oid4vp-1final-verifier-request-uri-method-post",
+    "variant": "*",
+    "configuration-filename": "*verify.oid4vp-1final-verifier*.json",
+    "current-block": "*",
+    "condition": "PostToRequestUriAndExtractRequestObject",
+    "expected-result": "failure",
+    "comment": "Example entry: the request_uri endpoint answers only GET, so a wallet POST with wallet_nonce is refused.",
+    "owner": "inji",
+    "spec": "OID4VP-1FINAL-5.10",
+    "issue": "docs/findings/verify-request-uri-method-post.md"
+  }
+]

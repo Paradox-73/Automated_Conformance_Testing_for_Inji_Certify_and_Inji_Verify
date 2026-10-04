@@ -1,0 +1,453 @@
+{
+  "schema_version": "1",
+  "run_id": "20261004T191000Z-1a2b3c4",
+  "component": "certify",
+  "track": "gate",
+  "gating": true,
+  "started_at": "2026-10-04T19:10:00Z",
+  "finished_at": "2026-10-04T19:27:44Z",
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1",
+    "image": "registry.gitlab.com/openid/conformance-suite:release-v5.3.1"
+  },
+  "target": {
+    "base_url": "https://certify.inji.test:18450",
+    "image": "injistackqa/inji-certify-with-plugins:develop",
+    "commit": "d6635da"
+  },
+  "plan": {
+    "name": "oid4vci-1_0-issuer-test-plan",
+    "id": "P2b3LwtPBUniz",
+    "variant": {
+      "fapi_profile": "vci",
+      "credential_format": "sd_jwt_vc",
+      "client_auth_type": "private_key_jwt",
+      "sender_constrain": "dpop",
+      "vci_grant_type": "pre_authorization_code",
+      "vci_authorization_code_flow_variant": "issuer_initiated",
+      "authorization_request_type": "simple",
+      "fapi_request_method": "unsigned",
+      "vci_credential_encryption": "plain"
+    },
+    "config_file": "certify/config/certify.oid4vci-1_0-issuer.json",
+    "export": "certify/exports/test-log-P2b3LwtPBUniz.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test",
+      "test_id": "vciexample0001",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0001",
+        "export": "exports/vciexample0001.html"
+      },
+      "duration_s": 6.7
+    },
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test-signed",
+      "test_id": "vciexample0002",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "Example entry: signed credential issuer metadata is optional and is not published.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.2",
+          "issue": "docs/findings/certify-signed-metadata.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0002",
+        "export": "exports/vciexample0002.html"
+      },
+      "duration_s": 7.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow",
+      "test_id": "vciexample0003",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIs200",
+          "severity": "FAILURE",
+          "message": "Credential endpoint returned HTTP 500",
+          "block": "Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:13:03Z",
+          "http_status": 200,
+          "duration_ms": 222,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0003",
+        "export": "exports/vciexample0003.html"
+      },
+      "duration_s": 8.1,
+      "verdict_reason": "unexpected FAILURE: EnsureHttpStatusCodeIs200 in Verify Credential Endpoint Response"
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-additional-requests",
+      "test_id": "vciexample0004",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:14:03Z",
+          "http_status": 200,
+          "duration_ms": 226,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0004",
+        "export": "exports/vciexample0004.html"
+      },
+      "duration_s": 8.8
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-multiple-clients",
+      "test_id": "vciexample0005",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:15:03Z",
+          "http_status": 200,
+          "duration_ms": 230,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0005",
+        "export": "exports/vciexample0005.html"
+      },
+      "duration_s": 9.5
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-skip-notification",
+      "test_id": "vciexample0006",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:16:03Z",
+          "http_status": 200,
+          "duration_ms": 234,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0006",
+        "export": "exports/vciexample0006.html"
+      },
+      "duration_s": 10.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-batch-issuance",
+      "test_id": "vciexample0007",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "Example entry: the issuer metadata has no batch_credential_issuance, so the suite skips the batch module.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.4",
+          "issue": "docs/findings/certify-batch-issuance.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:17:03Z",
+          "http_status": 200,
+          "duration_ms": 238,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0007",
+        "export": "exports/vciexample0007.html"
+      },
+      "duration_s": 10.9
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-nonce",
+      "test_id": "vciexample0008",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:18:03Z",
+          "http_status": 200,
+          "duration_ms": 242,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0008",
+        "export": "exports/vciexample0008.html"
+      },
+      "duration_s": 11.6
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature",
+      "test_id": "vciexample0009",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:19:03Z",
+          "http_status": 200,
+          "duration_ms": 246,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0009",
+        "export": "exports/vciexample0009.html"
+      },
+      "duration_s": 12.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-key-attestation-signature",
+      "test_id": "vciexample0010",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "Example entry: the credential configuration does not require key attestation, so there is nothing to send an invalid one to.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-F.1",
+          "issue": "docs/findings/certify-key-attestation.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:20:03Z",
+          "http_status": 200,
+          "duration_ms": 250,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0010",
+        "export": "exports/vciexample0010.html"
+      },
+      "duration_s": 13.0
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-missing-proof",
+      "test_id": "vciexample0011",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:21:03Z",
+          "http_status": 200,
+          "duration_ms": 254,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0011",
+        "export": "exports/vciexample0011.html"
+      },
+      "duration_s": 13.7
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm",
+      "test_id": "vciexample0012",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "Example entry: credential response encryption is not offered, so the suite skips the unsupported-algorithm module.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.2",
+          "issue": "docs/findings/certify-credential-encryption.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:22:03Z",
+          "http_status": 200,
+          "duration_ms": 258,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0012",
+        "export": "exports/vciexample0012.html"
+      },
+      "duration_s": 14.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+      "test_id": "vciexample0013",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "stale_benchmark",
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "condition": "VCIValidateCredentialErrorResponse",
+          "current_block": "*",
+          "expected_result": "failure",
+          "comment": "Example entry: an unknown credential_configuration_id is answered with a generic error code instead of unknown_credential_configuration.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.3.1",
+          "issue": "docs/findings/certify-unknown-credential-configuration-error.md",
+          "matched": false
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:23:03Z",
+          "http_status": 200,
+          "duration_ms": 262,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0013",
+        "export": "exports/vciexample0013.html"
+      },
+      "duration_s": 15.1,
+      "verdict_reason": "remove benchmark entry VCIValidateCredentialErrorResponse: the listed failure did not occur"
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-identifier",
+      "test_id": "vciexample0014",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:24:03Z",
+          "http_status": 200,
+          "duration_ms": 266,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0014",
+        "export": "exports/vciexample0014.html"
+      },
+      "duration_s": 15.8
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-on-access-token-in-query",
+      "test_id": "vciexample0015",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "at": "2026-10-04T19:25:03Z",
+          "http_status": 200,
+          "duration_ms": 270,
+          "detail": "POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0015",
+        "export": "exports/vciexample0015.html"
+      },
+      "duration_s": 16.5
+    }
+  ],
+  "notes": [
+    "Hand-written example of the contract, not the output of a measured run. Module names are the ones the suite creates for this plan and variant; results, messages and benchmark entries are illustrative."
+  ],
+  "summary": {
+    "total": 15,
+    "conforms": 9,
+    "known_gap": 0,
+    "regression": 1,
+    "not_applicable": 4,
+    "stale_benchmark": 1
+  },
+  "gate": {
+    "passed": false,
+    "exit_code": 1,
+    "allow_stale": false,
+    "benchmark_files": [
+      "benchmark/certify.expected-failures.json",
+      "benchmark/certify.expected-skips.json"
+    ],
+    "messages": [
+      "oid4vci-1_0-issuer-happy-flow: unexpected FAILURE: EnsureHttpStatusCodeIs200 in Verify Credential Endpoint Response",
+      "oid4vci-1_0-issuer-fail-unknown-credential-configuration: remove benchmark entry VCIValidateCredentialErrorResponse: the listed failure did not occur",
+      "gate: 1 regressions, 0 known gaps, 1 stale"
+    ]
+  }
+}

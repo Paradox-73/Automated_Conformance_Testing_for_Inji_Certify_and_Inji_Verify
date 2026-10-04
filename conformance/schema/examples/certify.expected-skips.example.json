@@ -1,0 +1,38 @@
+[
+  {
+    "test-name": "oid4vci-1_0-issuer-metadata-test-signed",
+    "variant": "*",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "comment": "Example entry: signed credential issuer metadata is optional and is not published.",
+    "owner": "inji",
+    "spec": "OID4VCI-1FINAL-12.2.2",
+    "issue": "docs/findings/certify-signed-metadata.md"
+  },
+  {
+    "test-name": "oid4vci-1_0-issuer-batch-issuance",
+    "variant": "*",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "comment": "Example entry: the issuer metadata has no batch_credential_issuance, so the suite skips the batch module.",
+    "owner": "inji",
+    "spec": "OID4VCI-1FINAL-12.2.4",
+    "issue": "docs/findings/certify-batch-issuance.md"
+  },
+  {
+    "test-name": "oid4vci-1_0-issuer-fail-invalid-key-attestation-signature",
+    "variant": "*",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "comment": "Example entry: the credential configuration does not require key attestation, so there is nothing to send an invalid one to.",
+    "owner": "inji",
+    "spec": "OID4VCI-1FINAL-F.1",
+    "issue": "docs/findings/certify-key-attestation.md"
+  },
+  {
+    "test-name": "oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm",
+    "variant": "*",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "comment": "Example entry: credential response encryption is not offered, so the suite skips the unsupported-algorithm module.",
+    "owner": "inji",
+    "spec": "OID4VCI-1FINAL-8.2",
+    "issue": "docs/findings/certify-credential-encryption.md"
+  }
+]

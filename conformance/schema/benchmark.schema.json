@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inji-conformance:schema:benchmark:v1",
+  "title": "Conformance benchmark (expected failures and expected skips)",
+  "description": "A benchmark file lists results the gate accepts. It uses the OpenID conformance suite's own expected-failures and expected-skips format, so run-test-plan.py --expected-failures-file and --expected-skips-file read the same file, plus four required fields that make every entry justified and traceable: comment, owner, spec and issue. run-test-plan.py ignores keys it does not know. One file holds one kind of entry: <component>.expected-failures.json or <component>.expected-skips.json.",
+  "anyOf": [
+    {"$ref": "#/$defs/expected_failures_file"},
+    {"$ref": "#/$defs/expected_skips_file"}
+  ],
+  "$defs": {
+    "expected_failures_file": {
+      "title": "Expected failures file",
+      "type": "array",
+      "items": {"$ref": "#/$defs/expected_failure"}
+    },
+    "expected_skips_file": {
+      "title": "Expected skips file",
+      "type": "array",
+      "items": {"$ref": "#/$defs/expected_skip"}
+    },
+    "owner": {
+      "description": "Who has to act to remove the entry: inji (a gap in Inji Certify or Inji Verify), suite (a problem in the conformance suite) or environment (a limit of the local test set-up, for example no public DNS).",
+      "enum": ["inji", "suite", "environment"]
+    },
+    "variant": {
+      "description": "\"*\" matches every variant. An object matches when every listed key has the listed value; keys not listed match anything (run-test-plan.py, is_expected_for_this_test).",
+      "oneOf": [
+        {"const": "*"},
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "string", "minLength": 1}
+        }
+      ]
+    },
+    "test_name": {
+      "description": "Test module name. Shell-style wildcards (fnmatch) are allowed, for example oid4vp-1final-verifier-invalid-*.",
+      "type": "string",
+      "minLength": 1
+    },
+    "configuration_filename": {
+      "description": "fnmatch pattern matched against the path of the rendered suite configuration in the run folder. Use a wildcard such as *verify.oid4vp-1final-verifier*.json, because the folder differs between runs.",
+      "type": "string",
+      "minLength": 1
+    },
+    "justification": {
+      "description": "The four fields every harness benchmark entry must carry.",
+      "type": "object",
+      "required": ["comment", "owner", "spec", "issue"],
+      "properties": {
+        "comment": {
+          "description": "Why the result is expected, in one or two sentences. Printed in the report and in the TestNG known-issue message.",
+          "type": "string",
+          "minLength": 10,
+          "pattern": "\\S"
+        },
+        "owner": {"$ref": "#/$defs/owner"},
+        "spec": {
+          "description": "The specification clause the result is about, as the suite names requirements (for example OID4VP-1FINAL-8.2), or a short clause reference.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "issue": {
+          "description": "Where the gap is written up: a repository-relative path to an issue draft (docs/findings/...) or an https URL of a filed issue.",
+          "type": "string",
+          "pattern": "^(https://\\S+|[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*\\.md(#[A-Za-z0-9._-]+)?)$"
+        }
+      }
+    },
+    "expected_failure": {
+      "title": "Expected failure or warning",
+      "allOf": [{"$ref": "#/$defs/justification"}],
+      "type": "object",
+      "required": [
+        "test-name",
+        "variant",
+        "configuration-filename",
+        "current-block",
+        "condition",
+        "expected-result"
+      ],
+      "properties": {
+        "test-name": {"$ref": "#/$defs/test_name"},
+        "variant": {"$ref": "#/$defs/variant"},
+        "configuration-filename": {"$ref": "#/$defs/configuration_filename"},
+        "current-block": {
+          "description": "Block title the condition ran in, exactly as the suite log shows it; \"\" for no block, \"*\" for any block.",
+          "type": "string"
+        },
+        "condition": {
+          "description": "Simple class name of the suite condition (the log entry's src), for example EnsureHttpStatusCodeIs4xx.",
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "expected-result": {"enum": ["failure", "warning"]},
+        "comment": true,
+        "owner": true,
+        "spec": true,
+        "issue": true
+      },
+      "additionalProperties": false
+    },
+    "expected_skip": {
+      "title": "Expected skip",
+      "description": "A module the suite is expected to skip (or, as run-test-plan.py also accepts, to fail) because the system under test does not offer the feature.",
+      "allOf": [{"$ref": "#/$defs/justification"}],
+      "type": "object",
+      "required": ["test-name", "variant", "configuration-filename"],
+      "properties": {
+        "test-name": {"$ref": "#/$defs/test_name"},
+        "variant": {"$ref": "#/$defs/variant"},
+        "configuration-filename": {"$ref": "#/$defs/configuration_filename"},
+        "comment": true,
+        "owner": true,
+        "spec": true,
+        "issue": true
+      },
+      "additionalProperties": false
+    }
+  }
+}
