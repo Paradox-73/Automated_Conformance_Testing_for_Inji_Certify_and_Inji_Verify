@@ -1,0 +1,44 @@
+[
+  {
+    "name": "x509_san_dns by reference",
+    "client_id": "x509_san_dns:test.example.com",
+    "response": {
+      "transactionId": "txn_6f2c1e0a-1b2c-4d5e-8f90-a1b2c3d4e5f6",
+      "requestId": "req_0d9e8f7a-6b5c-4d3e-2f10-fedcba987654",
+      "requestUri": "https://verify.inji.test:18451/v1/verify/v2/vp-request/req_0d9e8f7a-6b5c-4d3e-2f10-fedcba987654",
+      "expiresAt": 1791148800000
+    }
+  },
+  {
+    "name": "redirect_uri by value with DCQL and client_metadata",
+    "client_id": "redirect_uri:https://verify.inji.test:18451/v1/verify/v2/vp-submission/direct-post",
+    "response": {
+      "transactionId": "txn_1",
+      "requestId": "req_1",
+      "authorizationDetails": {
+        "responseType": "vp_token",
+        "responseMode": "direct_post",
+        "issuedAt": 1791148800000,
+        "clientId": "redirect_uri:https://verify.inji.test:18451/v1/verify/v2/vp-submission/direct-post",
+        "dcqlQuery": {"credentials": [{"id": "pid", "format": "dc+sd-jwt", "meta": {"vct_values": ["urn:eudi:pid:1"]}, "claims": [{"path": ["given_name"]}]}]},
+        "nonce": "n-0S6_WzA2Mj~*",
+        "responseUri": "https://verify.inji.test:18451/v1/verify/v2/vp-submission/direct-post",
+        "responseCodeValidationRequired": false
+      }
+    }
+  },
+  {
+    "name": "pre-registered client by value without client_metadata, non-ASCII and spaces",
+    "client_id": "inji-verify-ui",
+    "response": {
+      "requestId": "req 2",
+      "authorizationDetails": {
+        "responseType": "vp_token",
+        "responseMode": "direct_post",
+        "dcqlQuery": {"credentials": [{"id": "c1", "format": "ldp_vc", "meta": {"type_values": [["VerifiableCredential", "Führerschein"]]}}]},
+        "nonce": "a b+c/d?e=f&g",
+        "responseUri": "https://verify.example/v2/vp-submission/direct-post"
+      }
+    }
+  }
+]

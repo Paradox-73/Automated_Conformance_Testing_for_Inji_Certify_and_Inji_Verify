@@ -170,8 +170,6 @@ def test_usage_errors_exit_2(capsys, argv):
 @pytest.mark.parametrize(
     "argv",
     [
-        ["run", "--component", "verify", "--modules", "a,b", "--no-gate", "--out", "x"],
-        ["run", "--combined", "--track", "haip", "--serial", "--allow-stale"],
         ["seed", "certify"],
         ["gate", "--run", "x", "--allow-stale", "--junit", "j.xml"],
     ],
@@ -180,6 +178,19 @@ def test_commands_not_in_this_version_say_so(capsys, argv):
     code, _, err = run(capsys, *argv)
     assert code == ExitCode.USAGE
     assert f"inji-conformance {argv[0]}: not available in this version" in err
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["run", "--combined", "--track", "haip", "--serial", "--allow-stale"],
+        ["run", "--component", "certify", "--no-gate"],
+    ],
+)
+def test_run_of_parts_not_in_this_version_says_so(capsys, argv):
+    code, _, err = run(capsys, *argv)
+    assert code == ExitCode.USAGE
+    assert "inji-conformance run: this version runs --component verify only" in err
 
 
 def test_run_parses_the_documented_options():

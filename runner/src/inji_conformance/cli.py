@@ -49,6 +49,13 @@ def _not_available(command: str) -> Handler:
     return handler
 
 
+def _run_handler(args: argparse.Namespace) -> int:
+    # Imported here so that "validate" and "--help" work without the run's dependencies being importable.
+    from inji_conformance.run import cmd_run
+
+    return cmd_run(args)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # validate
 # ---------------------------------------------------------------------------------------------------------------
@@ -196,7 +203,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--no-seed", action="store_true", help="do not seed Inji Certify before the issuer plan")
     run.add_argument("--timeout-minutes", type=float, metavar="N", help="time limit for the whole run")
     run.add_argument("--out", type=Path, metavar="DIR", help="run folder to write into")
-    run.set_defaults(handler=_not_available("run"))
+    run.set_defaults(handler=_run_handler)
 
     seed = commands.add_parser("seed", help="prepare a component for the suite (idempotent)")
     seed.add_argument("component", choices=[Component.CERTIFY.value])
