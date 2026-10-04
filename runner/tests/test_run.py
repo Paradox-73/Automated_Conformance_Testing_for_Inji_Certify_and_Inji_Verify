@@ -56,12 +56,12 @@ def test_run_script_copies_output_and_finds_the_plan_id(tmp_path, capsys):
     assert "suite | done" in capsys.readouterr().out
 
 
-def test_run_script_stops_at_the_deadline(tmp_path):
-    with pytest.raises(run.RunError) as caught:
-        run.run_script(
-            [sys.executable, "-c", "import time; time.sleep(30)"], tmp_path, {}, tmp_path / "l", time.monotonic() + 1
-        )
-    assert caught.value.exit_code is ExitCode.TIMEOUT
+def test_run_script_stops_at_the_deadline_and_keeps_the_plan_id(tmp_path):
+    code = "import time; print('x Created test plan, new id: P1', flush=True); time.sleep(30)"
+    exit_code, plan_id = run.run_script(
+        [sys.executable, "-c", code], tmp_path, {}, tmp_path / "log", time.monotonic() + 2
+    )
+    assert (exit_code, plan_id) == (None, "P1")
 
 
 def test_wait_until_ready_gives_up_with_exit_3():
@@ -97,8 +97,8 @@ class FakeVerify:
         return {"vpResultStatus": "SUCCESS"}
 
 
-@pytest.mark.parametrize("no_gate", [True, False])
-def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate):
+@pytest.mark.parametrize(("no_gate", "timed_out"), [(True, False), (False, False), (True, True), (False, True)])
+def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate, timed_out):
     template = plans.find_template(REPO_ROOT / "conformance" / "plans", Component.VERIFY)
     folder = tmp_path / "verify"
     (folder / "config").mkdir(parents=True)
@@ -132,6 +132,7 @@ def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate
         config_path=config,
         modules=("oid4vp-1final-verifier-happy-flow",),
         no_gate=no_gate,
+        timed_out=timed_out,
     )
 
     results = run.build_results(ctx, FakeSuite(), FakeVerify(), "PLAN", responder)  # type: ignore[arg-type]
@@ -145,4 +146,4 @@ def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate
     assert results.plan.config_file == "verify/config/verify.oid4vp-1final-verifier.json"
     assert results.plan.export == "verify/exports/test-log-PLAN.zip"
     assert results.gating is (not no_gate)
-    assert results.gate.exit_code is ExitCode.OK
+    assert results.gate.exit_code is (ExitCode.TIMEOUT if timed_out else ExitCode.OK)

@@ -146,10 +146,11 @@ def stage_scripts(home: Path, stage: Path, pki_dir: Path, certs_keys: dict[str, 
 
 def run_script(
     command: Sequence[str], cwd: Path, env: dict[str, str], log_path: Path, deadline: float
-) -> tuple[int, str | None]:
+) -> tuple[int | None, str | None]:
     """Run ``run-test-plan.py``, copying its output to the console and the log; returns (exit code, plan id).
 
-    Raises RunError(TIMEOUT) and stops the script when ``deadline`` (time.monotonic) passes.
+    When ``deadline`` (time.monotonic) passes, the script is stopped and the exit code is None; the plan id is
+    still returned, so the modules that ran can be reported.
     """
     plan_id: list[str] = []
     marker = "Created test plan, new id: "
@@ -186,7 +187,7 @@ def run_script(
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 process.kill()
-            raise RunError("the run reached its time limit; run-test-plan.py was stopped", ExitCode.TIMEOUT) from None
+            code = None
         finally:
             reader.join(timeout=10)
     return code, plan_id[0] if plan_id else None
@@ -293,7 +294,10 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         finally:
             responder.stop()
             shutil.rmtree(stage / "certs-keys", ignore_errors=True)
-        print(f"run-test-plan.py exited with {script_code}; plan {plan_id or 'not created'}")
+        if script_code is None:
+            print("the run reached its time limit (--timeout-minutes); run-test-plan.py was stopped", file=sys.stderr)
+        else:
+            print(f"run-test-plan.py exited with {script_code}; plan {plan_id or 'not created'}")
 
         context = RunContext(
             run_id=run_id,
@@ -309,6 +313,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             config_path=config_path,
             modules=tuple(args.modules or template.modules),
             no_gate=bool(args.no_gate),
+            timed_out=script_code is None,
         )
         results = build_results(context, suite, verify, plan_id, responder)
     finally:
@@ -337,6 +342,7 @@ class RunContext:
     config_path: Path
     modules: tuple[str, ...]  # selected modules; empty for every module of the plan
     no_gate: bool
+    timed_out: bool = False  # run-test-plan.py was stopped at the time limit
 
 
 def build_results(
@@ -375,7 +381,15 @@ def build_results(
     notes = []
     if responder.errors:
         notes.append(f"handoff responder: {len(responder.errors)} failed polls, last: {responder.errors[-1]}")
-    if ctx.no_gate:
+    if ctx.timed_out:
+        # Exit 4 with or without --no-gate: an incomplete run is never a pass.
+        gating = not ctx.no_gate and ctx.track is Track.GATE
+        gate = model.Gate(
+            passed=False,
+            exit_code=ExitCode.TIMEOUT,
+            messages=("the run reached its time limit; modules that did not finish are regressions",),
+        )
+    elif ctx.no_gate:
         gating = False
         gate = model.Gate(
             passed=True, exit_code=ExitCode.OK, messages=("--no-gate: verdicts recorded, the gate was not applied",)

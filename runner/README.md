@@ -112,7 +112,7 @@ and the findings write-up, not runner errors.
 | 1 | Gate failed |
 | 2 | Bad options or plan template |
 | 3 | Suite or Inji Verify not reachable, or a run key missing |
-| 4 | `--timeout-minutes` (default 30) reached; `run-test-plan.py` is stopped |
+| 4 | `--timeout-minutes` (default 30) reached: `run-test-plan.py` is stopped and `results.json` still records every module, unfinished ones as regressions (also with `--no-gate`) |
 
 ### The handoff responder
 
