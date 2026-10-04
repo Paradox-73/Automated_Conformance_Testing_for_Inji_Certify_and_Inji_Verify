@@ -1,0 +1,16 @@
+VpSubmissionSDJWT:
+  Injiverify_VpSubmissionSDJWT_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-submission/direct-post
+    description: Submitting the authorization response for SD-JWT DCQL request
+    uniqueIdentifier: TC_InjiVerify_VpSubmissionSDJWT_01
+    role: noauth
+    restMethod: post
+    checkOnlyStatusCodeInResponse: true
+    inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+    outputTemplate: injiverify/responseCode
+    input: '{
+      "state":"$ID:CreateVpRequestWithSDJWT_All_Valid_Smoke_Sid_requestId$"
+    }'
+    output: '{
+      "responseCode": "200"
+    }'

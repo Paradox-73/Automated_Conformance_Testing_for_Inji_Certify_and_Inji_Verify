@@ -1,0 +1,660 @@
+VpSubmission:
+  Injiverify_VpSubmission_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response for DCQL sd-jwt with valid signature
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_01
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateVpRequestWithDCQL_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmission_Random_State_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with random value for state
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_02
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"hdbhgshaJ"
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_RandomValue_VpToken_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with random value for vp token
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_03
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionNeg
+      outputTemplate: injiverify/error2
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": "bdhgyga"
+      }'
+      output: '{
+      "errorCode": "invalid_request"
+}'
+
+  Injiverify_VpSubmission_Empty_VpToken_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with empty vp token
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_04
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionNeg
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": ""
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_Empty_State_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with empty state
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_05
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":""
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_RandomValue_PresentationDefinitionId_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with random value for presentation definition id
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_06
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_All_Valid_Smoke_Sid_requestId$",
+      "definition_id":"hbdBYGdy"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmission_Empty_PresentationDefinitionId_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with empty presentation definition id
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_07
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "definition_id":""
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmission_Without_PresentationDefinitionId_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response without presentation definition id
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_08
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "definition_id":"$REMOVE$"
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_Without_State_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response without state
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_09
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$REMOVE$"
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_Without_VpToken_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response without vp token
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_10
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionNeg
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": "$REMOVE$"
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmission_Invalid_Error_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with invalid error value
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_11
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionNeg
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_All_Valid_Smoke_Sid_requestId$",
+      "error": "sdfsfdsf"
+      }'
+      output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_VpSubmissionWithProof_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_WithProof_01
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionLDPSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_WithProof_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmissionWithOutProof_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_WithProof_02
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_WithoutVC_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmission_With_validdata_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC with valid Presentation Id data
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_12
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_Withvaliddata_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+      }'
+  Injiverify_VpSubmissionForSessionRequest_All_Valid_Smoke_Sid:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC to VP Session Request with valid data
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_13
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpSessionRequest_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+  Injiverify_VpSubmissionForSessionRequest_duplicateRequestID_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC to VP Session Request with already used requestID and expect duplicate submission error
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_14
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForVpSessionRequest_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "VP response has already been submitted."
+}'
+  Injiverify_VpSubmissionForSessionRequest_whenResponseCodeValidationIsFalse_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC to VP Session Request with valid and responseCodeValidationRequired is false
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_15
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state":"$ID:CreateNewVerificationRequest_ForVpSessionRequest_withResponseCodeValidationRequired_asFalse_Valid_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+  Injiverify_VpSubmission_InvalidNonce_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response with invalid nonce
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_16
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/error2
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_All_Valid_Smoke_Sid_requestId$",
+      "challenge": "invalid_nonce"
+      }'
+      output: '{
+      "errorCode": "invalid_request"
+}'
+  Injiverify_VpSubmissionForSessionRequest2_All_Valid_Smoke_Sid:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC to VP Session Request with valid data
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_17
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionLifeInsuranceDCQL
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+  Injiverify_VpSubmissionForSessionRequest3_Invalid_vp_All_Valid_Smoke_Sid:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting VC to VP Session Request with valid data
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_18
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionInvalidHolderBindingDCQL
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_Withvaliddata3_using_for_Neg_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmission_Unsupported_Param_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with unsupported presentation_submission parameter and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_19
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionRequestValidationNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[{\"type\":\"VP\"}]}",
+      "presentation_submission": "not-allowed"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Invalid parameter: presentation_submission"
+}'
+
+  Injiverify_VpSubmission_Neither_VpToken_Nor_Error_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with only state and neither vp_token nor error and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_20
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionRequestValidationNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Either vp_token or error must be provided."
+}'
+
+  Injiverify_VpSubmission_Both_VpToken_And_Error_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with both vp_token and error and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_21
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionRequestValidationNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[{\"type\":\"VP\"}]}",
+      "error": "access_denied"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Both vp_token and error cannot be provided together."
+}'
+
+  Injiverify_VpSubmission_ErrorDescription_With_VpToken_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with error_description together with vp_token and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_22
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionRequestValidationNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[{\"type\":\"VP\"}]}",
+      "error_description": "user cancelled"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "If error_description is provided, vp_token must be null."
+}'
+
+  Injiverify_VpSubmission_ErrorDescription_Without_Error_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with error_description but without error and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_23
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionRequestValidationNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForNeg_Valid_Sid_requestId$",
+      "error_description": "user cancelled"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "If error_description is provided, error must also be provided."
+}'
+
+  Injiverify_VpSubmission_VpToken_Literal_Null_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with vp_token literal null string and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_24
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenLiteralNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "null"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: vp_token is required and cannot be empty or ''null''"
+}'
+
+  Injiverify_VpSubmission_VpToken_Json_Array_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with vp_token as JSON array and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_25
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "[{\"type\":\"VP\"}]"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token, not a valid JSON object"
+}'
+
+  Injiverify_VpSubmission_VpToken_Empty_Object_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with empty vp_token object and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_26
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: must contain at least one key-value pair"
+}'
+
+  Injiverify_VpSubmission_VpToken_Value_Not_Array_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with vp_token value that is not an array and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_27
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":{\"type\":\"VP\"}}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: all values must be arrays"
+}'
+
+  Injiverify_VpSubmission_VpToken_Empty_Array_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with empty array in vp_token and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_28
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[]}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: all arrays must have at least one element"
+}'
+
+  Injiverify_VpSubmission_VpToken_Invalid_First_Element_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with empty object as first vp_token array element and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_29
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[{}]}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: array elements must be non-empty JSON objects or non-empty SD-JWT strings"
+}'
+
+  Injiverify_VpSubmission_VpToken_Mixed_Object_Then_String_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with mixed LDP object then SD-JWT string in same array and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_30
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[{\"type\":\"VP\"},\"sd-jwt-string\"]}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: all elements must be non-empty JSON objects"
+}'
+
+  Injiverify_VpSubmission_VpToken_Mixed_SdJwt_Then_Object_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting with mixed SD-JWT string then LDP object in same array and expect invalid_request
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_31
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionVpTokenStructureNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpTokenStructureNeg_Valid_Sid_requestId$",
+      "vp_token": "{\"cred1\":[\"header.payload.sig~kb\",{\"type\":\"VP\"}]}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "invalid_vp_token: all elements must be non-empty SD-JWT strings"
+}'
+
+  Injiverify_VpSubmission_SdJwt_KbJwt_Wrong_Nonce_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting SD-JWT with KB-JWT nonce mismatch and expect invalid_request (issue #2059)
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_32
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionSdJwtKbJwtNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForSdJwtKbJwtNeg_WrongNonce_Valid_Sid_requestId$",
+      "sd_jwt": "eyJ0eXAiOiJkYytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjMiLCJjbmYiOnsia2lkIjoiazEifSwidmN0IjoiZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEifQ.c2ln~eyJ0eXAiOiJrYitqd3QiLCJhbGciOiJFUzI1NiJ9.eyJub25jZSI6Indyb25nLW5vbmNlIiwiYXVkIjoiY2xpZW50MTIzIiwiaWF0IjoxNzg2MzYyODI0fQ.a2JzaWc"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Nonce validation failed due to invalid nonce/challenge."
+}'
+
+  Injiverify_VpSubmission_SdJwt_KbJwt_Wrong_Aud_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting SD-JWT with KB-JWT aud mismatch and expect invalid_request (issue #2059)
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_33
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionSdJwtKbJwtNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForSdJwtKbJwtNeg_WrongAud_Valid_Sid_requestId$",
+      "sd_jwt": "eyJ0eXAiOiJkYytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjMiLCJjbmYiOnsia2lkIjoiazEifSwidmN0IjoiZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEifQ.c2ln~eyJ0eXAiOiJrYitqd3QiLCJhbGciOiJFUzI1NiJ9.eyJub25jZSI6Ik5rZEhKa0JJYmRPZFFhQWpXbThncEEiLCJhdWQiOiJodHRwczovL3dyb25nLmV4YW1wbGUuY29tIiwiaWF0IjoxNzg2MzYyODI0fQ.a2JzaWc"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Client id validation failed due to invalid client_id/domain."
+}'
+
+  Injiverify_VpSubmission_SdJwt_KbJwt_Missing_Nonce_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting SD-JWT with KB-JWT missing nonce claim and expect invalid_request (issue #2059)
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_34
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionSdJwtKbJwtNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForSdJwtKbJwtNeg_MissingNonce_Valid_Sid_requestId$",
+      "sd_jwt": "eyJ0eXAiOiJkYytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjMiLCJjbmYiOnsia2lkIjoiazEifSwidmN0IjoiZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEifQ.c2ln~eyJ0eXAiOiJrYitqd3QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJjbGllbnQxMjMiLCJpYXQiOjE3ODYzNjI4MjR9.a2JzaWc"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Nonce validation failed due to invalid nonce/challenge."
+}'
+
+  Injiverify_VpSubmission_SdJwt_KbJwt_Missing_Aud_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting SD-JWT with KB-JWT missing aud claim and expect invalid_request (issue #2059)
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_35
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionSdJwtKbJwtNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForSdJwtKbJwtNeg_MissingAud_Valid_Sid_requestId$",
+      "sd_jwt": "eyJ0eXAiOiJkYytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjMiLCJjbmYiOnsia2lkIjoiazEifSwidmN0IjoiZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEifQ.c2ln~eyJ0eXAiOiJrYitqd3QiLCJhbGciOiJFUzI1NiJ9.eyJub25jZSI6Ik5rZEhKa0JJYmRPZFFhQWpXbThncEEiLCJpYXQiOjE3ODYzNjI4MjR9.a2JzaWc"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "Client id validation failed due to invalid client_id/domain."
+}'
+
+  Injiverify_VpSubmission_SdJwt_Missing_Key_Binding_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting SD-JWT without Key Binding JWT when holder binding is required and expect invalid_request (issue #2059)
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_36
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionSdJwtKbJwtNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForSdJwtKbJwtNeg_MissingKeyBinding_Valid_Sid_requestId$",
+      "sd_jwt": "eyJ0eXAiOiJkYytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjMiLCJjbmYiOnsia2lkIjoiazEifSwidmN0IjoiZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEifQ.c2ln~"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "[credential_id: id_credential_query] vp_token SD-JWT credential must include a Key Binding JWT when require_cryptographic_holder_binding is true."
+}'
+  Injiverify_VpSubmission_Duplicate_Different_VpToken_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Resubmitting a different vp_token for an already submitted state and expect duplicate submission error
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_37
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDuplicateNeg
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpSessionRequest_All_Valid_Smoke_Sid_requestId$",
+      "vp_token": "{\"student_id_credential_query\":[{\"type\":\"VerifiablePresentation\",\"holder\":\"did:example:different\"}]}"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "VP response has already been submitted."
+}'
+
+  Injiverify_VpSubmission_ThirdDuplicate_Neg:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Third submit for an already submitted session request and expect duplicate submission error
+      uniqueIdentifier: TC_InjiVerify_VpSubmission_41
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/VpSubmission/VpSubmission
+      outputTemplate: injiverify/errorCodeAndMessage
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_ForVpSessionRequest_All_Valid_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "errorCode": "invalid_request",
+      "errorMessage": "VP response has already been submitted."
+}'

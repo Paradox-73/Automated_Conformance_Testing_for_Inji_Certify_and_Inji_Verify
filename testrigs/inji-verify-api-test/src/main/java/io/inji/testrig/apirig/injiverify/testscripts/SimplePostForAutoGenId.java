@@ -1,0 +1,181 @@
+package io.inji.testrig.apirig.injiverify.testscripts;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.testng.ITest;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.SkipException;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import io.inji.testrig.apirig.injiverify.utils.InjiVerifyConfigManager;
+import io.inji.testrig.apirig.injiverify.utils.InjiVerifyUtil;
+import io.mosip.testrig.apirig.dto.OutputValidationDto;
+import io.mosip.testrig.apirig.dto.TestCaseDTO;
+import io.mosip.testrig.apirig.testrunner.HealthChecker;
+import io.mosip.testrig.apirig.utils.AdminTestException;
+import io.mosip.testrig.apirig.utils.AuthenticationTestException;
+import io.mosip.testrig.apirig.utils.GlobalConstants;
+import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.OutputValidationUtil;
+import io.mosip.testrig.apirig.utils.ReportUtil;
+import io.mosip.testrig.apirig.utils.SecurityXSSException;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+
+public class SimplePostForAutoGenId extends InjiVerifyUtil implements ITest {
+	private static final Logger logger = Logger.getLogger(SimplePostForAutoGenId.class);
+
+	private static final String JSON_KEY_COOKIE = "cookie";
+	private static final String HEADER_CONTENT_TYPE = "Content-Type";
+	private static final String HEADER_ACCEPT = "Accept";
+	private static final String HEADER_COOKIE = "Cookie";
+
+	protected String testCaseName = "";
+	public String idKeyName = null;
+	public Response response = null;
+	public boolean sendEsignetToken = false;
+	public boolean auditLogCheck = false;
+
+	@BeforeClass
+	public static void setLogLevel() {
+		if (InjiVerifyConfigManager.IsDebugEnabled())
+			logger.setLevel(Level.ALL);
+		else
+			logger.setLevel(Level.ERROR);
+	}
+
+	/**
+	 * get current testcaseName
+	 */
+	@Override
+	public String getTestName() {
+		return testCaseName;
+	}
+
+	/**
+	 * Data provider class provides test case list
+	 * 
+	 * @return object of data provider
+	 */
+	@DataProvider(name = "testcaselist")
+	public Object[] getTestCaseList(ITestContext context) {
+		String ymlFile = context.getCurrentXmlTest().getLocalParameters().get("ymlFile");
+		sendEsignetToken = context.getCurrentXmlTest().getLocalParameters().containsKey("sendEsignetToken");
+		idKeyName = context.getCurrentXmlTest().getLocalParameters().get("idKeyName");
+		logger.info("Started executing yml: " + ymlFile);
+		return getYmlTestData(ymlFile);
+	}
+
+	/**
+	 * Test method for OTP Generation execution
+	 * 
+	 * @param objTestParameters
+	 * @param testScenario
+	 * @param testcaseName
+	 * @throws AuthenticationTestException
+	 * @throws AdminTestException
+	 * @throws NoSuchAlgorithmException
+	 */
+	@Test(dataProvider = "testcaselist")
+	public void test(TestCaseDTO testCaseDTO)
+			throws AuthenticationTestException, AdminTestException, NoSuchAlgorithmException, SecurityXSSException {
+		testCaseName = testCaseDTO.getTestCaseName();
+		testCaseName = InjiVerifyUtil.isTestCaseValidForExecution(testCaseDTO);
+		if (HealthChecker.signalTerminateExecution) {
+			throw new SkipException(
+					GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
+		}
+
+		String inputJson = getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate());
+
+		inputJson = inputJsonModuleKeyWordHandler(inputJson, testCaseName);
+		inputJson = InjiVerifyUtil.replaceVpSessionInputPlaceholders(inputJson);
+		boolean sendCookieAsHeader = false;
+		String cookieValue = null;
+
+		if (inputJson != null) {
+			try {
+				JSONObject requestJson = new JSONObject(inputJson);
+
+				if (requestJson.has(JSON_KEY_COOKIE)) {
+					cookieValue = requestJson.optString(JSON_KEY_COOKIE);
+
+					if (cookieValue != null && !cookieValue.isEmpty()) {
+						logger.info("Sending cookie via HEADER: " + cookieValue);
+
+						requestJson.remove(JSON_KEY_COOKIE);
+						inputJson = requestJson.toString();
+						sendCookieAsHeader = true;
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Error parsing input JSON for cookie handling", e);
+			}
+		}
+
+		String outputJson = getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate());
+		outputJson = inputJsonModuleKeyWordHandler(outputJson, testCaseName);
+
+		if (sendCookieAsHeader) {
+			response = RestAssured
+					.given()
+					.header(HEADER_CONTENT_TYPE, "application/json")
+					.header(HEADER_ACCEPT, "application/json")
+					.header(HEADER_COOKIE, cookieValue)
+					.body(inputJson)
+					.post(injiVerifyBaseUrl + testCaseDTO.getEndPoint());
+
+		} else {
+			response = postWithBodyAndCookieForAutoGeneratedId(
+					injiVerifyBaseUrl + testCaseDTO.getEndPoint(),
+					inputJson,
+					auditLogCheck,
+					COOKIENAME,
+					testCaseDTO.getRole(),
+					testCaseDTO.getTestCaseName(),
+					idKeyName,
+					sendEsignetToken
+			);
+		}
+
+		try {
+			InjiVerifyUtil.captureTransactionCookieFromVpSessionRequestResponse(
+					testCaseDTO.getEndPoint(), testCaseDTO.getTestCaseName(), response, inputJson);
+		} catch (Exception e) {
+			logger.error("Error while extracting transaction cookie from response", e);
+		}
+
+		InjiVerifyUtil.validateAuthorizationDetailsResponseCodeValidationRequiredFromInput(
+				testCaseDTO.getOutputTemplate(), testCaseDTO.isCheckOnlyStatusCodeInResponse(), inputJson,
+				response.asString());
+
+		InjiVerifyUtil.validateRedirectUriClientIdCreateResponse(testCaseName, inputJson,
+				response != null ? response.asString() : null);
+
+		Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil
+				.doJsonOutputValidation(response.asString(), outputJson, testCaseDTO, response.getStatusCode());
+		Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+		if (!OutputValidationUtil.publishOutputResult(ouputValid))
+			throw new AdminTestException("Failed at output validation");
+	}
+
+	/**
+	 * The method ser current test name to result
+	 * 
+	 * @param result
+	 */
+	@AfterMethod(alwaysRun = true)
+	public void setResultTestName(ITestResult result) {
+		result.setAttribute("TestCaseName", testCaseName);
+	}
+}

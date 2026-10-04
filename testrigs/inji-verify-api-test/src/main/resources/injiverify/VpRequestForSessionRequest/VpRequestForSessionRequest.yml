@@ -1,0 +1,107 @@
+VpRequestForSessionRequest:
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-session-request
+    description: Creates a VP session request with a valid DCQL query for VP Session result API
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_01
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequestResult
+    input: '{
+      "clientId": "injiverify.dev-int-inji.mosip.net/",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": false,
+      "responseCodeValidationRequired": true
+    }'
+    output: '{
+      "responseType": "vp_token"
+}'
+
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_withoutClientID_Neg:
+    endPoint: /v1/verify/v2/vp-session-request
+    description: Creates a VP session request without clientId and expect 400 status code
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_02
+    checkOnlyStatusCodeInResponse: true
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/responseCode
+    input: '{
+      "clientId": "$REMOVE$",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": false,
+      "responseCodeValidationRequired": true
+    }'
+    output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_withoutResponseCodeValidationRequired_Neg:
+    endPoint: /v1/verify/v2/vp-session-request
+    description: Creates a VP session request with responseCodeValidationRequired present but no value and expect 400 status code
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_03
+    checkOnlyStatusCodeInResponse: true
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/responseCode
+    input: '{
+      "clientId": "injiverify.dev-int-inji.mosip.net/",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": false,
+      "responseCodeValidationRequired": "$IGNORE$"
+    }'
+    output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_withMalformedJSONRequest_Neg:
+    endPoint: /v1/verify/v2/vp-session-request
+    description: Creates a VP session request with an empty request body and expect 400 status code
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_04
+    checkOnlyStatusCodeInResponse: true
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/responseCode
+    input: '{}'
+    output: '{
+      "responseCode": "400"
+}'
+
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_withResponseCodeValidationRequired_asFalse_Valid_Sid:
+    endPoint: /v1/verify/v2/vp-session-request
+    description: Creates a VP session request with valid DCQL data and responseCodeValidationRequired false for VP Session result API
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_05
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequestResult
+    input: '{
+      "clientId": "injiverify.dev-int-inji.mosip.net/",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": false,
+      "responseCodeValidationRequired": false
+    }'
+    output: '{
+      "responseType": "vp_token"
+}'
+
+  Injiverify_CreateNewVerificationRequest_ForVpSessionRequest_V1_endpoint_Neg:
+    endPoint: /v1/verify/vp-session-request
+    description: Creates a VP session request with valid DCQL data using V1 endpoint and expect 404 status code
+    uniqueIdentifier: TC_InjiVerify_VpRequestForSessionRequest_with_v1_endpoint_06
+    role: noauth
+    restMethod: post
+    checkOnlyStatusCodeInResponse: true
+    inputTemplate: injiverify/VpRequestForSessionRequest/VpRequestForSessionRequest
+    outputTemplate: injiverify/responseCode
+    input: '{
+      "clientId": "injiverify.dev-int-inji.mosip.net/",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": false,
+      "responseCodeValidationRequired": true
+    }'
+    output: '{
+      "responseCode": "404"
+}'

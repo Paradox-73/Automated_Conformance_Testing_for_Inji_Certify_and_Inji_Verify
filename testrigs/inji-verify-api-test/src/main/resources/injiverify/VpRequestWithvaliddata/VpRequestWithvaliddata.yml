@@ -1,0 +1,70 @@
+VpRequestWithvaliddata:
+  Injiverify_CreateNewVerificationRequest_Withvaliddata_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-request
+    description: Creates a VP request with a valid presentationDefinitionId for VP submission with presentation id
+    uniqueIdentifier: TC_InjiVerify_VpRequestWithvaliddata_02
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestWithvaliddata/VpRequestWithvaliddataRequest
+    outputTemplate: injiverify/CreateNewVerificationRequest/CreateNewVerificationRequestResult
+    input: '{
+      "clientId": "injiverify.dev-int-inji.mosip.net",
+      "responseCodeValidationRequired": false,
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA"
+      }'
+    output: '{
+    "responseType": "vp_token"
+}'
+
+  Injiverify_CreateNewVerificationRequest_WithvaliddataForVpSessionRequest_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-request
+    description: Creates a VP request with a valid presentationDefinitionId for VP session result
+    uniqueIdentifier: TC_InjiVerify_VpRequestWithvaliddata_03
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestWithvaliddata/VpRequestWithvaliddataForVpSessionRequest
+    outputTemplate: injiverify/VpRequestWithvaliddata/VpRequestWithvaliddataForVpSessionResult
+    input: '{
+      "clientId": "injiverify.mosip.net",
+      "nonce": "NkdHJkBIbdOdQaAjWm8gpA",
+      "acceptVPWithoutHolderProof": true,
+      "responseCodeValidationRequired": true
+    }'
+    output: '{
+      "responseType": "vp_token"
+}'
+
+  Injiverify_CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-request
+    description: Creates a VP request with a valid presentationDefinitionId and returns vp_token details 2.
+    uniqueIdentifier: TC_InjiVerify_VpRequestWithvaliddata_06
+    role: noauth
+    restMethod: post
+    checkOnlyStatusCodeInResponse: true
+    inputTemplate: injiverify/VpRequestWithvaliddata/VpRequestWithvaliddataDCQL31LifeInsurance
+    outputTemplate: injiverify/responseCode
+    input: '{
+      "clientId": "decentralized_identifier:did:web:injiverify.dev-int-inji.mosip.net:v1:verify",
+      "responseCodeValidationRequired": false,
+      "nonce": "IvfM76kOqj8Xy5H9pFBGBQ"
+      }'
+    output: '{
+    "responseCode": "201"
+}'
+
+  Injiverify_CreateNewVerificationRequest_Withvaliddata3_using_for_Neg_All_Valid_Smoke_Sid:
+    endPoint: /v1/verify/v2/vp-request
+    description: Creates a VP request with a valid presentationDefinitionId and returns vp_token details 3.
+    uniqueIdentifier: TC_InjiVerify_VpRequestWithvaliddata_07
+    role: noauth
+    restMethod: post
+    inputTemplate: injiverify/VpRequestWithvaliddata/VpRequestWithvaliddataDCQL41
+    outputTemplate: injiverify/CreateNewVerificationRequest/CreateNewVerificationRequestResult
+    input: '{
+      "clientId": "$REDIRECT_URI_CLIENT_ID$",
+      "responseCodeValidationRequired": false,
+      "nonce": "IvfM76kOqj8Xy5H9pFBGBQ"
+      }'
+    output: '{
+    "responseType": "vp_token"
+}'

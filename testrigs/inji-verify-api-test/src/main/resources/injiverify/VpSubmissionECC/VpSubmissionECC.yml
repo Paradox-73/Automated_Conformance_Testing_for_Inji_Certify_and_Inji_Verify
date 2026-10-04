@@ -1,0 +1,32 @@
+VpSubmissionECC:
+  Injiverify_VpSubmissionECCR1_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response for ECCR1
+      uniqueIdentifier: TC_InjiVerify_VpSubmissionECCR1_01
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_All_ValidForECCR1_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'
+
+  Injiverify_VpSubmissionECCK1_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-submission/direct-post
+      description: Submitting the authorization response for ECCK1
+      uniqueIdentifier: TC_InjiVerify_VpSubmissionECCK1_01
+      role: noauth
+      restMethod: post
+      checkOnlyStatusCodeInResponse: true
+      inputTemplate: injiverify/VpSubmission/VpSubmissionDCQLSmoke
+      outputTemplate: injiverify/responseCode
+      input: '{
+      "state": "$ID:CreateNewVerificationRequest_All_ValidForECCK1_Smoke_Sid_requestId$"
+      }'
+      output: '{
+      "responseCode": "200"
+}'

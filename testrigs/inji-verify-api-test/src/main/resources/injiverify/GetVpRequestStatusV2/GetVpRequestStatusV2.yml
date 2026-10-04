@@ -1,0 +1,170 @@
+GetVpRequestStatusV2.yml:
+  Injiverify_GetVpRequestStatus_V2_All_Valid_Smoke:
+      endPoint: /v1/verify/v2/vp-results/{transactionId}
+      description: Verify VP results in V2 end point
+      uniqueIdentifier: TC_InjiVerify_GetVpRequestStatus_V2_01
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2
+      outputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2Result
+      input: '{
+      "skipStatusChecks": false,
+      "statusCheckFilters": ["revocation", "suspension"],
+      "includeClaims": true,
+      "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$"
+      }'
+      output: '{
+  "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$",
+  "allChecksSuccessful": true,
+  "credentialResults": [
+    {
+      "allChecksSuccessful": true,
+      "schemaAndSignatureCheck": {
+        "valid": true,
+        "error": null
+      },
+      "expiryCheck": {
+        "valid": true
+      },
+      "statusCheck": [],
+      "claims": {
+        "gender": "Male",
+        "policyName": "Afterbirth",
+        "dob": "2025-02-04",
+        "policyNumber": "8080",
+        "mobile": "67845634567",
+        "fullName": "Afterbirth",
+        "policyIssuedOn": "2027-05-20",
+        "policyExpiresOn": "2024-06-17",
+        "email": "Afterbirth@gmail.com"
+      },
+      "holderProofCheck": {
+        "valid": true,
+        "error": null
+      }
+    }
+  ]
+}'
+
+  Injiverify_GetVpRequestStatus_V2_WithoutClaims_Neg:
+      endPoint: /v1/verify/v2/vp-results/{transactionId}
+      description: Verify VP results in V2 end point without claims
+      uniqueIdentifier: TC_InjiVerify_GetVpRequestStatus_V2_02
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2
+      outputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2Result
+      input: '{
+      "skipStatusChecks": false,
+      "statusCheckFilters": ["revocation", "suspension"],
+      "includeClaims": false,
+      "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$"
+      }'
+      output: '{
+  "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$",
+  "allChecksSuccessful": true,
+  "credentialResults": [
+    {
+      "allChecksSuccessful": true,
+      "schemaAndSignatureCheck": {
+        "valid": true,
+        "error": null
+      },
+      "expiryCheck": {
+        "valid": true
+      },
+      "statusCheck": [],
+      "claims": {},
+      "holderProofCheck": {
+        "valid": true,
+        "error": null
+      }
+    }
+  ]
+}'
+
+  Injiverify_GetVpRequestStatus_V2_WithoutStatusCheck_Neg:
+      endPoint: /v1/verify/v2/vp-results/{transactionId}
+      description: Verify VP results in V2 end point without status
+      uniqueIdentifier: TC_InjiVerify_GetVpRequestStatus_V2_03
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2
+      outputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2Result
+      input: '{
+      "skipStatusChecks": true,
+      "statusCheckFilters": ["revocation", "suspension"],
+      "includeClaims": true,
+      "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$"
+      }'
+      output: '{
+  "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata2_All_Valid_Smoke_Sid_transactionId$",
+  "allChecksSuccessful": true,
+  "credentialResults": [
+    {
+      "allChecksSuccessful": true,
+      "schemaAndSignatureCheck": {
+        "valid": true,
+        "error": null
+      },
+      "expiryCheck": {
+        "valid": true
+      },
+      "statusCheck": [],
+      "claims": {
+        "gender": "Male",
+        "policyName": "Afterbirth",
+        "dob": "2025-02-04",
+        "policyNumber": "8080",
+        "mobile": "67845634567",
+        "fullName": "Afterbirth",
+        "policyIssuedOn": "2027-05-20",
+        "policyExpiresOn": "2024-06-17",
+        "email": "Afterbirth@gmail.com"
+      },
+      "holderProofCheck": {
+        "valid": true,
+        "error": null
+      }
+    }
+  ]
+}'
+
+  Injiverify_GetVpRequestStatus_V2_Withinvalid_vp_Neg:
+      endPoint: /v1/verify/v2/vp-results/{transactionId}
+      description: Verify VP results in V2 end point with invalid holder binding
+      uniqueIdentifier: TC_InjiVerify_GetVpRequestStatus_V2_04
+      role: noauth
+      restMethod: post
+      inputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2
+      outputTemplate: injiverify/GetVpRequestStatusV2/GetVpRequestStatusV2Result
+      input: '{
+      "skipStatusChecks": true,
+      "statusCheckFilters": ["revocation", "suspension"],
+      "includeClaims": true,
+      "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata3_using_for_Neg_All_Valid_Smoke_Sid_transactionId$"
+      }'
+      output: '{
+  "transactionId": "$ID:CreateNewVerificationRequest_Withvaliddata3_using_for_Neg_All_Valid_Smoke_Sid_transactionId$",
+  "allChecksSuccessful": false,
+  "credentialResults": [
+    {
+      "allChecksSuccessful": false,
+      "schemaAndSignatureCheck": {
+        "valid": true,
+        "error": null
+      },
+      "expiryCheck": {
+        "valid": true
+      },
+      "statusCheck": [],
+      "claims": {},
+      "holderProofCheck": {
+        "valid": false,
+        "error": {
+          "errorCode": "ERR_SIGNATURE_VERIFICATION_FAILED"
+        }
+      }
+    }
+  ]
+}'
