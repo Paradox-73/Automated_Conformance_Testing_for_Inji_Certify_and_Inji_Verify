@@ -16,6 +16,13 @@ MOSIP Decode 2026, problem statement 01, team Badmosip.
 
 This table lists only what has been run. The next section is the plan, not a result.
 
+## Status and contributing
+
+- [docs/STATUS.md](docs/STATUS.md): every task with its status and commits, a card for each remaining task
+  (goal, owned folders, acceptance check, notes), how to split the work, and the definition of done.
+- [CONTRIBUTING.md](CONTRIBUTING.md): tools, one-time setup, build and test commands, the local stack and its
+  ports, what runs end to end today, conventions, and troubleshooting.
+
 ## What the harness will do
 
 - Start one Docker Compose project with Inji Certify, Inji Verify, the conformance suite (server, MongoDB, nginx)
