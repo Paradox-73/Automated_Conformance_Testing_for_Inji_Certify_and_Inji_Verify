@@ -1,0 +1,98 @@
+WellKnownEndpoint:
+   InjiCertify_WellKnownEndpoint_LandRegistry_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer?version=latest
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_LandRegistry_01
+      description: WellKnownEndpoint for Land registry with all valid details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_Mock_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer?version=latest
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_Mock_01
+      description: WellKnownEndpoint for Mock with all valid details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_MosipID_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer?version=latest
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_MosipID_01
+      description: WellKnownEndpoint for MosipID with all valid details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_Sunbird_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer?version=latest
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_Sunbird_01
+      description: WellKnownEndpoint for sunbird with all valid details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_mdl_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer?version=latest
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_mDoc_01
+      description: WellKnownEndpoint for mDoc with all valid details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_mdocvp_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_mdocvp_01
+      description: Get Credential Metadata from Well Known Endpoint
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/PresentationDuringIssuance/DiscoveryEndpoints/IssuerMetadata/CredentialMetadata
+      outputTemplate: injicertify/PresentationDuringIssuance/DiscoveryEndpoints/IssuerMetadata/CredentialMetadataResult
+      input: '{
+}'
+      output: '{
+}'
+
+   InjiCertify_WellKnownEndpoint_PreAuthCode_all_Valid_Smoke:
+      endPoint: $INJICERTIFYBASEURL$/v1/certify/.well-known/openid-credential-issuer
+      uniqueIdentifier: TC_InjiCertify_WellKnownEndpoint_PreAuthCode_01
+      description: Get Credential Metadata from Well Known Endpoint for Pre-Auth Code flow
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpoint
+      outputTemplate: injicertify/WellKnownEndpoint/WellKnownEndpointResult
+      input: '{
+}'
+      output: '{
+}'
