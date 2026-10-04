@@ -3,8 +3,9 @@
 Assets for the root [`docker-compose.yml`](../docker-compose.yml): one Docker Compose project (`ps01-harness`) that
 runs the OpenID Foundation conformance suite and the Inji systems under test side by side.
 
-Lane: platform. Status on 2026-10-04: compose v1 runs the suite, Inji Verify, the TLS proxy and the run-time key
-generation (`bash compose/smoke.sh verify` passes, output below). Inji Certify and MinIO come in compose v2.
+Lane: platform. Status on 2026-10-04: compose v2 runs the suite, Inji Verify, Inji Certify, the TLS proxy, the
+run-time key generation and MinIO. `bash compose/smoke.sh verify` and `bash compose/smoke.sh certify reports` pass
+(output below).
 
 ## Quick start
 
@@ -13,6 +14,9 @@ bash scripts/dc.sh --profile verify pull                # once; about 1.1 GB to 
 bash scripts/dc.sh --profile verify up -d --wait        # suite + Inji Verify + TLS proxy, healthy in about 1 minute
 bash scripts/dc.sh --profile verify down -v             # stop and delete containers, network and volumes
 bash compose/smoke.sh verify                            # start, check, measure, remove (exit 0 when all checks pass)
+
+bash scripts/dc.sh --profile certify --profile reports pull   # once; Inji Certify is about 0.9 GB compressed
+bash compose/smoke.sh certify reports                   # suite + Inji Certify + TLS proxy + MinIO
 ```
 
 Always call Compose through [`scripts/dc.sh`](../scripts/dc.sh); a plain `docker compose` lacks the generated
@@ -35,8 +39,9 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 |---|---|
 | `suite` | `suite-mongodb`, `suite-server`, `suite-nginx` |
 | `verify` | the suite, `verify-db`, `verify-service`, `pki-init`, `tls-proxy` |
-| `certify` | the suite, `pki-init`, `tls-proxy` (Inji Certify itself arrives in compose v2) |
-| `tools` | one-off containers for `dc.sh run --rm`: `runner` (built from `runner/`), `probe` (curl), `pki-init` |
+| `certify` | the suite, `certify-db`, `certify`, `pki-init`, `tls-proxy` |
+| `reports` | `minio` (S3 store with the `automationtests` bucket for the testrig reports) |
+| `tools` | one-off containers for `dc.sh run --rm`: `runner` (built from `runner/`), `probe` (curl), `minio-mc` (S3 client), `pki-init` |
 
 | Service | Image (default, pinned by tag and digest) | Override | Host port (127.0.0.1 only) | Name inside the network | Memory limit |
 |---|---|---|---|---|---|
@@ -45,7 +50,11 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 | `suite-mongodb` | `mongo:6.0.13`, named volume `suite-mongodb-data` | `SUITE_MONGODB_IMAGE` | none | - | 512 MiB |
 | `verify-service` | `injistackqa/inji-verify-service:1.0.x` (commit `ad3595f`) | `VERIFY_IMAGE` | 18461 (plain HTTP, debugging only) | - | 768 MiB |
 | `verify-db` | `postgres:13` + [`verify/init.sql`](verify/init.sql) | `VERIFY_DB_IMAGE` | none | - | 256 MiB |
-| `tls-proxy` | `nginx:1.30.5-alpine` + [`tls-proxy/`](tls-proxy/) | `TLS_PROXY_IMAGE` | 18451 | `verify.inji.test`, `certify.inji.test` | 128 MiB |
+| `certify` | `injistackqa/inji-certify-with-plugins:develop` (commit `d6635da`) + [`certify/config/`](certify/README.md) | `CERTIFY_IMAGE` | 18460 (plain HTTP, debugging only) | - | 1 GiB |
+| `certify-db` | `postgres:15` + [`certify/certify_init.sql`](certify/certify_init.sql), named volume `certify-db-data` | `CERTIFY_DB_IMAGE` | none | - | 256 MiB |
+| `tls-proxy` | `nginx:1.30.5-alpine` + [`tls-proxy/`](tls-proxy/) | `TLS_PROXY_IMAGE` | 18450, 18451 | `verify.inji.test`, `certify.inji.test` | 128 MiB |
+| `minio` | `pgsty/minio:RELEASE.2026-08-04T00-00-00Z` + [`minio/init.sh`](minio/README.md), named volume `minio-data` | `MINIO_IMAGE` | 18900 (S3), 18901 (console) | `minio` | 512 MiB |
+| `minio-mc` | `pgsty/mc:RELEASE.2026-09-16T00-00-00Z` | `MINIO_MC_IMAGE` | none | - | 128 MiB |
 | `pki-init` | `python:3.12.15-slim` + [`pki/generate.py`](pki/generate.py) | `PKI_IMAGE` | none (no network) | - | 128 MiB |
 | `runner` | built from `runner/Dockerfile` (added by the runner lane) | `RUNNER_IMAGE` | none | - | 512 MiB |
 | `probe` | `curlimages/curl:8.22.0` | `PROBE_IMAGE` | none | - | 64 MiB |
@@ -72,6 +81,14 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 - Verify signs request objects with the test keystore bundled in its image (certificate SAN `test.example.com`),
   so the client id is `x509_san_dns:test.example.com`. For `x509_san_dns` the suite checks the client id against
   that certificate, not against the `response_uri` host.
+- Inji Certify sits behind `tls-proxy` as `https://certify.inji.test:18450`, which is also its
+  `mosip.certify.domain.url`. The domain has no path, so the issuer identifier is the origin and OpenID4VCI 1.0
+  puts the metadata at `/.well-known/openid-credential-issuer` on the root; `tls-proxy` maps the root well-known
+  routes to Certify's `/v1/certify/.well-known/...` as upstream's `certify-nginx.conf` does. The Certify listener
+  asks for a client certificate without checking it (`ssl_verify_client optional_no_ca`), for the suite's mTLS
+  variants. Details: [`certify/README.md`](certify/README.md).
+- MinIO is reached as `http://minio:9000` with path-style requests, which the testrigs' stock `S3Adapter` uses.
+  Details: [`minio/README.md`](minio/README.md).
 - `tls-proxy` resolves its backends per request through Docker's DNS, so it starts with any profile and answers
   502 for a backend that the active profiles leave out.
 - Host ports stay in 18000-18999 and bind to 127.0.0.1 only; nothing listens on 8080, 8443 or 4501 on the host.
@@ -96,7 +113,7 @@ test-only key material to `$HARNESS_RUN_DIR/pki`. Nothing here is ever committed
 
 ## Smoke test (`smoke.sh`)
 
-`bash compose/smoke.sh PROFILE...` (profiles `suite`, `verify`) refuses to start when containers of the project
+`bash compose/smoke.sh PROFILE...` (profiles `suite`, `verify`, `certify`, `reports`) refuses to start when containers of the project
 already exist, checks that the published ports are free, runs `up --wait`, runs the checks, samples `docker stats`
 every 3 seconds, and always ends with `down --volumes`. It exits 0 only when every check passed.
 
@@ -107,6 +124,11 @@ every 3 seconds, and always ends with `down --volumes`. It exits 0 only when eve
 | `suite` | `GET /api/server` answers through nginx from inside the network (`probe`) and from the host, and the version matches the image tag. |
 | `suite-mtls` | The mTLS listener on 18444 answers. |
 | `verify` | Over TLS with the test CA: `POST /v1/verify/v2/vp-request` with client id `x509_san_dns:test.example.com` and a DCQL query for `dc+sd-jwt` returns 201 with a `requestUri` under `https://verify.inji.test:18451/v1/verify`; that URI returns a request object (`application/oauth-authz-req+jwt`) whose header has `x5c` and whose claims carry the client id and a `response_uri` under the same base URL. |
+| `certify` | Over TLS: `GET /.well-known/openid-credential-issuer` at the root returns `credential_issuer` `https://certify.inji.test:18450`, the credential endpoint under `/v1/certify`, and Certify itself as first authorization server. Prints the image's `commit_id` label. |
+| `certify-as` | `GET /.well-known/oauth-authorization-server` names the same issuer, `token_endpoint` `https://certify.inji.test:18450/v1/certify/oauth/token` and the pre-authorized code grant. |
+| `certify-preauth` | `POST /v1/certify/pre-authorized-data` for the seeded `FarmerCredential` returns an `openid-credential-offer://` link; the offer it points to has the issuer and a pre-authorized code. |
+| `certify-token` | That code, redeemed at the token endpoint, gives a `Bearer` access token whose `iss` is the issuer (Certify validates its own tokens). |
+| `minio` | `minio-mc stat local/automationtests` finds the bucket; an object is written, read and deleted with signed path-style requests (`curl --aws-sigv4` to `http://minio:9000/automationtests/...`); the S3 port answers on the host. |
 | `stats` | Peak memory per service and in total. |
 | `teardown` | No container or volume of the project is left. |
 
@@ -135,6 +157,35 @@ Measured on the same day, four runs: start to healthy 34-76 s for `verify` (the 
 projects put on the shared Docker VM) and 66 s for `suite`; peak memory 880-925 MiB in total for `verify` and
 576 MiB for `suite`.
 
+`bash compose/smoke.sh certify reports` on 2026-10-04, same machine and conditions (other projects' stacks were
+running on the same Docker VM):
+
+```text
+ports PASS 18443 18444 18450 18451 18460 18900 18901 free
+start PASS 134s to healthy (certify reports)
+pki PASS 4 certificates chain to the test CA, signing JWK has x5c
+  network: {"build_time":"2026-09-18T14:29:43Z","tag":"release-v5.3.1","version":"5.3.1","external_ip":null,"revision":"440eec8"}
+suite PASS 5.3.1
+suite-mtls PASS 18444
+  image commit_id label: d6635da
+  credential_endpoint https://certify.inji.test:18450/v1/certify/issuance/credential
+certify PASS credential_issuer=https://certify.inji.test:18450
+  token_endpoint https://certify.inji.test:18450/v1/certify/oauth/token
+certify-as PASS token_endpoint
+  offer https://certify.inji.test:18450/v1/certify/credential-offer-data/4f876282-98e6-48dc-afe0-288fc901fded
+certify-preauth PASS offer
+  POST /oauth/token -> 200, token_type Bearer, iss https://certify.inji.test:18450
+certify-token PASS Bearer
+  path-style PUT, GET and DELETE of automationtests/smoke/20261004T103927Z-303207.txt
+minio PASS bucket automationtests
+  peak memory (MiB): certify 615 suite-server 541 suite-mongodb 163 minio 85 certify-db 54 suite-nginx 32 tls-proxy 9
+stats PASS peak 1499 MiB total, start 134s
+teardown PASS
+```
+
+One run so far; Certify alone needs most of the 134 s (Spring Boot start and the keymanager's first key
+generation).
+
 ## Upstream files
 
 Imported unchanged in their own commits first, then changed in separate commits, so `git log -p -- <file>` shows
@@ -144,12 +195,18 @@ the team's diff.
 |---|---|---|---|
 | `suite/nginx.conf` | `openid/conformance-suite` `nginx/nginx.conf` at tag `release-v5.3.1` (commit `440eec8`) | MIT, [`suite/LICENSE.txt`](suite/LICENSE.txt) | `listen 18443`/`18444` and the matching `X-Forwarded-Port` headers instead of 8443/8444; `proxy_pass` to `suite-server`; header comment |
 | `verify/init.sql` | `inji/inji-verify` `docker-compose/db-init/init.sql` at `release-1.0.x` commit `6a6ab3b` | Apache-2.0, [`verify/LICENSE`](verify/LICENSE) | none |
+| `certify/config/certify-default.properties` | `inji/inji-certify` `docker-compose/docker-compose-injistack/config/` at `release-1.0.x` commit `203b143` | Apache-2.0, [`certify/LICENSE`](certify/LICENSE) | Certify as its own authorization server, HTTPS domain, database host, passwords from `env.local`; see [`certify/README.md`](certify/README.md) |
+| `certify/config/certify-csvdp-farmer.properties`, `certify/certify_init.sql`, `certify/certify-nginx.conf` | same commit, `docker-compose/docker-compose-injistack/` | Apache-2.0 | none (`certify-nginx.conf` is the reference for `tls-proxy/sites/certify.conf`, not mounted) |
 
 `docker-compose.yml` follows the suite's `docker-compose-prebuilt.yml` and Inji Verify's
 `docker-compose/docker-compose.yml` (release-1.0.x) for service settings, with these differences: harness ports
 and names, generated database password, no `user: root` for Verify (the image's own user works), the QA image
 `injistackqa/inji-verify-service:1.0.x` because the `1.0.0-alpha.2` tag in the upstream file is not published and
-`1.0.0-alpha.1` cannot sign `x509_san_dns` requests, and no Verify UI (the harness drives Verify's API).
+`1.0.0-alpha.1` cannot sign `x509_san_dns` requests, and no Verify UI (the harness drives Verify's API). For Inji
+Certify it follows `docker-compose/docker-compose-injistack/docker-compose.yaml` of inji-certify (release-1.0.x):
+same `user: root`, Spring settings and mount paths; harness ports and names; the profile `preauth` added; no
+`certify-nginx` (replaced by the `tls-proxy` site), no Mimoto and no Inji Web (wallet side, which the suite plays);
+the keystore in a named volume instead of a folder of the checkout.
 
 ## Tests
 
@@ -157,8 +214,8 @@ and names, generated database password, no `user: root` for Verify (the image's 
 |---|---|
 | `bash scripts/tests/test-pki.sh` | `pki/test_generate.py`: chain, key usages, JWK members and lengths, `x5c` matches the key, thumbprint, reuse and regeneration rules, private-scalar padding |
 | `bash scripts/tests/test-dc.sh` | `dc.sh` with a stub `docker`: env file creation and append-only updates, compose arguments, native paths, project-name guard |
-| `bash scripts/tests/test-smoke.sh` | `smoke.sh` argument handling, memory-peak parsing, JSON and JWT helpers |
-| `bash compose/smoke.sh verify` | The whole stack, as above (needs Docker) |
+| `bash scripts/tests/test-smoke.sh` | `smoke.sh` argument handling, memory-peak parsing, JSON, JWT and URL helpers, reading `env.local` |
+| `bash compose/smoke.sh verify`, `bash compose/smoke.sh certify reports` | The whole stack, as above (needs Docker) |
 
 `bash scripts/check.sh shell` runs shellcheck on every script and then all three test scripts.
 
@@ -174,3 +231,8 @@ and names, generated database password, no `user: root` for Verify (the image's 
 | `VERIFY_DB_PASSWORD` error from `docker compose` | Compose was called directly. Use `bash scripts/dc.sh`. |
 | Verify cannot log in to its database after `env.local` was deleted | The database volume still has the old password: `bash scripts/dc.sh --profile '*' down -v`. |
 | Bind mounts empty or wrong on Windows | Call through `dc.sh` (it passes native paths and turns off Git Bash path rewriting). |
+| `certify` not healthy within the start limit | Certify takes about 2 minutes on a loaded laptop. Read `bash scripts/dc.sh --profile certify logs certify`; raise `SMOKE_START_TIMEOUT` if it is only slow. |
+| Certify fails to sign or to start after `env.local` or one volume was deleted | The keystore volume, the database volume and the passwords in `env.local` belong together: `bash scripts/dc.sh --profile '*' down -v` and start again. |
+| `certify` check shows `credential_issuer` other than `https://certify.inji.test:18450` | `CERTIFY_IMAGE` points at an image that ignores the mounted configuration, or the properties were edited; see [`certify/README.md`](certify/README.md). |
+| `minio` unhealthy, log says the bucket is missing | `compose/minio/init.sh` could not reach the server within 60 s (`MINIO_INIT_TIMEOUT`). `bash scripts/dc.sh --profile reports logs minio` shows the hook's output. |
+| `pull access denied` for `minio/minio` or `minio/mc` | Those images are no longer published; the defaults use the `pgsty` builds. Point `MINIO_IMAGE` / `MINIO_MC_IMAGE` at a build you can pull. |

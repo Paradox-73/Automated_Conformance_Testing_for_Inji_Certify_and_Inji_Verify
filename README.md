@@ -12,6 +12,7 @@ MOSIP Decode 2026, problem statement 01, team Badmosip.
 |---|---|
 | 2026-10-04 | Repository layout and the repository checks (`scripts/check.sh`). Nothing else runs yet. |
 | 2026-10-04 | Compose v1: the conformance suite (release-v5.3.1) and Inji Verify 1.0.x behind a TLS proxy, with keys made at run time. `bash compose/smoke.sh verify` passes; see [`compose/README.md`](compose/README.md). |
+| 2026-10-04 | Compose v2: Inji Certify (commit `d6635da`) as its own authorization server behind the TLS proxy, issuing from pre-authorized offers, and MinIO with the `automationtests` bucket. `bash compose/smoke.sh certify reports` passes (metadata, offer, token, path-style S3 upload). |
 
 This table lists only what has been run. The next section is the plan, not a result.
 
