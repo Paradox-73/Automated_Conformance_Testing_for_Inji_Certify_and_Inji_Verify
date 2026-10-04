@@ -55,7 +55,7 @@ def test_create_vp_request_posts_the_sdk_body():
     assert sent["clientId"] == "x509_san_dns:h"
     assert sent["dcqlQuery"] == {"credentials": []}
     assert sent["responseMode"] == "direct_post"
-    assert len(sent["nonce"]) >= 16
+    assert len(sent["nonce"]) == 43  # 32 random bytes in base64url without padding, as the SDK sends
 
 
 @respx.mock

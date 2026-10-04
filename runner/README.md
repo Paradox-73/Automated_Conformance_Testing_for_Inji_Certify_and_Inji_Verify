@@ -94,8 +94,17 @@ bash scripts/dc.sh down -v
 
 There is no benchmark yet (it comes in a later version), so every problem is a `regression`. A REVIEW result
 counts as `conforms` only with an evidence image of Inji Verify's verdict, which a later version uploads; until
-then the happy flow is recorded as `regression` with the reason "no evidence image". `--no-gate` writes
+then a REVIEW module is recorded as `regression` with the reason "no evidence image". `--no-gate` writes
 `gating: false` and exits 0 whatever the verdicts; without it the run exits 1 when any module is a regression.
+
+Measured on 2026-10-04 (this laptop, compose profile `verify`, module `oid4vp-1final-verifier-happy-flow`,
+`--no-gate`): exit code 0, run time 23 s after the stack was up; the module reached FINISHED with result FAILED;
+one `authorization_request` handoff, HTTP 200 from the suite in 1750 ms. The failing conditions were
+`ValidateRequestObjectSignatureAgainstX5cHeader` (the request object's x5c leaf is self-signed),
+`EnsureHttpStatusCodeIs200` (Inji Verify's `direct-post` answered HTTP 500: its database has no
+`vp_submission.response_code` column, see `compose/verify/init.sql`), and the warnings
+`ValidateRequestObjectIssIfPresent` and `ValidateDirectPostResponse`. These are open items for the compose set-up
+and the findings write-up, not runner errors.
 
 | Exit code | Cause in `run` |
 |---|---|

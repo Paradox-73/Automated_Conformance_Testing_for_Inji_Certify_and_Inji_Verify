@@ -365,7 +365,7 @@ def build_results(
                 handoffs,
                 suite_log_url=suite.log_url(test_id) if test_id else None,
                 review=review,
-                duration_s=_duration(info),
+                duration_s=_duration(log),
             )
         )
 
@@ -412,16 +412,12 @@ def build_results(
     )
 
 
-def _duration(info: dict | None) -> float | None:
-    """Seconds from the module's start to its last status change, from the suite's timestamps."""
-    if not info or not info.get("started"):
+def _duration(log: list[dict]) -> float | None:
+    """Seconds between the first and the last log entry of a module (entries carry ``time`` in epoch ms)."""
+    times = [entry["time"] for entry in log if isinstance(entry.get("time"), int | float)]
+    if not times:
         return None
-    try:
-        start = datetime.fromisoformat(str(info["started"]).replace("Z", "+00:00"))
-        end = datetime.fromisoformat(str(info.get("updated") or info.get("started")).replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    return max(0.0, round((end - start).total_seconds(), 1))
+    return round((max(times) - min(times)) / 1000, 1)
 
 
 def print_summary(results: model.Results, path: Path) -> None:

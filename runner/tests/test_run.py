@@ -83,12 +83,10 @@ class FakeSuite:
             "result": "PASSED",
             "description": "d",
             "variant": {"credential_format": "sd_jwt_vc"},
-            "started": "2026-10-04T19:31:00Z",
-            "updated": "2026-10-04T19:31:07.5Z",
         }
 
     def test_log(self, test_id):
-        return []
+        return [{"src": "A", "result": "SUCCESS", "time": 1791148800000}, {"src": "B", "time": 1791148807500}]
 
     def log_url(self, test_id):
         return f"https://localhost.emobix.co.uk:18443/log-detail.html?log={test_id}"

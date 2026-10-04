@@ -106,8 +106,12 @@ def authorization_query(client_id: str, response: Mapping[str, Any]) -> str:
 
 
 def generate_nonce() -> str:
-    """A fresh nonce for the request; the SDK uses a random value as well."""
-    return secrets.token_urlsafe(16)
+    """A fresh nonce as the SDK makes it (``generateNonce`` in ``utils/api.ts``): 32 random bytes, base64url.
+
+    Inji Verify puts this nonce into the request object, and the suite checks its entropy
+    (``VP1FinalEnsureMinimumNonceEntropy``), so a shorter nonce would be reported against Inji Verify.
+    """
+    return secrets.token_urlsafe(32)
 
 
 class VerifyClient:
