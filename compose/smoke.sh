@@ -4,16 +4,23 @@
 # Smoke test of the compose stack: start the given profiles, check that every service answers the way the
 # conformance runs need, measure start time and peak memory, then remove everything again.
 #
-#   bash compose/smoke.sh PROFILE...        PROFILE: suite, verify
+#   bash compose/smoke.sh PROFILE...        PROFILE: suite, verify, certify, reports
 #
 # On this laptop run it under the shared Docker lock, after pulling images outside the lock:
 #   bash scripts/dc.sh --profile verify pull
 #   with_lock docker-stack bash compose/smoke.sh verify
+#   bash scripts/dc.sh --profile certify --profile reports pull
+#   with_lock docker-stack bash compose/smoke.sh certify reports
 #
 # Output: one line per check, "<check> PASS|FAIL <detail>", with detail lines indented below. The lines other
 # scripts and the acceptance checks look for:
 #   suite PASS <version>                      suite API answers on the host and inside the network
 #   verify PASS 201 x509_san_dns request_uri  Inji Verify creates a signed request object over TLS
+#   certify PASS credential_issuer=<url>      Inji Certify issuer metadata at the root well-known URL over TLS
+#   certify-as PASS token_endpoint            Certify is its own authorization server (AS metadata, token URL)
+#   certify-preauth PASS offer                a pre-authorized credential offer is created and can be fetched
+#   certify-token PASS Bearer                 the offer's code is redeemed at Certify's token endpoint
+#   minio PASS bucket automationtests         the report bucket exists and takes path-style S3 uploads
 #   teardown PASS                             no container or volume of the project is left
 # Measurements and logs go to $HARNESS_RUN_DIR/smoke/<UTC time>-<profiles>/ (smoke.json, stats.tsv, and
 # compose.log when a check failed).
@@ -31,7 +38,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=../scripts/lib/common.sh
 source "$SCRIPT_DIR/../scripts/lib/common.sh"
 
-readonly KNOWN_PROFILES=(suite verify)
+readonly KNOWN_PROFILES=(suite verify certify reports)
 readonly START_TIMEOUT=${SMOKE_START_TIMEOUT:-420}
 readonly STATS_INTERVAL=${SMOKE_STATS_INTERVAL:-3}
 readonly PROJECT_LABEL=com.docker.compose.project=$HARNESS_COMPOSE_PROJECT
@@ -41,6 +48,19 @@ readonly PROJECT_LABEL=com.docker.compose.project=$HARNESS_COMPOSE_PROJECT
 readonly VERIFY_URL=https://verify.inji.test:18451/v1/verify
 readonly VERIFY_CLIENT_ID=x509_san_dns:test.example.com
 readonly VERIFY_DCQL='{"credentials":[{"id":"pid","format":"dc+sd-jwt","meta":{"vct_values":["urn:eudi:pid:1"]},"claims":[{"path":["given_name"]}]}]}'
+
+# What the Inji Certify checks use: the issuer identifier (mosip.certify.domain.url, served by tls-proxy) and a
+# pre-authorized offer for the FarmerCredential configuration that upstream's certify_init.sql seeds, with claims
+# from that configuration. The conformance runs add their own dc+sd-jwt configuration (runner, "seed certify").
+readonly CERTIFY_URL=https://certify.inji.test:18450
+readonly CERTIFY_API=$CERTIFY_URL/v1/certify
+readonly CERTIFY_OFFER_REQUEST='{"credential_configuration_id":"FarmerCredential","claims":{"fullName":"Smoke Test","dateOfBirth":"1990-01-15","gender":"Female"},"expires_in":600}'
+readonly PRE_AUTH_GRANT=urn:ietf:params:oauth:grant-type:pre-authorized_code
+
+# The bucket the api-testrigs upload to (the name the problem statement and the testrigs use), and MinIO's S3 API
+# as the testrigs reach it on the compose network.
+readonly MINIO_BUCKET_NAME=automationtests
+readonly MINIO_URL=http://minio:9000
 
 FAILURES=0
 STARTED=0
@@ -94,6 +114,24 @@ b64url_decode() {
 # json_string FIELD: value of a top-level string field in a one-line JSON document read from stdin.
 json_string() {
   sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" | head -n 1
+}
+
+# url_decode: percent-decode stdin (a URL query parameter value; "+" stays "+", as in the offer URLs Certify makes).
+url_decode() {
+  local data
+  data=$(cat)
+  printf '%b' "${data//%/\\x}"
+}
+
+# env_value NAME [DEFAULT]: NAME from the environment, else from $HARNESS_RUN_DIR/env.local (the generated
+# passwords scripts/dc.sh passes to Compose), else DEFAULT.
+env_value() {
+  local name=$1 default=${2:-} value
+  value=${!name:-}
+  if [[ -z $value && -f $HARNESS_RUN_DIR/env.local ]]; then
+    value=$(sed -n "s/^$name=//p" "$HARNESS_RUN_DIR/env.local" | tail -n 1)
+  fi
+  printf '%s\n' "${value:-$default}"
 }
 
 # has_profile NAME: true when NAME was given on the command line.
@@ -283,6 +321,142 @@ check_verify() {
   fi
 }
 
+# Inji Certify through the TLS proxy with the test CA, the way the suite (acting as the wallet) and the runner (acting
+# as the issuer's back office) will use it: issuer metadata at the root well-known URL, the metadata of Certify as
+# its own authorization server, then a pre-authorized offer redeemed at the token endpoint.
+check_certify() {
+  local out status body commit issuer token_endpoint offer_link offer_url code token_type access_token payload
+  commit=$(docker image inspect --format '{{index .Config.Labels "commit_id"}}' \
+    "$(dc --profile certify config --images | grep -m 1 inji-certify)" 2>/dev/null || true)
+  detail "image commit_id label: ${commit:-unknown}"
+
+  if ! body=$(probe -sS --fail-with-body --max-time 30 --cacert /pki/ca.crt \
+    "$CERTIFY_URL/.well-known/openid-credential-issuer" 2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result certify FAIL "GET $CERTIFY_URL/.well-known/openid-credential-issuer failed"
+    return
+  fi
+  issuer=$(json_string credential_issuer <<<"$body")
+  detail "credential_endpoint $(json_string credential_endpoint <<<"$body")"
+  if [[ $issuer != "$CERTIFY_URL" ]]; then
+    result certify FAIL "credential_issuer is '$issuer', expected $CERTIFY_URL"
+  elif [[ $(json_string credential_endpoint <<<"$body") != "$CERTIFY_API/issuance/credential" ]]; then
+    result certify FAIL "credential_endpoint is not $CERTIFY_API/issuance/credential"
+  elif [[ ${body//[[:space:]]/} != *'"authorization_servers":["'"$CERTIFY_URL"'"'* ]]; then
+    result certify FAIL "authorization_servers does not start with $CERTIFY_URL (Certify as its own server)"
+  else
+    result certify PASS "credential_issuer=$issuer"
+  fi
+
+  if ! body=$(probe -sS --fail-with-body --max-time 30 --cacert /pki/ca.crt \
+    "$CERTIFY_URL/.well-known/oauth-authorization-server" 2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result certify-as FAIL "GET $CERTIFY_URL/.well-known/oauth-authorization-server failed"
+    return
+  fi
+  token_endpoint=$(json_string token_endpoint <<<"$body")
+  detail "token_endpoint $token_endpoint"
+  if [[ $(json_string issuer <<<"$body") != "$CERTIFY_URL" ]]; then
+    result certify-as FAIL "AS issuer is not $CERTIFY_URL"
+  elif [[ $token_endpoint != "$CERTIFY_API/oauth/token" ]]; then
+    result certify-as FAIL "token_endpoint is not $CERTIFY_API/oauth/token"
+  elif [[ $body != *"$PRE_AUTH_GRANT"* ]]; then
+    result certify-as FAIL "grant_types_supported lacks the pre-authorized code grant"
+  else
+    result certify-as PASS token_endpoint
+  fi
+
+  # The issuer's back-office call. Errors come back as HTTP 200 with an "errors" list, so both are checked.
+  if ! body=$(probe -sS --fail-with-body --max-time 30 --cacert /pki/ca.crt -H 'Content-Type: application/json' \
+    -d "$CERTIFY_OFFER_REQUEST" "$CERTIFY_API/pre-authorized-data" 2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result certify-preauth FAIL "POST $CERTIFY_API/pre-authorized-data failed"
+    return
+  fi
+  offer_link=$(json_string credential_offer_uri <<<"$body")
+  offer_url=$(sed -n 's/^openid-credential-offer:\/\/?credential_offer_uri=//p' <<<"$offer_link" | url_decode)
+  if [[ $offer_url != "$CERTIFY_API/credential-offer-data/"* ]]; then
+    detail "$body"
+    result certify-preauth FAIL "no credential_offer_uri under $CERTIFY_API/credential-offer-data/"
+    return
+  fi
+  if ! body=$(probe -sS --fail-with-body --max-time 30 --cacert /pki/ca.crt "$offer_url" 2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result certify-preauth FAIL "GET $offer_url failed"
+    return
+  fi
+  code=$(json_string pre-authorized_code <<<"$body")
+  detail "offer $offer_url"
+  if [[ $(json_string credential_issuer <<<"$body") != "$CERTIFY_URL" || -z $code ]]; then
+    detail "$body"
+    result certify-preauth FAIL "offer lacks credential_issuer $CERTIFY_URL or a pre-authorized code"
+    return
+  fi
+  result certify-preauth PASS offer
+
+  # The wallet's call: redeem the code. Certify validates its own tokens at the credential endpoint, so the token's
+  # issuer must be the same origin as the credential issuer.
+  if ! out=$(probe -sS --max-time 30 --cacert /pki/ca.crt -w '\n%{http_code}' \
+    --data-urlencode "grant_type=$PRE_AUTH_GRANT" --data-urlencode "pre-authorized_code=$code" \
+    "$CERTIFY_API/oauth/token" 2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result certify-token FAIL "POST $CERTIFY_API/oauth/token failed"
+    return
+  fi
+  status=$(tail -n 1 <<<"$out")
+  body=$(sed '$d' <<<"$out")
+  token_type=$(json_string token_type <<<"$body")
+  access_token=$(json_string access_token <<<"$body")
+  payload=$(cut -d . -f 2 <<<"$access_token" | b64url_decode || true)
+  detail "POST /oauth/token -> $status, token_type $token_type, iss $(json_string iss <<<"$payload")"
+  if [[ $status != 200 || -z $access_token ]]; then
+    detail "$body"
+    result certify-token FAIL "token endpoint answered $status without an access token"
+  elif [[ $(json_string iss <<<"$payload") != "$CERTIFY_URL" ]]; then
+    result certify-token FAIL "access token issuer is not $CERTIFY_URL"
+  else
+    result certify-token PASS "$token_type"
+  fi
+}
+
+# MinIO: the bucket exists (minio-mc, the tools client), and an object can be written, read and deleted with
+# signed path-style requests (http://minio:9000/<bucket>/<key>), the addressing the testrigs' S3Adapter uses.
+check_minio() {
+  local user password key out
+  user=$(env_value MINIO_ROOT_USER harness)
+  password=$(env_value MINIO_ROOT_PASSWORD)
+  if ! out=$(dc --progress quiet run --rm --no-deps -T minio-mc stat "local/$MINIO_BUCKET_NAME" 2>&1); then
+    detail "$out"
+    result minio FAIL "bucket $MINIO_BUCKET_NAME not found"
+    return
+  fi
+  key=smoke/$(date -u +%Y%m%dT%H%M%SZ)-$$.txt
+  # The password goes to curl in a config file on stdin, not on the command line.
+  if ! out=$(printf 'user = "%s:%s"\n' "$user" "$password" | probe -sS --fail-with-body --max-time 30 -K - \
+    --aws-sigv4 aws:amz:us-east-1:s3 -X PUT --data-binary "smoke $key" "$MINIO_URL/$MINIO_BUCKET_NAME/$key" \
+    2>>"$OUT_DIR/probe.log"); then
+    probe_errors
+    result minio FAIL "path-style PUT $MINIO_URL/$MINIO_BUCKET_NAME/$key failed"
+    return
+  fi
+  out=$(printf 'user = "%s:%s"\n' "$user" "$password" | probe -sS --fail-with-body --max-time 30 -K - \
+    --aws-sigv4 aws:amz:us-east-1:s3 "$MINIO_URL/$MINIO_BUCKET_NAME/$key" 2>>"$OUT_DIR/probe.log") || true
+  printf 'user = "%s:%s"\n' "$user" "$password" | probe -sS --max-time 30 -K - --aws-sigv4 aws:amz:us-east-1:s3 \
+    -X DELETE -o /dev/null "$MINIO_URL/$MINIO_BUCKET_NAME/$key" 2>>"$OUT_DIR/probe.log" || true
+  if [[ $out != "smoke $key" ]]; then
+    probe_errors
+    result minio FAIL "path-style GET did not return the object just written"
+    return
+  fi
+  detail "path-style PUT, GET and DELETE of $MINIO_BUCKET_NAME/$key"
+  if command -v curl >/dev/null 2>&1 &&
+    ! curl -fsS --max-time 10 -o /dev/null http://127.0.0.1:18900/minio/health/live 2>/dev/null; then
+    result minio FAIL "no answer at http://127.0.0.1:18900 from the host"
+    return
+  fi
+  result minio PASS "bucket $MINIO_BUCKET_NAME"
+}
+
 # ---------------------------------------------------------------------------------------------------------------
 # Report and teardown
 # ---------------------------------------------------------------------------------------------------------------
@@ -380,13 +554,15 @@ main() {
   fi
   check_ports_free || exit 1
 
-  # The probe image belongs to the tools profile, which "pull --profile <component>" leaves out. It is small.
-  local probe_image
-  probe_image=$(dc --profile tools config --images | grep -m 1 curl || true)
-  if [[ -n $probe_image ]] && ! docker image inspect "$probe_image" >/dev/null 2>&1; then
-    log_info "pulling the probe image $probe_image"
-    docker pull -q "$probe_image" >/dev/null
-  fi
+  # The probe and minio-mc images belong to the tools profile, which "pull --profile <component>" leaves out.
+  # Both are small.
+  local tool_image
+  while read -r tool_image; do
+    if [[ -n $tool_image ]] && ! docker image inspect "$tool_image" >/dev/null 2>&1; then
+      log_info "pulling the tool image $tool_image"
+      docker pull -q "$tool_image" >/dev/null
+    fi
+  done < <(dc --profile tools config --images | grep -E 'curl|/mc:' || true)
 
   trap 'teardown $?' EXIT
   trap 'exit 130' INT TERM
@@ -405,12 +581,21 @@ main() {
   START_SECONDS=$((end - start))
   result start PASS "${START_SECONDS}s to healthy (${PROFILES[*]})"
 
-  if has_profile verify; then
+  if has_profile verify || has_profile certify; then
     check_pki
   fi
-  check_suite
+  # Every component profile brings the suite (docker-compose.yml); "reports" alone does not.
+  if has_profile suite || has_profile verify || has_profile certify; then
+    check_suite
+  fi
   if has_profile verify; then
     check_verify
+  fi
+  if has_profile certify; then
+    check_certify
+  fi
+  if has_profile reports; then
+    check_minio
   fi
   # One more memory sample after the checks, which load the services.
   sleep "$STATS_INTERVAL"

@@ -8,8 +8,9 @@
 # Profiles:
 #   suite    conformance suite only (suite-server, suite-mongodb, suite-nginx)
 #   verify   suite + Inji Verify (verify-service, verify-db) + tls-proxy
-#   certify  suite + tls-proxy; Inji Certify itself is added in the next compose version
-#   tools    one-off containers: runner (inji-conformance), probe (curl on the compose network)
+#   certify  suite + Inji Certify (certify, certify-db) + tls-proxy
+#   reports  MinIO, the local S3 store with the automationtests bucket the api-testrigs upload their reports to
+#   tools    one-off containers: runner (inji-conformance), probe (curl on the compose network), minio-mc (S3 client)
 # pki-init (run-time keys) runs in the profiles that need keys: verify, certify, tools.
 #
 # Every image is pinned (tag and digest) as an overridable default, so a pipeline can test another build without
@@ -17,7 +18,8 @@
 # 18000-18999 and bound to 127.0.0.1 only. Network-internal names:
 #   localhost.emobix.co.uk:18443/18444   suite (alias of suite-nginx; the same name resolves to 127.0.0.1 on hosts)
 #   verify.inji.test:18451               Inji Verify over TLS (alias of tls-proxy)
-#   certify.inji.test:18450              Inji Certify over TLS (alias of tls-proxy, used from the next version)
+#   certify.inji.test:18450              Inji Certify over TLS (alias of tls-proxy)
+#   minio:9000                           S3 API of MinIO, path-style requests (bucket in the path, no bucket host names)
 
 name: ps01-harness
 
@@ -188,6 +190,76 @@ services:
     logging: *logging
 
   # ------------------------------------------------------------------------------------------------------------
+  # Inji Certify 1.0 line (Apache-2.0). Upstream: inji-certify release-1.0.x docker-compose/docker-compose-injistack.
+  # Configuration: compose/certify/ (upstream files, patched; see compose/certify/README.md). Certify is its own
+  # authorization server and issues from pre-authorized offers (profile preauth), so the conformance suite can run
+  # the issuer plan without an identity system or a browser login.
+  # Image: the QA build injistackqa/inji-certify-with-plugins:develop, label commit_id d6635da (built 2026-09-09),
+  # the newest 1.0-line image with DPoP support; the 1.0.0-alpha.1 release image has none (plan research,
+  # inji.md section 0). compose/smoke.sh prints the commit_id label of the image that ran.
+  # ------------------------------------------------------------------------------------------------------------
+  certify-db:
+    profiles: [certify]
+    image: ${CERTIFY_DB_IMAGE:-postgres:15@sha256:724292da1f2e50bdccfc3302ce75bbba7f4a6076701b588cc795fcac65683550}
+    environment:
+      # The upstream init script creates the database and schema owned by "postgres", so that is the user.
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${CERTIFY_DB_PASSWORD?generated into env.local by scripts/dc.sh}
+    volumes:
+      # Upstream schema and seed data (the FarmerCredential configuration), unchanged.
+      - ./compose/certify/certify_init.sql:/docker-entrypoint-initdb.d/certify_init.sql:ro
+      - certify-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "inji_certify"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    mem_limit: 256m
+    logging: *logging
+
+  certify:
+    profiles: [certify]
+    image: ${CERTIFY_IMAGE:-injistackqa/inji-certify-with-plugins:develop@sha256:b5022884fb308fe8f697d11a2f6256714a97cec3188dbc5ed8b9aa59d1cacf5c}
+    # As in upstream's compose: the keystore directory below is a volume that Docker creates owned by root, and
+    # the image's own user (inji, 1001) could not create the PKCS12 file in it.
+    user: root
+    environment:
+      # Spring profiles, later ones override earlier ones: upstream defaults, upstream farmer plugin settings, then
+      # the harness overlay that switches to pre-authorized issuance (compose/certify/config/).
+      active_profile_env: default,csvdp-farmer,preauth
+      SPRING_CONFIG_NAME: certify
+      SPRING_CONFIG_LOCATION: /home/mosip/config/
+      enable_certify_artifactory: "false"
+      download_hsm_client: "false"
+      # Read by the patched certify-default.properties through ${...} placeholders.
+      CERTIFY_DB_PASSWORD: ${CERTIFY_DB_PASSWORD?generated into env.local by scripts/dc.sh}
+      CERTIFY_KEYSTORE_PASSWORD: ${CERTIFY_KEYSTORE_PASSWORD?generated into env.local by scripts/dc.sh}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=50
+    volumes:
+      - ./compose/certify/config/certify-default.properties:/home/mosip/config/certify-default.properties:ro
+      - ./compose/certify/config/certify-csvdp-farmer.properties:/home/mosip/config/certify-csvdp-farmer.properties:ro
+      - ./compose/certify/config/certify-preauth.properties:/home/mosip/config/certify-preauth.properties:ro
+      # The PKCS12 keystore holds the master keys; the database holds keys wrapped by them. Both are named volumes
+      # so they live and die together ("down -v" removes both); a keystore without its database, or the reverse,
+      # leaves Certify unable to sign.
+      - certify-keystore:/home/mosip/CERTIFY_PKCS12
+    depends_on:
+      certify-db:
+        condition: service_healthy
+    ports:
+      # Direct HTTP access for debugging only; the suite and the runner use https://certify.inji.test:18450.
+      - "127.0.0.1:18460:8090"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8090/v1/certify/actuator/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 240s
+    mem_limit: 1g
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
   # TLS front end for the systems under test (compose/tls-proxy/nginx.conf).
   # ------------------------------------------------------------------------------------------------------------
   tls-proxy:
@@ -201,6 +273,7 @@ services:
         target: /pki
         read_only: true
     ports:
+      - "127.0.0.1:18450:18450"
       - "127.0.0.1:18451:18451"
     networks:
       default:
@@ -220,12 +293,53 @@ services:
     logging: *logging
 
   # ------------------------------------------------------------------------------------------------------------
+  # MinIO (AGPL-3.0, run unmodified as a separate program): the S3 store of the api-testrig reports. The testrigs'
+  # stock S3Adapter uploads to http://minio:9000 with path-style requests, so no bucket host names are needed.
+  # MinIO Inc. no longer publishes server or client images; pgsty/minio and pgsty/mc are community builds of the
+  # same AGPL source (github.com/pgsty/minio, github.com/pgsty/mc). Override MINIO_IMAGE or MINIO_MC_IMAGE to use
+  # another build. See compose/minio/README.md.
+  # ------------------------------------------------------------------------------------------------------------
+  minio:
+    profiles: [reports]
+    image: ${MINIO_IMAGE:-pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372}
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-harness}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD?generated into env.local by scripts/dc.sh}
+      # Alias "local" of the mc client inside this container (bucket creation and healthcheck).
+      MC_HOST_local: http://${MINIO_ROOT_USER:-harness}:${MINIO_ROOT_PASSWORD}@127.0.0.1:9000
+      MINIO_BUCKET: ${MINIO_BUCKET:-automationtests}
+    # minio-init: creates the report bucket once the server answers (compose/minio/init.sh, idempotent). A
+    # post-start hook instead of a one-shot container, because "up --wait" fails on an exited one-shot container
+    # that no other service depends on (measured with Compose 5.5.1), and nothing in this profile waits for one.
+    post_start:
+      - command: ["sh", "/opt/minio-init/init.sh"]
+    volumes:
+      - ./compose/minio/init.sh:/opt/minio-init/init.sh:ro
+      - minio-data:/data
+    ports:
+      - "127.0.0.1:18900:9000"
+      - "127.0.0.1:18901:9001"
+    healthcheck:
+      # Healthy only once the bucket exists, so "up --wait" returns with the store ready for uploads.
+      test: ["CMD-SHELL", "mc stat \"local/$$MINIO_BUCKET\" >/dev/null"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+      start_interval: 1s
+    mem_limit: 512m
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
   # Tools (profile tools): one-off containers on the compose network, started with "scripts/dc.sh run --rm".
   # ------------------------------------------------------------------------------------------------------------
   runner:
     profiles: [tools]
     build:
-      context: ./runner
+      # The image also holds third_party/ and conformance/; runner/Dockerfile.dockerignore limits the context.
+      context: .
+      dockerfile: runner/Dockerfile
     image: ${RUNNER_IMAGE:-ps01-harness/runner:local}
     user: "${HARNESS_UID:-1000}:${HARNESS_GID:-1000}"
     environment:
@@ -258,5 +372,17 @@ services:
     mem_limit: 64m
     logging: *logging
 
+  # S3 client for the report store: bash scripts/dc.sh run --rm minio-mc ls local/automationtests
+  minio-mc:
+    profiles: [tools]
+    image: ${MINIO_MC_IMAGE:-pgsty/mc:RELEASE.2026-09-16T00-00-00Z@sha256:cfc83108c3abb371f8fb84d99c1fdc88f8c237e022409b0081fb7c0a3be634dd}
+    environment:
+      MC_HOST_local: http://${MINIO_ROOT_USER:-harness}:${MINIO_ROOT_PASSWORD?generated into env.local by scripts/dc.sh}@minio:9000
+    mem_limit: 128m
+    logging: *logging
+
 volumes:
   suite-mongodb-data:
+  certify-db-data:
+  certify-keystore:
+  minio-data:

@@ -67,6 +67,20 @@ header=$(printf '%s' '{"alg":"EdDSA","x5c":["MIIB"]}' | base64 | tr '+/' '-_' | 
 check "b64url_decode restores a JWT header" "$(b64url_decode <<<"$header")" '{"alg":"EdDSA","x5c":["MIIB"]}'
 check "b64url_decode handles '-' and '_'" "$(printf '%s' '-_-_' | b64url_decode | od -An -tx1 | tr -d ' ')" "fbffbf"
 
+# An offer link exactly as Inji Certify returns it from POST /pre-authorized-data.
+check "url_decode restores the credential_offer_uri of an offer link" \
+  "$(url_decode <<<'https%3A%2F%2Fcertify.inji.test%3A18450%2Fv1%2Fcertify%2Fcredential-offer-data%2F7787-4ff2')" \
+  "https://certify.inji.test:18450/v1/certify/credential-offer-data/7787-4ff2"
+check "url_decode leaves plain text alone" "$(url_decode <<<'plain-text_1.2')" "plain-text_1.2"
+
+saved_run_dir=$HARNESS_RUN_DIR
+HARNESS_RUN_DIR=$WORK
+printf '# comment\nSMOKE_TEST_SETTING=old\nSMOKE_TEST_SETTING=fromfile\n' >"$WORK/env.local"
+check "env_value reads the last value from env.local" "$(env_value SMOKE_TEST_SETTING)" "fromfile"
+check "env_value prefers the environment" "$(SMOKE_TEST_SETTING=fromenv env_value SMOKE_TEST_SETTING)" "fromenv"
+check "env_value falls back to the default" "$(env_value SMOKE_TEST_MISSING harness)" "harness"
+HARNESS_RUN_DIR=$saved_run_dir
+
 PROFILES=(verify)
 has_profile verify
 check "has_profile finds a given profile" "$?" 0
