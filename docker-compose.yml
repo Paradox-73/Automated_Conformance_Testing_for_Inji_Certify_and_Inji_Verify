@@ -1,0 +1,262 @@
+# Inji conformance harness: one Docker Compose project with the OpenID Foundation conformance suite and the Inji
+# systems under test. Run it through scripts/dc.sh, which adds the generated passwords (--env-file
+# $HARNESS_RUN_DIR/env.local) and converts paths on Windows:
+#
+#   bash scripts/dc.sh --profile verify up -d --wait     # suite + Inji Verify + TLS proxy
+#   bash scripts/dc.sh --profile verify down -v
+#
+# Profiles:
+#   suite    conformance suite only (suite-server, suite-mongodb, suite-nginx)
+#   verify   suite + Inji Verify (verify-service, verify-db) + tls-proxy
+#   certify  suite + tls-proxy; Inji Certify itself is added in the next compose version
+#   tools    one-off containers: runner (inji-conformance), probe (curl on the compose network)
+# pki-init (run-time keys) runs in the profiles that need keys: verify, certify, tools.
+#
+# Every image is pinned (tag and digest) as an overridable default, so a pipeline can test another build without
+# editing this file, for example VERIFY_IMAGE=injistackqa/inji-verify-service:develop. Host ports are in
+# 18000-18999 and bound to 127.0.0.1 only. Network-internal names:
+#   localhost.emobix.co.uk:18443/18444   suite (alias of suite-nginx; the same name resolves to 127.0.0.1 on hosts)
+#   verify.inji.test:18451               Inji Verify over TLS (alias of tls-proxy)
+#   certify.inji.test:18450              Inji Certify over TLS (alias of tls-proxy, used from the next version)
+
+name: ps01-harness
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "1m"
+    max-file: "3"
+
+services:
+  # ------------------------------------------------------------------------------------------------------------
+  # Run-time test PKI: test CA, TLS certificates, the suite's mTLS client certificate and credential signing JWK
+  # (with x5c), written to $HARNESS_RUN_DIR/pki. Reuses an existing set; see compose/README.md.
+  # ------------------------------------------------------------------------------------------------------------
+  pki-init:
+    # Only in profiles where a service depends on it: "up --wait" fails on a one-shot container nothing waits for.
+    profiles: [verify, certify, tools]
+    image: ${PKI_IMAGE:-python:3.12.15-slim@sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256}
+    user: "${HARNESS_UID:-1000}:${HARNESS_GID:-1000}"
+    command: ["python", "/opt/pki/generate.py", "--out", "/pki"]
+    environment:
+      PKI_TLS_HOSTS: verify.inji.test certify.inji.test
+      PKI_FORCE: ${PKI_FORCE:-0}
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - ./compose/pki/generate.py:/opt/pki/generate.py:ro
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/pki
+        target: /pki
+    network_mode: none
+    restart: "no"
+    mem_limit: 128m
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
+  # OpenID Foundation conformance suite, release-v5.3.1 (MIT). Upstream: docker-compose-prebuilt.yml.
+  # ------------------------------------------------------------------------------------------------------------
+  suite-mongodb:
+    profiles: [suite, verify, certify]
+    image: ${SUITE_MONGODB_IMAGE:-mongo:6.0.13@sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070}
+    volumes:
+      - suite-mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    mem_limit: 512m
+    logging: *logging
+
+  suite-server:
+    profiles: [suite, verify, certify]
+    image: ${SUITE_SERVER_IMAGE:-registry.gitlab.com/openid/conformance-suite:release-v5.3.1@sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70}
+    environment:
+      # The suite builds every URL it hands out from these, so they carry the port nginx listens on in the network.
+      BASE_URL: https://localhost.emobix.co.uk:18443
+      BASE_MTLS_URL: https://localhost.emobix.co.uk:18444
+      MONGODB_HOST: suite-mongodb
+      # dev profile: no login, the API needs no token (single fixed user). Local use only, never exposed.
+      SPRING_PROFILES_ACTIVE: dev
+      # The image passes these to Spring Security, which refuses to start with empty values. The dev profile never
+      # uses them; they are the placeholders of the suite's own docker-compose-prebuilt.yml.
+      OIDC_GOOGLE_CLIENTID: google-client
+      OIDC_GOOGLE_SECRET: google-secret # ggignore: placeholder, the dev profile has no Google login
+      OIDC_GITLAB_CLIENTID: gitlab-client
+      OIDC_GITLAB_SECRET: gitlab-secret # ggignore: placeholder, the dev profile has no GitLab login
+      # Heap as a share of mem_limit; the JVM default (25 %) is too small for long test plans.
+      JAVA_EXTRA_ARGS: -XX:MaxRAMPercentage=60
+    depends_on:
+      suite-mongodb:
+        condition: service_healthy
+    healthcheck:
+      # The suite rejects plain-http requests unless the proxy header says the client used https.
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "-H", "X-Forwarded-Proto: https", "http://127.0.0.1:8080/api/server"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 180s
+    mem_limit: 1536m
+    logging: *logging
+
+  suite-nginx:
+    profiles: [suite, verify, certify]
+    image: ${SUITE_NGINX_IMAGE:-registry.gitlab.com/openid/conformance-suite/nginx:release-v5.3.1@sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105}
+    volumes:
+      # Upstream nginx/nginx.conf with the harness ports and service name; see the header of the file.
+      - ./compose/suite/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "127.0.0.1:18443:18443"
+      - "127.0.0.1:18444:18444"
+    networks:
+      default:
+        aliases:
+          # Containers reach the suite under the name its URLs carry; on hosts the name resolves to 127.0.0.1.
+          - localhost.emobix.co.uk
+    depends_on:
+      suite-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsSk", "-o", "/dev/null", "https://127.0.0.1:18443/api/server"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    mem_limit: 128m
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
+  # Inji Verify 1.0.x (Apache-2.0). Upstream: inji-verify release-1.0.x docker-compose/docker-compose.yml.
+  # The QA image injistackqa/inji-verify-service:1.0.x (commit ad3595f) signs x509_san_dns requests; the
+  # 1.0.0-alpha.1 release image does not (plan research, inji.md section 0).
+  # ------------------------------------------------------------------------------------------------------------
+  verify-db:
+    profiles: [verify]
+    image: ${VERIFY_DB_IMAGE:-postgres:13@sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068}
+    environment:
+      POSTGRES_USER: verify
+      POSTGRES_PASSWORD: ${VERIFY_DB_PASSWORD?generated into env.local by scripts/dc.sh}
+      POSTGRES_DB: inji_verify
+    volumes:
+      # Upstream schema, unchanged (compose/verify/init.sql).
+      - ./compose/verify/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "verify", "-d", "inji_verify"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    mem_limit: 256m
+    logging: *logging
+
+  verify-service:
+    profiles: [verify]
+    image: ${VERIFY_IMAGE:-injistackqa/inji-verify-service:1.0.x@sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef}
+    environment:
+      active_profile_env: default
+      DATABASE_HOST: verify-db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: inji_verify
+      DATABASE_SCHEMA: verify
+      DATABASE_USERNAME: verify
+      DATABASE_PASSWORD: ${VERIFY_DB_PASSWORD?generated into env.local by scripts/dc.sh}
+      # Base of request_uri and response_uri: the TLS name the suite (acting as the wallet) can reach.
+      INJI_VP_SUBMISSION_BASE_URL: https://verify.inji.test:18451/v1/verify
+      INJI_DID_VERIFY_URI: did:web:verify.inji.test%3A18451:v1:verify
+      INJI_DID_VERIFY_PUBLIC_KEY_URI: did:web:verify.inji.test%3A18451:v1:verify#key-0
+      INJI_VERIFY_REDIRECT_URI: https://verify.inji.test:18451
+      INJI_VP_REQUEST_LONG_POLLING_TIMEOUT: "55000"
+      INJI_VERIFY_RESPONSE_CODE_EXPIRY_TIME_IN_MINS: "5"
+      INJI_VERIFY_CLAIMS_WITH_META_DATA: _sd,_sd_alg,iss,cnf,sub,aud,exp,nbf,iat,cti
+      # Request objects are signed with the image's bundled test keystore (SAN test.example.com, the image's
+      # default INJI_X509_SAN_DNS_HOST), so client_id x509_san_dns:test.example.com works without key changes.
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
+    depends_on:
+      verify-db:
+        condition: service_healthy
+    ports:
+      # Direct HTTP access for debugging only; the suite and the runner use https://verify.inji.test:18451.
+      - "127.0.0.1:18461:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/v1/verify/actuator/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    mem_limit: 768m
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
+  # TLS front end for the systems under test (compose/tls-proxy/nginx.conf).
+  # ------------------------------------------------------------------------------------------------------------
+  tls-proxy:
+    profiles: [verify, certify]
+    image: ${TLS_PROXY_IMAGE:-nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94}
+    volumes:
+      - ./compose/tls-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./compose/tls-proxy/sites:/etc/nginx/harness/sites:ro
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/pki
+        target: /pki
+        read_only: true
+    ports:
+      - "127.0.0.1:18451:18451"
+    networks:
+      default:
+        aliases:
+          - verify.inji.test
+          - certify.inji.test
+    depends_on:
+      pki-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:18459/healthz"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    mem_limit: 128m
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------------------------
+  # Tools (profile tools): one-off containers on the compose network, started with "scripts/dc.sh run --rm".
+  # ------------------------------------------------------------------------------------------------------------
+  runner:
+    profiles: [tools]
+    build:
+      context: ./runner
+    image: ${RUNNER_IMAGE:-ps01-harness/runner:local}
+    user: "${HARNESS_UID:-1000}:${HARNESS_GID:-1000}"
+    environment:
+      HARNESS_SUITE_URL: https://localhost.emobix.co.uk:18443
+      HARNESS_VERIFY_URL: https://verify.inji.test:18451/v1/verify
+      HARNESS_PKI_DIR: /pki
+      HARNESS_REPORTS_DIR: /reports
+    volumes:
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/pki
+        target: /pki
+        read_only: true
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/reports
+        target: /reports
+    depends_on:
+      pki-init:
+        condition: service_completed_successfully
+    mem_limit: 512m
+    logging: *logging
+
+  probe:
+    profiles: [tools]
+    image: ${PROBE_IMAGE:-curlimages/curl:8.22.0@sha256:58adaa4e8dca9c988bae2aba4ab3434a0bb2da16bbe3f92dec39ec7785166777}
+    volumes:
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/pki
+        target: /pki
+        read_only: true
+    mem_limit: 64m
+    logging: *logging
+
+volumes:
+  suite-mongodb-data:
