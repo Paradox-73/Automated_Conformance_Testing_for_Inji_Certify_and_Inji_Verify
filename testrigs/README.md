@@ -3,17 +3,18 @@
 The Inji api-testrigs (MOSIP's TestNG API test projects for Inji Certify and Inji Verify) and a bridge library
 that turns conformance results into TestNG results inside them.
 
-Lane: testrig. Status on 2026-10-04: both api-testrigs imported unchanged; the bridge library and the build files
-are not written yet.
+Lane: testrig. Status on 2026-10-04: both api-testrigs imported; the bridge library, the aggregator `pom.xml` and the
+Inji Verify rig integration are in place (see [apitest-commons-conformance/README.md](apitest-commons-conformance/README.md));
+the Inji Certify rig integration, the testrig image and the S3 upload check come next.
 
 ## Contents
 
 | Path | Purpose | Licence | Status |
 |---|---|---|---|
 | `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0 | imported, unchanged |
-| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0 | imported, unchanged |
-| `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MIT | planned |
-| `pom.xml` | Maven aggregator for the three projects | MIT | planned |
+| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs and one `pom.xml` line |
+| `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MIT | done |
+| `pom.xml` | Maven aggregator for the three projects | MIT | done |
 | `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MIT | planned |
 | `upstream-patches/` | The few changes made to upstream files, as patches | MIT | planned |
 
@@ -75,8 +76,23 @@ the team's changes.
   They are listed, with the reason for each, in `.gitguardian.yaml`. The harness does not use these values.
 - Result on 2026-10-04 after the import: `bash scripts/check.sh eol secrets` printed PASS for both checks
   (7 upstream CRLF files exempted, 10 listed fixtures skipped).
-- Not yet done: building the imported rigs with Maven. They are upstream code at the commits above; the build is
-  checked when the aggregator `pom.xml` lands.
+- Build: the Inji Verify rig (with the bridge) builds through the aggregator `pom.xml` (BUILD SUCCESS on
+  2026-10-04, 8 min 23 s under a shared Maven cache, shaded jar 404,728,104 bytes). The Inji Certify rig has not
+  been built through the aggregator yet.
+
+## Conformance rows in the rigs
+
+`OpenIDConformanceTest` adds one TestNG row per OpenID conformance test module (`TC_OIDF_VERIFY_nn`) to the rig's
+`EmailableReport`; `ConformanceRigRunner` runs only those rows and exits 1 when one fails. Settings, verdict mapping,
+the files added to the Verify rig and the run command are in
+[apitest-commons-conformance/README.md](apitest-commons-conformance/README.md). The team's changes to the imported
+Verify rig: `git diff f307a88 -- testrigs/inji-verify-api-test`.
+
+Build the bridge and the Inji Verify rig (JDK 21, Maven 3.9):
+
+```bash
+mvn -B -f testrigs/pom.xml -pl apitest-commons-conformance,inji-verify-api-test -am package     -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
+```
 
 ## Checks
 

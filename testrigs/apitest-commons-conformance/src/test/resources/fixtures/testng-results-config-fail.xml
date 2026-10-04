@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="1" passed="0" failed="0" skipped="1">
+  <suite name="Inji-Verify OpenID Conformance">
+    <test name="OpenIDConformance">
+      <class name="io.inji.testrig.apirig.injiverify.testscripts.OpenIDConformanceTest">
+        <test-method status="FAIL" signature="setUp()" name="setUp" is-config="true"/>
+        <test-method status="SKIP" signature="test(TestCaseDTO)" name="test"/>
+      </class>
+    </test>
+  </suite>
+</testng-results>

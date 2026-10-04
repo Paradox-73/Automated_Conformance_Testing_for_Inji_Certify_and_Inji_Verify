@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SPDX-License-Identifier: MIT
+  Maven aggregator for the testrigs folder. It only lists the modules so one command builds the conformance bridge
+  together with the rigs that use it; each module keeps its own pom (the rigs are upstream projects and stay
+  standalone). Build the bridge and the Inji Verify rig:
+
+    mvn -B -f testrigs/pom.xml -pl apitest-commons-conformance,inji-verify-api-test -am package \
+        -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.inji.conformance</groupId>
+  <artifactId>testrigs-aggregator</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>testrigs (aggregator)</name>
+  <description>Builds the OpenID conformance bridge for the MOSIP api-testrigs and the Inji testrigs that use it.</description>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://opensource.org/license/mit</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <!-- Order is informational: Maven sorts the reactor by dependencies, so the bridge always builds first. -->
+    <module>apitest-commons-conformance</module>
+    <module>inji-verify-api-test</module>
+    <module>inji-certify-api-test</module>
+  </modules>
+</project>

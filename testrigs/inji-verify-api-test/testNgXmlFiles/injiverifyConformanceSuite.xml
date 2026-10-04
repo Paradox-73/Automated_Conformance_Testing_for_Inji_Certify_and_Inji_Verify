@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--
+  SPDX-License-Identifier: MIT
+  One row per OpenID conformance test module of the verifier plan run against Inji Verify (TC_OIDF_VERIFY_nn).
+  Included from injiverifyConformanceMasterTestSuite.xml; see OpenIDConformanceTest for the settings.
+-->
+<suite name="Inji-Verify OpenID Conformance">
+	<test name="OpenIDConformance">
+		<classes>
+			<class name="io.inji.testrig.apirig.injiverify.testscripts.OpenIDConformanceTest" />
+		</classes>
+	</test>
+</suite>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SPDX-License-Identifier: MIT
+  OpenID conformance bridge for MOSIP api-testrigs: turns the conformance runner's results.json into one TestNG
+  result per conformance test module, inside a rig's existing EmailableReport. Written as a candidate addition to
+  API Test Commons (mosip-functional-tests/apitest-commons), so it depends only on what a rig already has.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.mosip.testrig.apitest.commons</groupId>
+  <artifactId>apitest-commons-conformance</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>apitest-commons-conformance</name>
+  <description>Maps OpenID Foundation conformance suite results to TestNG results in MOSIP api-testrigs.</description>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://opensource.org/license/mit</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+
+    <!--
+      apitest-commons is "provided": every rig already depends on it, and each rig keeps its own version
+      (Inji Verify 1.5.0, Inji Certify 1.6.0). The bridge compiles against the oldest one it supports and uses only
+      API present in both: TestCaseDTO, GlobalConstants, BaseTestCase.setReportName, ConfigManager.
+    -->
+    <apitest.commons.version>1.5.0</apitest.commons.version>
+    <junit.jupiter.version>5.10.5</junit.jupiter.version>
+
+    <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+    <maven.surefire.plugin.version>3.5.2</maven.surefire.plugin.version>
+    <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.mosip.testrig.apitest.commons</groupId>
+      <artifactId>apitest-commons</artifactId>
+      <version>${apitest.commons.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <compilerArgs>
+            <arg>-Xlint:all,-processing,-serial</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <!-- Tests look for the repository's schema examples relative to this folder. -->
+          <workingDirectory>${project.basedir}</workingDirectory>
+          <!--
+            apitest-commons also brings the JUnit Vintage engine with JUnit 4.10, which Vintage refuses to run
+            ("Please upgrade to version 4.12"), failing discovery. This module has JUnit 5 tests only.
+          -->
+          <includeJUnit5Engines>
+            <engine>junit-jupiter</engine>
+          </includeJUnit5Engines>
+        </configuration>
+        <dependencies>
+          <!--
+            TestNG reaches the test classpath through apitest-commons. Naming the JUnit Platform provider stops
+            Surefire from picking the TestNG provider and finding no tests.
+          -->
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit-platform</artifactId>
+            <version>${maven.surefire.plugin.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>io.mosip.testrig.apirig.conformance</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
