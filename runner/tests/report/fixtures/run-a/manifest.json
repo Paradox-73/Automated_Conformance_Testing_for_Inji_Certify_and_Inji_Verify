@@ -1,0 +1,75 @@
+{
+  "schema_version": "1",
+  "run_id": "20261004T191000Z-1a2b3c4",
+  "mode": "combined",
+  "track": "gate",
+  "parallel": false,
+  "started_at": "2026-10-04T19:08:12Z",
+  "finished_at": "2026-10-04T19:43:05Z",
+  "wall_time_s": 2093.0,
+  "command": [
+    "./run-full-stack-conformance.sh",
+    "--no-prepare",
+    "--runner-only"
+  ],
+  "harness": {
+    "git_commit": "1a2b3c4",
+    "git_dirty": false,
+    "runner_version": "0.1.0"
+  },
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "images": [
+    {
+      "service": "suite-server",
+      "image": "registry.gitlab.com/openid/conformance-suite:release-v5.3.1",
+      "digest": null,
+      "commit": "440eec8"
+    },
+    {
+      "service": "certify",
+      "image": "injistackqa/inji-certify-with-plugins:develop",
+      "digest": null,
+      "commit": "d6635da"
+    },
+    {
+      "service": "verify-service",
+      "image": "injistackqa/inji-verify-service:1.0.x",
+      "digest": null,
+      "commit": "ad3595f"
+    }
+  ],
+  "components": [
+    {
+      "component": "certify",
+      "plan": "oid4vci-1_0-issuer-test-plan",
+      "results": "certify/results.json",
+      "started_at": "2026-10-04T19:10:00Z",
+      "finished_at": "2026-10-04T19:27:44Z",
+      "wall_time_s": 1064.0,
+      "exit_code": 0
+    },
+    {
+      "component": "verify",
+      "plan": "oid4vp-1final-verifier-test-plan",
+      "results": "verify/results.json",
+      "started_at": "2026-10-04T19:30:00Z",
+      "finished_at": "2026-10-04T19:42:31Z",
+      "wall_time_s": 751.0,
+      "exit_code": 0
+    }
+  ],
+  "gate": {
+    "passed": true,
+    "exit_code": 0
+  },
+  "host": {
+    "os": "Windows 11 (Git Bash)",
+    "python": "3.12.10"
+  },
+  "notes": [
+    "Report test fixture built from the contract examples by build_fixtures.py; not a measured run."
+  ]
+}

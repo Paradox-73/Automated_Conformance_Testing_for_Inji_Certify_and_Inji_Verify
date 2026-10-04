@@ -1,0 +1,105 @@
+{#- diff.html: what changed between run A and run B. View objects come from inji_conformance/report/html.py. -#}
+{% import "_macros.html.j2" as ui with context %}
+{% macro side(module) %}{% if module %}{{ ui.verdict(module.verdict) }} <code>{{ module.result.value if module.result else module.status.value }}</code>{% else %}<span class="muted">absent</span>{% endif %}{% endmacro %}
+{{ ui.head("Run diff · " ~ diff.before.run_id ~ " to " ~ diff.after.run_id) }}
+<body>
+{{ ui.icon_sprite() }}
+<header class="page-header">
+  <div>
+    <div>
+      <h1>Run diff</h1>
+      <p>{{ labels[0] }} <code>{{ diff.before.run_id }}</code> → {{ labels[1] }} <code>{{ diff.after.run_id }}</code></p>
+    </div>
+    <div class="header-actions">
+      {% if diff.same %}
+      <span class="status gate gate-passed">{{ ui.icon("passed") }}Same verdicts</span>
+      {% elif counts.new_regressions %}
+      <span class="status gate gate-failed">{{ ui.icon("failed") }}{{ plural(counts.new_regressions, "new regression") }}</span>
+      {% else %}
+      <span class="status gate gate-none">{{ ui.icon("changed") }}Changed, no new regression</span>
+      {% endif %}
+      <button type="button" id="theme-toggle" hidden>Theme: auto</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section aria-labelledby="counts-heading">
+    <h2 id="counts-heading">Summary</h2>
+    <p>{{ counts.changed }} changed · {{ counts.added }} added · {{ counts.removed }} removed · {{ counts.unchanged }} unchanged · {{ plural(counts.new_regressions, "new regression") }} · {{ counts.fixed }} fixed</p>
+    <p class="muted">Modules are matched by component and name. A module changed when its verdict, its suite status or result, or its set of failing conditions changed; times and links never count.</p>
+  </section>
+
+  <section aria-labelledby="modules-heading">
+    <h2 id="modules-heading">Modules</h2>
+    {% if rows %}
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Modules whose outcome differs between {{ labels[0] }} and {{ labels[1] }}; new regressions first</caption>
+        <thead>
+          <tr>
+            <th scope="col">Change</th>
+            <th scope="col">Component</th>
+            <th scope="col">Module</th>
+            <th scope="col">{{ labels[0] }}</th>
+            <th scope="col">{{ labels[1] }}</th>
+            <th scope="col">Failing conditions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          {% set item = row.change %}
+          <tr>
+            <td><span class="status status-{{ row.css }}">{{ ui.icon(row.css) }}{{ row.label }}</span></td>
+            <td>{{ item.component }}</td>
+            <th scope="row" class="module-name">{{ item.name }}</th>
+            <td>{{ side(item.before) }}</td>
+            <td>{{ side(item.after) }}</td>
+            <td>
+              {% if item.conditions_added or item.conditions_removed %}
+              <ul class="conditions">
+                {% for condition, severity in item.conditions_added %}
+                <li class="plus"><span class="visually-hidden">New: </span><code>{{ condition }}</code> {{ severity }}</li>
+                {% endfor %}
+                {% for condition, severity in item.conditions_removed %}
+                <li class="minus"><span class="visually-hidden">No longer failing: </span><code>{{ condition }}</code> {{ severity }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <span class="muted">no change</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p>Every module has the same verdict, suite result and failing conditions in both runs.</p>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="context-heading">
+    <h2 id="context-heading">What ran differently</h2>
+    {% if diff.context %}
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Differences in commits, images, suite version and plan variant between the runs</caption>
+        <thead><tr><th scope="col">Subject</th><th scope="col">{{ labels[0] }}</th><th scope="col">{{ labels[1] }}</th></tr></thead>
+        <tbody>
+          {% for change in diff.context %}
+          <tr><th scope="row">{{ change.subject }}</th><td><code>{{ change.before }}</code></td><td><code>{{ change.after }}</code></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p>Same harness commit, images, suite version and plan variants (as far as both runs recorded them).</p>
+    {% endif %}
+  </section>
+</main>
+{% call ui.footer(meta) %}{% endcall %}
+<script>
+{{ script }}
+</script>
+</body>
+</html>

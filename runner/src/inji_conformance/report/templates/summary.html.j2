@@ -1,0 +1,215 @@
+{#- summary.html: the consolidated report of one run (one component, or both for a combined run).
+    Layout follows docs/design/report-wireframe.svg. View objects come from inji_conformance/report/html.py. -#}
+{% import "_macros.html.j2" as ui with context %}
+{{ ui.head(header.title ~ " · " ~ header.run_id) }}
+<body>
+<a class="skip-link" href="#modules">Skip to the module table</a>
+{{ ui.icon_sprite() }}
+<header class="page-header">
+  <div>
+    <div>
+      <h1>{{ header.title }}</h1>
+      <p>{{ header.mode }} <code>{{ header.run_id }}</code> · track {{ header.track }} · {{ header.started }} to {{ header.finished }}{% if header.duration %} ({{ header.duration }}){% endif %}</p>
+    </div>
+    <div class="header-actions">
+      {{ ui.gate(header.gate, "gate") }}
+      <a class="badge-link" href="{{ badge_href }}"><img src="{{ badge_href }}" alt="Badge of this run"></a>
+      <button type="button" id="theme-toggle" hidden>Theme: auto</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section aria-labelledby="run-heading">
+    <h2 id="run-heading">Run</h2>
+    <ul class="totals" aria-label="Verdicts of all {{ header.module_total }} modules">
+      <li><strong>{{ plural(header.module_total, "module") }}</strong></li>
+      {% for verdict, count in header.totals %}
+      <li>{{ ui.verdict(verdict) }} {{ count }}</li>
+      {% endfor %}
+    </ul>
+    <dl class="facts">
+      {% for fact in header.facts %}
+      <dt>{{ fact.label }}</dt>
+      <dd>{% if fact.code %}<code>{{ fact.value }}</code>{% else %}{{ fact.value }}{% endif %}</dd>
+      {% endfor %}
+    </dl>
+    {% if header.images %}
+    <h3>Images</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Container images of the run, with registry digest and source commit label</caption>
+        <thead><tr><th scope="col">Service</th><th scope="col">Image</th><th scope="col">Digest</th><th scope="col">Commit</th></tr></thead>
+        <tbody>
+          {% for image in header.images %}
+          <tr><td>{{ image.service }}</td><td><code>{{ image.image }}</code></td><td><code>{{ image.digest }}</code></td><td><code>{{ image.commit }}</code></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </section>
+
+  {% if compare %}
+  <section aria-labelledby="compare-heading" class="compare">
+    <h2 id="compare-heading">Changes since run <code>{{ compare.previous_run_id }}</code></h2>
+    <p>{{ compare.counts.changed }} changed · {{ compare.counts.added }} added · {{ compare.counts.removed }} removed · {{ compare.counts.unchanged }} unchanged · {{ plural(compare.counts.new_regressions, "new regression") }} · {{ compare.counts.fixed }} fixed{% if compare.context_count %} · {{ plural(compare.context_count, "difference") }} in what ran{% endif %}</p>
+    {% if compare.highlights %}
+    <ul>
+      {% for item in compare.highlights %}
+      <li>{% if item.new_regression %}{{ ui.verdict(item.after.verdict) }} new in{% else %}<span class="status status-conforms">{{ ui.icon("conforms") }}Fixed</span> in{% endif %} {{ item.component }} <a href="#m-{{ item.component }}-{{ item.name }}">{{ item.name }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <p><a href="{{ compare.diff_href }}">Open the full diff (diff.html)</a></p>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="components-heading">
+    <h2 id="components-heading">Components</h2>
+    <div class="cards">
+      {% for card in cards %}
+      <article class="card" aria-labelledby="card-{{ card.component }}">
+        <h3 id="card-{{ card.component }}">{{ card.title }} ({{ card.role }})</h3>
+        <p class="muted"><code>{{ card.plan }}</code>{% if card.variant %} · {{ card.variant }}{% endif %}</p>
+        <ul class="counts" aria-label="Verdicts of {{ card.title }}">
+          {% for verdict, count in card.counts %}
+          <li><span class="count">{{ count }}</span>{{ ui.verdict(verdict) }}</li>
+          {% endfor %}
+        </ul>
+        <p>{{ ui.gate(card.gate) }} · track {{ card.track }}</p>
+        <p>Target <code>{{ card.target }}</code>, commit <code>{{ card.target_commit }}</code></p>
+        <p>Suite {{ card.suite_version }} · {{ plural(card.module_count, "module") }}{% if card.duration %} · {{ card.duration }}{% endif %}</p>
+        <p>{% if card.export_href %}<a href="{{ card.export_href }}">Plan export (zip)</a>{% else %}<span class="muted">Plan export not in this folder</span>{% endif %}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section aria-labelledby="modules">
+    <h2 id="modules" tabindex="-1">Modules</h2>
+    <fieldset id="filters" class="filters" hidden>
+      <legend>Filter modules</legend>
+      <div class="filter-field">
+        <label for="filter-component">Component</label>
+        <select id="filter-component">
+          <option value="">All components</option>
+          {% for component in components %}
+          <option value="{{ component }}">{{ component }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <fieldset class="verdict-filter">
+        <legend>Verdict</legend>
+        {% for verdict in VERDICTS %}
+        <label><input type="checkbox" name="verdict" value="{{ verdict.value }}" checked>{{ ui.verdict(verdict) }}</label>
+        {% endfor %}
+      </fieldset>
+      <div class="filter-field">
+        <label for="filter-text">Search module or condition</label>
+        <input type="search" id="filter-text" autocomplete="off">
+      </div>
+    </fieldset>
+    <p id="shown" role="status" aria-live="polite">Showing {{ rows | length }} of {{ rows | length }} modules.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Every test module of the run; regressions sort first. Use a module's button to show its failing conditions, benchmark entries and handoffs.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Component</th>
+            <th scope="col">Module</th>
+            <th scope="col">Suite result</th>
+            <th scope="col">Verdict</th>
+            <th scope="col">Failing conditions</th>
+            <th scope="col" class="num">Time</th>
+            <th scope="col">Links</th>
+          </tr>
+        </thead>
+        {% for row in rows %}
+        <tbody class="module" id="{{ row.anchor }}" data-component="{{ row.component }}" data-verdict="{{ row.verdict.value }}" data-search="{{ row.search }}">
+          <tr>
+            <td>{{ row.component }}</td>
+            <th scope="row" class="module-name">
+              {% if row.has_details %}
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="{{ row.anchor }}-details"><span class="chevron" aria-hidden="true">&#9656;</span>{{ row.module.name }}</button>
+              {% else %}
+              {{ row.module.name }}
+              {% endif %}
+            </th>
+            <td><code>{{ row.result }}</code></td>
+            <td>{{ ui.verdict(row.verdict) }}</td>
+            <td>{{ row.failure_summary }}</td>
+            <td class="num">{{ row.duration }}</td>
+            <td class="links">
+              {% if row.suite_log %}<a href="{{ row.suite_log }}">Suite log<span class="visually-hidden"> of {{ row.module.name }} (live suite)</span></a>{% endif %}
+              {% if row.export_href %}<a href="{{ row.export_href }}">HTML export<span class="visually-hidden"> of {{ row.module.name }}</span></a>{% endif %}
+              {% if not row.suite_log and not row.export_href %}<span class="muted">none</span>{% endif %}
+            </td>
+          </tr>
+          {% if row.has_details %}
+          <tr class="detail-row" id="{{ row.anchor }}-details">
+            <td colspan="7">
+              {% if row.module.description %}<p>{{ row.module.description }}</p>{% endif %}
+              {% if row.module.verdict_reason %}<p><strong>Why this verdict:</strong> {{ row.module.verdict_reason }}</p>{% endif %}
+              {% if row.failures %}
+              <h4>Failing conditions</h4>
+              <ul>
+                {% for view in row.failures %}
+                {% set failure = view.failure %}
+                <li><code>{{ failure.condition }}</code> · {{ failure.severity.value }}{% if failure.block %} · block "{{ failure.block }}"{% endif %}{% if view.listed %} · {{ view.listed }}{% endif %}
+                  {% if failure.message %}<br>{{ failure.message }}{% endif %}
+                  {% if failure.requirements %}<br><span class="muted">Requirements: {{ failure.requirements | join(", ") }}</span>{% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              {% if row.benchmark %}
+              <h4>Benchmark entries</h4>
+              <ul>
+                {% for view in row.benchmark %}
+                {% set ref = view.ref %}
+                <li>{{ view.kind }}{% if ref.condition %} of <code>{{ ref.condition }}</code>{% endif %} · owner {{ ref.owner.value }} · spec {{ ref.spec }} · issue {% if view.issue_href %}<a href="{{ view.issue_href }}">{{ ref.issue }}</a>{% else %}draft <code>{{ ref.issue }}</code>{% endif %} · {{ view.matched_text }}
+                  <blockquote>{{ ref.comment }}</blockquote>
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              {% if row.review %}
+              <h4>Review</h4>
+              <p>Inji Verify showed <strong>{{ row.review.observed.value }}</strong>; the module expects <strong>{{ row.review.expected.value }}</strong>.{% if row.evidence_href %} <a href="{{ row.evidence_href }}">Evidence image</a>{% elif row.review.evidence %} Evidence image not in this folder.{% else %} No evidence image was made.{% endif %}</p>
+              {% endif %}
+              {% if row.handoffs %}
+              <h4>Handoffs</h4>
+              <ul>
+                {% for handoff in row.handoffs %}
+                <li>{{ HANDOFF_LABELS.get(handoff.kind.value, handoff.kind.value) }}{% if handoff.http_status is not none %} · HTTP {{ handoff.http_status }}{% endif %} · {{ "%.0f" | format(handoff.duration_ms) }} ms{% if handoff.at %} · {{ format_time(handoff.at) }}{% endif %}
+                  {% if handoff.detail %}<br><span class="muted">{{ handoff.detail }}</span>{% endif %}
+                  {% if handoff.error %}<br><strong>Error:</strong> {{ handoff.error }}{% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+        {% endfor %}
+      </table>
+    </div>
+    <p id="no-match" class="empty-state" hidden>No module matches the filters.</p>
+  </section>
+</main>
+{% call ui.footer(meta) %}
+  {% if header.notes %}
+  <p>Notes from the run:</p>
+  <ul>
+    {% for note in header.notes %}
+    <li>{{ note }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+{% endcall %}
+<script>
+{{ script }}
+</script>
+</body>
+</html>

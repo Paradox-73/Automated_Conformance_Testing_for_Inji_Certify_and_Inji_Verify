@@ -38,6 +38,10 @@ inji-conformance = "inji_conformance.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# The report's page templates, style sheet and script are read at run time with importlib.resources.
+[tool.setuptools.package-data]
+"inji_conformance.report" = ["templates/*.j2", "assets/*.css", "assets/*.js"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"

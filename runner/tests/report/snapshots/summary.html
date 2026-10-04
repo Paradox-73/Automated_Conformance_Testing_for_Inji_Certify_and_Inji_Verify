@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="inji-conformance VERSION">
+<title>Inji conformance report · 20261004T191000Z-1a2b3c4</title>
+<style>
+/*
+ * Style sheet of summary.html and diff.html, copied inline into each page.
+ *
+ * Colours are tokens with a light set and a dark set. Every text token reaches a contrast ratio of at least 4.5:1
+ * (WCAG 2.1 AA) on the page and card backgrounds of its theme; runner/tests/report/test_html.py reads the tokens
+ * from this file and checks it. The page follows the system theme unless the theme button set data-theme on <html>.
+ */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f6f8fa;
+  --text: #1f2328;
+  --muted: #59636e;
+  --border: #c8d1da;
+  --link: #0757c2;
+  --focus: #0757c2;
+  --conforms: #1a7f37;
+  --gap: #8a5300;
+  --regression: #c4261d;
+  --na: #59636e;
+  --stale: #7339c4;
+  --code-bg: #eef1f4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --text: #e6edf3;
+    --muted: #9ea7b3;
+    --border: #3d444d;
+    --link: #58a6ff;
+    --focus: #58a6ff;
+    --conforms: #3fb950;
+    --gap: #d29922;
+    --regression: #ff7b72;
+    --na: #9ea7b3;
+    --stale: #bc8cff;
+    --code-bg: #212830;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --muted: #9ea7b3;
+  --border: #3d444d;
+  --link: #58a6ff;
+  --focus: #58a6ff;
+  --conforms: #3fb950;
+  --gap: #d29922;
+  --regression: #ff7b72;
+  --na: #9ea7b3;
+  --stale: #bc8cff;
+  --code-bg: #212830;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+main, .page-header > div, footer { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+code, .mono { font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; font-size: 0.9em; }
+code { background: var(--code-bg); padding: 0 4px; border-radius: 4px; overflow-wrap: anywhere; }
+h1 { font-size: 1.6rem; margin: 0; }
+h2 { font-size: 1.2rem; margin: 32px 0 12px; }
+h3 { font-size: 1.05rem; margin: 0; }
+section > h3 { margin: 20px 0 8px; }
+h4 { font-size: 0.95rem; margin: 16px 0 4px; }
+.muted { color: var(--muted); }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link { position: absolute; left: 8px; top: -48px; background: var(--bg); padding: 8px; z-index: 10; }
+.skip-link:focus { top: 8px; }
+
+/* Header */
+.page-header { border-bottom: 1px solid var(--border); background: var(--surface); padding: 20px 0; }
+.page-header > div { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+.page-header p { margin: 4px 0 0; }
+.header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.badge-link img { display: block; height: 20px; }
+button {
+  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 12px; cursor: pointer;
+}
+
+/* Status: an icon of a distinct shape plus the word, coloured by the same token. */
+.icon { width: 1em; height: 1em; vertical-align: -0.15em; flex: none; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
+.status-conforms, .gate-passed { color: var(--conforms); }
+.status-gap { color: var(--gap); }
+.status-regression, .gate-failed { color: var(--regression); }
+.status-na, .gate-none, .gate-info { color: var(--na); }
+.status-stale { color: var(--stale); }
+.status-added { color: var(--link); }
+.status-removed, .status-changed { color: var(--text); }
+.gate { font-size: 1.1rem; border: 2px solid currentColor; border-radius: 8px; padding: 4px 12px; }
+
+/* Facts and tables */
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--border); }
+thead th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+tbody th { font-weight: 600; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+
+/* Summary strip and component cards */
+.totals { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; margin: 0 0 12px; list-style: none; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 16px; }
+.card p { margin: 4px 0; }
+.counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.counts li { display: flex; flex-direction: column; gap: 2px; }
+.counts .count { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.counts .status { font-size: 0.8rem; white-space: normal; }
+
+/* Comparison box */
+.compare { margin-top: 24px; border-left: 4px solid var(--link); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+.compare ul { margin: 8px 0 0; padding-left: 20px; }
+
+/* Filters */
+.filters { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 0 0 8px; }
+.filters legend { font-weight: 600; padding: 0 4px; }
+.filters label { display: inline-flex; gap: 6px; align-items: center; }
+.filter-field { display: flex; flex-direction: column; gap: 4px; }
+.filter-field input[type="search"], .filter-field select {
+  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px;
+}
+.verdict-filter { display: flex; flex-wrap: wrap; gap: 4px 16px; border: 0; padding: 0; margin: 0; }
+.verdict-filter legend { padding: 0; margin-bottom: 4px; font-weight: 400; color: var(--muted); }
+#shown { margin: 4px 0 12px; color: var(--muted); }
+
+/* Module table */
+.module-name { font-weight: 600; overflow-wrap: anywhere; }
+.toggle {
+  border: 0; background: none; padding: 0; color: var(--link); text-align: left; font-weight: 600;
+  display: inline-flex; gap: 6px; align-items: baseline; overflow-wrap: anywhere;
+}
+.toggle .chevron { display: inline-block; transition: transform 0.15s; }
+.toggle[aria-expanded="true"] .chevron { transform: rotate(90deg); }
+tr.detail-row > td { background: var(--surface); padding: 4px 16px 16px 40px; }
+.js tr.detail-row[hidden] { display: none; }
+.detail-row ul { margin: 4px 0; padding-left: 20px; }
+.detail-row li { margin: 2px 0; }
+.detail-row blockquote { margin: 4px 0; padding-left: 12px; border-left: 3px solid var(--border); }
+.links { display: flex; gap: 12px; white-space: nowrap; }
+.empty-state { padding: 24px; text-align: center; color: var(--muted); }
+
+/* Diff page */
+.conditions { margin: 0; padding: 0; list-style: none; }
+.conditions .plus::before { content: "+ "; font-weight: 700; }
+.conditions .minus::before { content: "\2212 "; font-weight: 700; }
+
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px; padding-top: 12px; padding-bottom: 32px; }
+footer p { margin: 4px 0; }
+
+@media (max-width: 720px) {
+  .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .facts { grid-template-columns: 1fr; }
+  .facts dd { margin-bottom: 8px; }
+}
+
+@media print {
+  .filters, #theme-toggle, .skip-link { display: none; }
+  .js tr.detail-row[hidden] { display: table-row; }
+}
+
+</style>
+</head>
+
+<body>
+<a class="skip-link" href="#modules">Skip to the module table</a>
+<svg class="visually-hidden" aria-hidden="true">
+  <symbol id="i-conforms" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.4 8.3l2.4 2.5 4.8-5.3" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gap" viewBox="0 0 16 16"><path d="M8 .8l7.6 14H.4z" fill="currentColor"/><path d="M8 5.6v4.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="12.4" r="1" fill="#fff"/></symbol>
+  <symbol id="i-regression" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.2 5.2l5.6 5.6M10.8 5.2l-5.6 5.6" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-na" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-stale" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="4" fill="currentColor"/><path d="M8 3.8V8l3 2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-added" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="currentColor"/><path d="M8 4v8M4 8h8" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-removed" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 8h8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-changed" viewBox="0 0 16 16"><path d="M8 .6l7.4 7.4L8 15.4.6 8z" fill="currentColor"/><path d="M5.3 8h5.4M8.6 5.9 10.7 8l-2.1 2.1" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-passed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M4.8 8.1l2.2 2.3 4.2-4.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-failed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-none" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 8h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="page-header">
+  <div>
+    <div>
+      <h1>Inji conformance report</h1>
+      <p>Combined run <code>20261004T191000Z-1a2b3c4</code> · track gate · 2026-10-04 19:08:12 UTC to 2026-10-04 19:43:05 UTC (34 min 53 s)</p>
+    </div>
+    <div class="header-actions">
+      <span class="status gate-passed gate"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span>
+      <a class="badge-link" href="badge.svg"><img src="badge.svg" alt="Badge of this run"></a>
+      <button type="button" id="theme-toggle" hidden>Theme: auto</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section aria-labelledby="run-heading">
+    <h2 id="run-heading">Run</h2>
+    <ul class="totals" aria-label="Verdicts of all 26 modules">
+      <li><strong>26 modules</strong></li>
+      <li><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span> 20</li>
+      <li><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span> 2</li>
+      <li><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span> 0</li>
+      <li><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span> 4</li>
+      <li><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span> 0</li>
+    </ul>
+    <dl class="facts">
+      <dt>Harness commit</dt>
+      <dd><code>1a2b3c4 (clean)</code></dd>
+      <dt>Runner</dt>
+      <dd>inji-conformance VERSION</dd>
+      <dt>Suite</dt>
+      <dd>5.3.1 at https://localhost.emobix.co.uk:18443</dd>
+      <dt>Plans</dt>
+      <dd>one after the other</dd>
+      <dt>Command</dt>
+      <dd><code>./run-full-stack-conformance.sh --no-prepare --runner-only</code></dd>
+      <dt>Host os</dt>
+      <dd>Windows 11 (Git Bash)</dd>
+      <dt>Host python</dt>
+      <dd>3.12.10</dd>
+    </dl>
+    <h3>Images</h3>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Container images of the run, with registry digest and source commit label</caption>
+        <thead><tr><th scope="col">Service</th><th scope="col">Image</th><th scope="col">Digest</th><th scope="col">Commit</th></tr></thead>
+        <tbody>
+          <tr><td>suite-server</td><td><code>registry.gitlab.com/openid/conformance-suite:release-v5.3.1</code></td><td><code>none (no registry digest)</code></td><td><code>440eec8</code></td></tr>
+          <tr><td>certify</td><td><code>injistackqa/inji-certify-with-plugins:develop</code></td><td><code>none (no registry digest)</code></td><td><code>d6635da</code></td></tr>
+          <tr><td>verify-service</td><td><code>injistackqa/inji-verify-service:1.0.x</code></td><td><code>none (no registry digest)</code></td><td><code>ad3595f</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="compare-heading" class="compare">
+    <h2 id="compare-heading">Changes since run <code>20261003T101500Z-9f8e7d6</code></h2>
+    <p>3 changed · 1 added · 0 removed · 22 unchanged · 0 new regressions · 2 fixed · 3 differences in what ran</p>
+    <ul>
+      <li><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Fixed</span> in certify <a href="#m-certify-oid4vci-1_0-issuer-happy-flow">oid4vci-1_0-issuer-happy-flow</a></li>
+      <li><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Fixed</span> in verify <a href="#m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce">oid4vp-1final-verifier-invalid-kb-jwt-nonce</a></li>
+    </ul>
+    <p><a href="diff.html">Open the full diff (diff.html)</a></p>
+  </section>
+
+  <section aria-labelledby="components-heading">
+    <h2 id="components-heading">Components</h2>
+    <div class="cards">
+      <article class="card" aria-labelledby="card-certify">
+        <h3 id="card-certify">Inji Certify (issuer)</h3>
+        <p class="muted"><code>oid4vci-1_0-issuer-test-plan</code> · simple · private_key_jwt · sd_jwt_vc · vci · unsigned · dpop · issuer_initiated · plain · pre_authorization_code</p>
+        <ul class="counts" aria-label="Verdicts of Inji Certify">
+          <li><span class="count">10</span><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></li>
+          <li><span class="count">1</span><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></li>
+          <li><span class="count">0</span><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></li>
+          <li><span class="count">4</span><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></li>
+          <li><span class="count">0</span><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></li>
+        </ul>
+        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span> · track gate</p>
+        <p>Target <code>https://certify.inji.test:18450</code>, commit <code>d6635da</code></p>
+        <p>Suite 5.3.1 · 15 modules · 17 min 44 s</p>
+        <p><span class="muted">Plan export not in this folder</span></p>
+      </article>
+      <article class="card" aria-labelledby="card-verify">
+        <h3 id="card-verify">Inji Verify (verifier)</h3>
+        <p class="muted"><code>oid4vp-1final-verifier-test-plan</code> · x509_san_dns · sd_jwt_vc · request_uri_signed · direct_post · plain_vp</p>
+        <ul class="counts" aria-label="Verdicts of Inji Verify">
+          <li><span class="count">10</span><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></li>
+          <li><span class="count">1</span><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></li>
+          <li><span class="count">0</span><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></li>
+          <li><span class="count">0</span><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></li>
+          <li><span class="count">0</span><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></li>
+        </ul>
+        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span> · track gate</p>
+        <p>Target <code>https://verify.inji.test:18451/v1/verify</code>, commit <code>ad3595f</code></p>
+        <p>Suite 5.3.1 · 11 modules · 12 min 31 s</p>
+        <p><span class="muted">Plan export not in this folder</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="modules">
+    <h2 id="modules" tabindex="-1">Modules</h2>
+    <fieldset id="filters" class="filters" hidden>
+      <legend>Filter modules</legend>
+      <div class="filter-field">
+        <label for="filter-component">Component</label>
+        <select id="filter-component">
+          <option value="">All components</option>
+          <option value="certify">certify</option>
+          <option value="verify">verify</option>
+        </select>
+      </div>
+      <fieldset class="verdict-filter">
+        <legend>Verdict</legend>
+        <label><input type="checkbox" name="verdict" value="regression" checked><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></label>
+        <label><input type="checkbox" name="verdict" value="stale_benchmark" checked><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></label>
+        <label><input type="checkbox" name="verdict" value="known_gap" checked><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></label>
+        <label><input type="checkbox" name="verdict" value="conforms" checked><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></label>
+        <label><input type="checkbox" name="verdict" value="not_applicable" checked><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></label>
+      </fieldset>
+      <div class="filter-field">
+        <label for="filter-text">Search module or condition</label>
+        <input type="search" id="filter-text" autocomplete="off">
+      </div>
+    </fieldset>
+    <p id="shown" role="status" aria-live="polite">Showing 26 of 26 modules.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Every test module of the run; regressions sort first. Use a module's button to show its failing conditions, benchmark entries and handoffs.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Component</th>
+            <th scope="col">Module</th>
+            <th scope="col">Suite result</th>
+            <th scope="col">Verdict</th>
+            <th scope="col">Failing conditions</th>
+            <th scope="col" class="num">Time</th>
+            <th scope="col">Links</th>
+          </tr>
+        </thead>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-fail-unknown-credential-configuration known gap vcivalidatecredentialerrorresponse">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unknown-credential-configuration</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">15.1 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0013">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration (live suite)</span></a><a href="../fixtures/run-a/certify/exports/vciexample0013.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details">
+            <td colspan="7">
+              <h4>Failing conditions</h4>
+              <ul>
+                <li><code>VCIValidateCredentialErrorResponse</code> · FAILURE · block "Verify Credential Endpoint Response" · listed in the benchmark<br>Expected error &#39;unknown_credential_configuration&#39;, got &#39;invalid_credential_request&#39;<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3.1</span>                </li>
+              </ul>
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected failure of <code>VCIValidateCredentialErrorResponse</code> · owner inji · spec OID4VCI-1FINAL-8.3.1 · issue draft <code>docs/findings/certify-unknown-credential-configuration-error.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: an unknown credential_configuration_id is answered with a generic error code instead of unknown_credential_configuration.</blockquote>
+                </li>
+              </ul>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 262 ms · 2026-10-04 19:23:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-request-uri-method-post" data-component="verify" data-verdict="known_gap" data-search="verify oid4vp-1final-verifier-request-uri-method-post known gap posttorequesturiandextractrequestobject">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-method-post-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-request-uri-method-post</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">8.1 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0003">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post (live suite)</span></a><a href="../fixtures/run-a/verify/exports/vpexample0003.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-method-post-details">
+            <td colspan="7">
+              <h4>Failing conditions</h4>
+              <ul>
+                <li><code>PostToRequestUriAndExtractRequestObject</code> · FAILURE · block "Authorization endpoint" · listed in the benchmark<br>POST to request_uri returned HTTP 405<br><span class="muted">Requirements: OID4VP-1FINAL-5.10</span>                </li>
+              </ul>
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected failure of <code>PostToRequestUriAndExtractRequestObject</code> · owner inji · spec OID4VP-1FINAL-5.10 · issue draft <code>docs/findings/verify-request-uri-method-post.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: the request_uri endpoint answers only GET, so a wallet POST with wallet_nonce is refused.</blockquote>
+                </li>
+              </ul>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 149 ms · 2026-10-04 19:33:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-metadata-test" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-metadata-test conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              oid4vci-1_0-issuer-metadata-test
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">6.7 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0001">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test (live suite)</span></a>            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-happy-flow conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">8.1 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0003">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow (live suite)</span></a><a href="../fixtures/run-a/certify/exports/vciexample0003.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 222 ms · 2026-10-04 19:13:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-happy-flow-additional-requests conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-additional-requests</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">8.8 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0004">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-additional-requests (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 226 ms · 2026-10-04 19:14:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-happy-flow-multiple-clients conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-multiple-clients</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">9.5 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0005">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-multiple-clients (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 230 ms · 2026-10-04 19:15:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-happy-flow-skip-notification conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-skip-notification</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">10.2 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0006">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-skip-notification (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 234 ms · 2026-10-04 19:16:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-invalid-nonce conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-nonce</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">11.6 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0008">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-nonce (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 242 ms · 2026-10-04 19:18:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">12.3 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0009">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 246 ms · 2026-10-04 19:19:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-missing-proof conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-missing-proof</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">13.7 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0011">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-missing-proof (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 254 ms · 2026-10-04 19:21:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-unknown-credential-identifier conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unknown-credential-identifier</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">15.8 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0014">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-identifier (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 266 ms · 2026-10-04 19:24:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-on-access-token-in-query conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-on-access-token-in-query</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">16.5 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0015">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-on-access-token-in-query (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 270 ms · 2026-10-04 19:25:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-happy-flow" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-happy-flow conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-happy-flow-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-happy-flow</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">6.7 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0001">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow (live suite)</span></a><a href="../fixtures/run-a/verify/exports/vpexample0001.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-happy-flow-details">
+            <td colspan="7">
+<p>The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it.</p>              <h4>Review</h4>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 143 ms · 2026-10-04 19:31:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:31:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-minimal-cnf-jwk conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-minimal-cnf-jwk</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">7.4 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0002">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-minimal-cnf-jwk (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details">
+            <td colspan="7">
+              <h4>Review</h4>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 146 ms · 2026-10-04 19:32:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:32:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-request-uri-fetched-twice conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-request-uri-fetched-twice</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">8.8 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0004">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-fetched-twice (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 152 ms · 2026-10-04 19:34:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-signature conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-signature</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">9.5 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0005">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-signature (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 155 ms · 2026-10-04 19:35:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-credential-signature conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-credential-signature</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">10.2 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0006">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-credential-signature (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details">
+            <td colspan="7">
+              <h4>Review</h4>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 158 ms · 2026-10-04 19:36:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:36:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-sd-hash conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-sd-hash</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">10.9 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0007">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-sd-hash (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 161 ms · 2026-10-04 19:37:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-nonce conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-nonce</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">11.6 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0008">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-nonce (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details">
+            <td colspan="7">
+              <h4>Review</h4>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 164 ms · 2026-10-04 19:38:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:38:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-aud conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-aud</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">12.3 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0009">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-aud (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 167 ms · 2026-10-04 19:39:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-kb-jwt-iat-in-past conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-kb-jwt-iat-in-past</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">13.0 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0010">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-past (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details">
+            <td colspan="7">
+              <h4>Review</h4>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 170 ms · 2026-10-04 19:40:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:40:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-kb-jwt-iat-in-future conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-kb-jwt-iat-in-future</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">13.7 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0011">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-future (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details">
+            <td colspan="7">
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 173 ms · 2026-10-04 19:41:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-metadata-test-signed not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-metadata-test-signed</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">7.4 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0002">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test-signed (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details">
+            <td colspan="7">
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.2 · issue draft <code>docs/findings/certify-signed-metadata.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: signed credential issuer metadata is optional and is not published.</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-batch-issuance" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-batch-issuance not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-batch-issuance-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-batch-issuance</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">10.9 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0007">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-batch-issuance (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-batch-issuance-details">
+            <td colspan="7">
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.4 · issue draft <code>docs/findings/certify-batch-issuance.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: the issuer metadata has no batch_credential_issuance, so the suite skips the batch module.</blockquote>
+                </li>
+              </ul>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 238 ms · 2026-10-04 19:17:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-fail-invalid-key-attestation-signature not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">13.0 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0010">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-key-attestation-signature (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details">
+            <td colspan="7">
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-F.1 · issue draft <code>docs/findings/certify-key-attestation.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: the credential configuration does not require key attestation, so there is nothing to send an invalid one to.</blockquote>
+                </li>
+              </ul>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 250 ms · 2026-10-04 19:20:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">14.4 s</td>
+            <td class="links">
+<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0012">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm (live suite)</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details">
+            <td colspan="7">
+              <h4>Benchmark entries</h4>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-8.2 · issue draft <code>docs/findings/certify-credential-encryption.md</code> · the listed problem happened in this run
+                  <blockquote>Example entry: credential response encryption is not offered, so the suite skips the unsupported-algorithm module.</blockquote>
+                </li>
+              </ul>
+              <h4>Handoffs</h4>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 258 ms · 2026-10-04 19:22:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p id="no-match" class="empty-state" hidden>No module matches the filters.</p>
+  </section>
+</main>
+<footer>
+  <p>Notes from the run:</p>
+  <ul>
+    <li>Report test fixture built from the contract examples by build_fixtures.py; not a measured run.</li>
+  </ul>
+  <p>Generated by inji-conformance VERSION on 2026-10-04 12:00:00 UTC from results contract v1.</p>
+  <p>The report never includes the rendered suite configuration or any key material; text taken from results files is filtered for private keys and credentials.</p>
+</footer>
+<script>
+// Script of summary.html and diff.html, copied inline into each page.
+//
+// Everything here is progressive: without script every row and every detail is visible, and the page is complete.
+// With script, details start closed behind their toggle buttons and the filters can hide rows.
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  root.classList.add("js");
+
+  // Theme: automatic (follow the system), light or dark. The choice is kept in local storage when the browser
+  // allows it; a page opened from a zip or with storage blocked still switches, it only forgets on reload.
+  var THEMES = ["auto", "light", "dark"];
+  var KEY = "inji-conformance-theme";
+  function readTheme() {
+    try { return localStorage.getItem(KEY) || "auto"; } catch (e) { return "auto"; }
+  }
+  function applyTheme(theme) {
+    if (theme === "auto") { root.removeAttribute("data-theme"); } else { root.setAttribute("data-theme", theme); }
+    var button = document.getElementById("theme-toggle");
+    if (button) { button.textContent = "Theme: " + theme; }
+  }
+  var theme = readTheme();
+  if (THEMES.indexOf(theme) < 0) { theme = "auto"; }
+  applyTheme(theme);
+  var themeButton = document.getElementById("theme-toggle");
+  if (themeButton) {
+    themeButton.hidden = false;
+    themeButton.addEventListener("click", function () {
+      theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+      try { localStorage.setItem(KEY, theme); } catch (e) { /* storage blocked: keep the choice for this view */ }
+      applyTheme(theme);
+    });
+  }
+
+  // Expandable module rows: a button in the module cell shows or hides the detail row below it.
+  function setOpen(button, open) {
+    var row = document.getElementById(button.getAttribute("aria-controls"));
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    if (row) { row.hidden = !open; }
+  }
+  var toggles = document.querySelectorAll("button.toggle");
+  Array.prototype.forEach.call(toggles, function (button) {
+    setOpen(button, false);
+    button.addEventListener("click", function () {
+      setOpen(button, button.getAttribute("aria-expanded") !== "true");
+    });
+  });
+  // A link to #m-<component>-<module> opens that module's details.
+  function openFromHash() {
+    if (!location.hash) { return; }
+    var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    var button = target && target.querySelector("button.toggle");
+    if (button) { setOpen(button, true); }
+  }
+  window.addEventListener("hashchange", openFromHash);
+  openFromHash();
+
+  // Filters: component, verdicts and free text. Each module is one <tbody> carrying data attributes.
+  var filters = document.getElementById("filters");
+  if (!filters) { return; }
+  filters.hidden = false;
+  var groups = document.querySelectorAll("tbody.module");
+  var componentSelect = document.getElementById("filter-component");
+  var search = document.getElementById("filter-text");
+  var verdictBoxes = filters.querySelectorAll("input[name='verdict']");
+  var shown = document.getElementById("shown");
+  var empty = document.getElementById("no-match");
+
+  function apply() {
+    var component = componentSelect ? componentSelect.value : "";
+    var text = search ? search.value.trim().toLowerCase() : "";
+    var verdicts = {};
+    Array.prototype.forEach.call(verdictBoxes, function (box) { verdicts[box.value] = box.checked; });
+    var count = 0;
+    Array.prototype.forEach.call(groups, function (group) {
+      var visible = (!component || group.getAttribute("data-component") === component) &&
+        verdicts[group.getAttribute("data-verdict")] !== false &&
+        (!text || group.getAttribute("data-search").indexOf(text) >= 0);
+      group.hidden = !visible;
+      if (visible) { count += 1; }
+    });
+    shown.textContent = "Showing " + count + " of " + groups.length + " modules.";
+    if (empty) { empty.hidden = count !== 0; }
+  }
+  filters.addEventListener("input", apply);
+  filters.addEventListener("change", apply);
+  apply();
+})();
+
+</script>
+</body>
+</html>

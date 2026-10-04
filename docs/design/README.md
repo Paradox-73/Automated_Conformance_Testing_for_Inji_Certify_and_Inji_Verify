@@ -4,7 +4,7 @@ Design material for the harness's user-facing output. Lane: delivery.
 
 | File | What it shows |
 |---|---|
-| [`report-wireframe.svg`](report-wireframe.svg) | Layout of the consolidated report `summary.html`, the badge `badge.svg` and the run diff `diff.html`, with numbered notes. Drawn before the report code (2026-10-04); the implementation in `runner/src/inji_conformance/report/` follows it. |
+| [`report-wireframe.svg`](report-wireframe.svg) | Layout of the consolidated report `summary.html`, the badge `badge.svg` and the run diff `diff.html`, with numbered notes. Drawn before the report code (2026-10-04); the implementation in `runner/src/inji_conformance/report/` follows it, with the differences listed under the rules below. |
 
 Review comments from the team go into a pull request or an issue that names the note number in the wireframe.
 
@@ -29,9 +29,21 @@ check (`runner/tests/report/`).
   set and a dark set; the page follows the system setting, and the theme button switches between automatic, light
   and dark (the choice is kept in the browser's local storage when the browser allows it).
 - The module table works with a keyboard and a screen reader: native `select`, checkbox and search inputs with
-  labels, `details` elements for the expandable rows, a live region that announces how many rows are shown.
-- Without script, every row is visible and every detail can still be opened; the filters only hide rows.
+  labels, a live region that announces how many rows are shown, and a real `button` with `aria-expanded` on each
+  module name that shows or hides the full-width detail row below it. (The wireframe's first idea, a `details`
+  element, cannot span the table's width from inside one cell, so the implementation uses the button pattern.)
+- Without script, every row and every detail row is visible, and the filters and theme button stay hidden because
+  they would do nothing; the filters only ever hide rows.
+- Credential values in query strings (`client_secret`, `password`, `access_token`, `refresh_token`) are filtered
+  as well as keys.
 - Two links per module: the live suite log (works while the suite runs) and the extracted HTML export inside the
   run folder (works after the containers are gone).
 - The report never reads or embeds the rendered suite configuration, which holds private keys. Free text taken from
   results files passes through a filter that removes PEM private keys and private JSON Web Key members.
+
+## Differences between the wireframe and the implementation
+
+- Every verdict filter starts checked; the wireframe hid "not applicable" by default, which made the row count
+  disagree with the component cards on first view.
+- The report also writes `summary.md` (the counts as a Markdown table) for CI job summaries.
+- The implementation is described in [`runner/src/inji_conformance/report/README.md`](../../runner/src/inji_conformance/report/README.md).

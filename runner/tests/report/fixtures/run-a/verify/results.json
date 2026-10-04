@@ -1,0 +1,394 @@
+{
+  "schema_version": "1",
+  "run_id": "20261004T191000Z-1a2b3c4",
+  "component": "verify",
+  "track": "gate",
+  "gating": true,
+  "started_at": "2026-10-04T19:30:00Z",
+  "finished_at": "2026-10-04T19:42:31Z",
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1",
+    "image": "registry.gitlab.com/openid/conformance-suite:release-v5.3.1"
+  },
+  "target": {
+    "base_url": "https://verify.inji.test:18451/v1/verify",
+    "image": "injistackqa/inji-verify-service:1.0.x",
+    "commit": "ad3595f"
+  },
+  "plan": {
+    "name": "oid4vp-1final-verifier-test-plan",
+    "id": "ZcQZkfwxFpA4z",
+    "variant": {
+      "vp_profile": "plain_vp",
+      "credential_format": "sd_jwt_vc",
+      "client_id_prefix": "x509_san_dns",
+      "request_method": "request_uri_signed",
+      "response_mode": "direct_post"
+    },
+    "config_file": "verify/config/verify.oid4vp-1final-verifier.json",
+    "export": "verify/exports/test-log-ZcQZkfwxFpA4z.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vp-1final-verifier-happy-flow",
+      "test_id": "vpexample0001",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:31:05Z",
+          "http_status": 200,
+          "duration_ms": 143,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        },
+        {
+          "kind": "verification_evidence",
+          "at": "2026-10-04T19:31:09Z",
+          "http_status": 200,
+          "duration_ms": 95,
+          "detail": "PNG of Inji Verify's vp-result uploaded to the suite"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0001",
+        "export": "verify/exports/vpexample0001.html"
+      },
+      "duration_s": 6.7,
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/vpexample0001.png"
+      },
+      "description": "The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it."
+    },
+    {
+      "name": "oid4vp-1final-verifier-minimal-cnf-jwk",
+      "test_id": "vpexample0002",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:32:05Z",
+          "http_status": 200,
+          "duration_ms": 146,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        },
+        {
+          "kind": "verification_evidence",
+          "at": "2026-10-04T19:32:09Z",
+          "http_status": 200,
+          "duration_ms": 95,
+          "detail": "PNG of Inji Verify's vp-result uploaded to the suite"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0002",
+        "export": "verify/exports/vpexample0002.html"
+      },
+      "duration_s": 7.4,
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/vpexample0002.png"
+      }
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-method-post",
+      "test_id": "vpexample0003",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "failures": [
+        {
+          "condition": "PostToRequestUriAndExtractRequestObject",
+          "severity": "FAILURE",
+          "message": "POST to request_uri returned HTTP 405",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.10"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "condition": "PostToRequestUriAndExtractRequestObject",
+          "current_block": "*",
+          "expected_result": "failure",
+          "comment": "Example entry: the request_uri endpoint answers only GET, so a wallet POST with wallet_nonce is refused.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5.10",
+          "issue": "docs/findings/verify-request-uri-method-post.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:33:05Z",
+          "http_status": 200,
+          "duration_ms": 149,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0003",
+        "export": "verify/exports/vpexample0003.html"
+      },
+      "duration_s": 8.1
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-fetched-twice",
+      "test_id": "vpexample0004",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:34:05Z",
+          "http_status": 200,
+          "duration_ms": 152,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0004",
+        "export": "verify/exports/vpexample0004.html"
+      },
+      "duration_s": 8.8
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "test_id": "vpexample0005",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:35:05Z",
+          "http_status": 200,
+          "duration_ms": 155,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0005",
+        "export": "verify/exports/vpexample0005.html"
+      },
+      "duration_s": 9.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-credential-signature",
+      "test_id": "vpexample0006",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:36:05Z",
+          "http_status": 200,
+          "duration_ms": 158,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        },
+        {
+          "kind": "verification_evidence",
+          "at": "2026-10-04T19:36:09Z",
+          "http_status": 200,
+          "duration_ms": 95,
+          "detail": "PNG of Inji Verify's vp-result uploaded to the suite"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0006",
+        "export": "verify/exports/vpexample0006.html"
+      },
+      "duration_s": 10.2,
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/vpexample0006.png"
+      }
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-sd-hash",
+      "test_id": "vpexample0007",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:37:05Z",
+          "http_status": 200,
+          "duration_ms": 161,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0007",
+        "export": "verify/exports/vpexample0007.html"
+      },
+      "duration_s": 10.9
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "test_id": "vpexample0008",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:38:05Z",
+          "http_status": 200,
+          "duration_ms": 164,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        },
+        {
+          "kind": "verification_evidence",
+          "at": "2026-10-04T19:38:09Z",
+          "http_status": 200,
+          "duration_ms": 95,
+          "detail": "PNG of Inji Verify's vp-result uploaded to the suite"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0008",
+        "export": "verify/exports/vpexample0008.html"
+      },
+      "duration_s": 11.6,
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/vpexample0008.png"
+      }
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "test_id": "vpexample0009",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:39:05Z",
+          "http_status": 200,
+          "duration_ms": 167,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0009",
+        "export": "verify/exports/vpexample0009.html"
+      },
+      "duration_s": 12.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "test_id": "vpexample0010",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:40:05Z",
+          "http_status": 200,
+          "duration_ms": 170,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        },
+        {
+          "kind": "verification_evidence",
+          "at": "2026-10-04T19:40:09Z",
+          "http_status": 200,
+          "duration_ms": 95,
+          "detail": "PNG of Inji Verify's vp-result uploaded to the suite"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0010",
+        "export": "verify/exports/vpexample0010.html"
+      },
+      "duration_s": 13.0,
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/vpexample0010.png"
+      }
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",
+      "test_id": "vpexample0011",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "at": "2026-10-04T19:41:05Z",
+          "http_status": 200,
+          "duration_ms": 173,
+          "detail": "GET authorization_endpoint with client_id and request_uri from Inji Verify"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0011",
+        "export": "verify/exports/vpexample0011.html"
+      },
+      "duration_s": 13.7
+    }
+  ],
+  "notes": [
+    "Report test fixture built from the contract examples by build_fixtures.py; not a measured run."
+  ],
+  "summary": {
+    "total": 11,
+    "conforms": 10,
+    "known_gap": 1,
+    "regression": 0,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "benchmark/verify.expected-failures.json",
+      "benchmark/verify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 0 regressions, 1 known gaps, 0 stale"
+    ]
+  }
+}
