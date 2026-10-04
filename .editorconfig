@@ -1,0 +1,31 @@
+# Editor settings (https://editorconfig.org). "bash scripts/check.sh eol" enforces the LF rule in CI as well.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+max_line_length = 120
+
+[*.{py,java}]
+indent_size = 4
+
+[*.md]
+# Two trailing spaces are a hard line break in Markdown.
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+
+# Upstream code imported byte for byte: an editor must not reformat it, or the import stops matching upstream.
+[{third_party/oidf-conformance-suite,testrigs/inji-certify-api-test,testrigs/inji-verify-api-test}/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
+max_line_length = unset

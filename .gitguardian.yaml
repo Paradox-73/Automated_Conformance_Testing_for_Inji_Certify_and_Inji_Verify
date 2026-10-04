@@ -1,0 +1,39 @@
+# Secret-scanning exceptions, read by GitGuardian's ggshield and by "bash scripts/check.sh secrets".
+#
+# Every entry is an upstream file imported byte for byte (so the team's changes stay visible as their own diff)
+# that holds test-only key or credential material published in its upstream repository. None of it protects a
+# real system: these are the values the upstream projects ship for local test environments. The harness never
+# uses them; it generates its own keys and passwords at run time in the run folder ($HARNESS_RUN_DIR).
+#
+# The list was filled before the imports land, from "bash scripts/check.sh secrets" run on 2026-10-04 over the
+# upstream trees placed at their future paths: inji/inji-certify@203b143 and inji/inji-verify@6a6ab3b
+# (release-1.0.x, api-test/) and Certify's docker-compose/docker-compose-injistack/config/. Those scans found
+# exactly the files below. Team-written files never belong here: keep their secrets out of git instead.
+version: 2
+secret:
+  ignored-paths:
+    # Inji Certify api-testrig (testrigs/inji-certify-api-test, Apache-2.0)
+    # Private JWK (Ed25519) that signs a test presentation inside a credential request template.
+    - testrigs/inji-certify-api-test/src/main/resources/injicertify/PresentationDuringIssuance/GetCredential/GetCredential.hbs
+    # Mock biometric device keystore passwords and a test auth secret key.
+    - testrigs/inji-certify-api-test/application.properties
+    # Test user passwords for identity creation and password reset.
+    - testrigs/inji-certify-api-test/src/main/resources/config/application.properties
+    # Test user password for the ID repository token request.
+    - testrigs/inji-certify-api-test/src/main/resources/config/idRepoToken.properties
+    # AUTH_SECRET_KEY of the MOSIP QA environment template.
+    - testrigs/inji-certify-api-test/src/main/resources/spring.properties
+    # Login request templates with test user passwords and a test client secret.
+    - testrigs/inji-certify-api-test/src/main/resources/config/Authorization/request.json
+    - testrigs/inji-certify-api-test/src/main/resources/config/Authorization/internalAuthRequest.json
+
+    # Inji Verify api-testrig (testrigs/inji-verify-api-test, Apache-2.0)
+    # AUTH_SECRET_KEY of the MOSIP QA environment template.
+    - testrigs/inji-verify-api-test/src/main/resources/spring.properties
+    # Login request templates with test user passwords and a test client secret.
+    - testrigs/inji-verify-api-test/src/main/resources/config/Authorization/request.json
+    - testrigs/inji-verify-api-test/src/main/resources/config/Authorization/internalAuthRequest.json
+
+    # Inji Certify local configuration (compose/certify/config, from inji-certify docker-compose, Apache-2.0)
+    # Development database, Redis and keystore passwords of the upstream local setup.
+    - compose/certify/config/certify-default.properties

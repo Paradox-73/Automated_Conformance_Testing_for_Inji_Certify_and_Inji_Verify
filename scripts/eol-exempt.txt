@@ -1,0 +1,21 @@
+# Upstream files that are stored with CRLF line endings upstream and are imported byte for byte.
+#
+# scripts/check.sh eol rejects CRLF in every other text file. An entry here exempts one file only while its bytes
+# stay identical to the upstream blob: the check compares "git hash-object --no-filters <path>" with the id below.
+# If the team ever has to change such a file, convert it to LF in the same commit and remove its line here.
+#
+# Format: <40-hex git blob id> <path from the repository root>. Lines starting with # are comments.
+# Found with "git grep -I -l -e $'\r' <commit> -- api-test" in each upstream clone, 2026-10-04.
+
+# inji/inji-verify@6a6ab3b (release-1.0.x) api-test/, imported into testrigs/inji-verify-api-test/.
+# The four EdgeTestCases files mix CRLF and LF lines; the three VcSubmission files are CRLF throughout.
+a27fe5b777c56ededa9dcfb30ca401a447991ec6 testrigs/inji-verify-api-test/src/main/resources/injiverify/EdgeTestCases/VpInvalidSignatureEdge/1_5_ldp_vp_invalid_signature_require_cryptographic_holder_binding_fals.hbs
+faf5b500ec78cf1df55c1ce42ab7c3a6a5180b1d testrigs/inji-verify-api-test/src/main/resources/injiverify/EdgeTestCases/VpMultipleSubmissionEdge/2_1_multiple_vp_submission_ldp_vp_sd_jwt_require_cryptographic_holder_.hbs
+650ad5a72807ac8c0bbbb3373bf04505da4f90cc testrigs/inji-verify-api-test/src/main/resources/injiverify/EdgeTestCases/VpMultipleSubmissionEdge/2_2_multiple_vp_submission_valid_expired_invalid_require_cryptographic.hbs
+db24421dbc168f90332198256d5a069cdb51cebd testrigs/inji-verify-api-test/src/main/resources/injiverify/EdgeTestCases/VpStatusCheckErrorEdge/1_7_ldp_vp_status_check_error_require_cryptographic_holder_binding_fal.hbs
+abf7ad80b7308e42e5c8d2625cc214a550359010 testrigs/inji-verify-api-test/src/main/resources/injiverify/VcSubmission/VcSubmissionCwt.hbs
+170da65af49608d14f6f6141baa5c4258b291c88 testrigs/inji-verify-api-test/src/main/resources/injiverify/VcSubmission/VcSubmissionJsonLd.hbs
+f84928c5c2d203618eac912a80b6551504d0fe8a testrigs/inji-verify-api-test/src/main/resources/injiverify/VcSubmission/VcSubmissionSdJwt.hbs
+
+# Checked, no CRLF: inji/inji-certify@203b143 api-test/ and docker-compose/docker-compose-injistack/config/,
+# openid/conformance-suite scripts/ (master 9497248; the imported scripts are identical at release-v5.3.1).

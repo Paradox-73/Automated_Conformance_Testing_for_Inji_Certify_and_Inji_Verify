@@ -15,8 +15,17 @@ node_modules/
 .vite/
 __pycache__/
 *.pyc
+*.egg-info/
 .venv/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# TestNG output folders that tools write next to themselves when not pointed at the run folder
+test-output/
+testng-report/
 
 # Go
 /bin/
@@ -29,6 +38,7 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+*.swp
 
 # Local machine files, secrets and run state (never in git)
 local.properties
@@ -40,4 +50,6 @@ local.properties
 *.p12
 *.pem.private
 secrets/
-run/
+# Runtime state of the harness (default HARNESS_RUN_DIR). Anchored to the repository root so that a source
+# folder named "run" anywhere else is still committed.
+/run/
