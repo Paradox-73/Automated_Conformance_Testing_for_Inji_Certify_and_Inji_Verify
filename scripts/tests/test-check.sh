@@ -122,6 +122,16 @@ repo=$(new_repo secrets-clean)
 printf 'password=${DB_PASSWORD}\nauth_token=https://issuer.example/token\n' >"$repo/app.properties"
 expect "secrets passes on variable references and URLs" "$repo" secrets PASS "no findings"
 
+repo=$(new_repo secrets-literals)
+cat >"$repo/results.json" <<'EOF'
+{
+  "passed": true,
+  "passwordless": false,
+  "secret_ref": null
+}
+EOF
+expect "secrets passes on JSON true, false and null values" "$repo" secrets PASS "no findings"
+
 repo=$(new_repo secrets-pem)
 printf '%s\n' "$PEM_KEY" >"$repo/key.txt"
 expect "secrets finds a PEM private key" "$repo" secrets FAIL "key.txt:1: private-key-pem"

@@ -266,6 +266,9 @@ check_secrets() {
       if [[ ${rule_names[$i]} == credential-assignment && $text =~ [:=][[:space:]]*[\"\']?[a-z]+:// ]]; then
         continue # a URL (for example a token endpoint), not a credential
       fi
+      if [[ ${rule_names[$i]} == credential-assignment && $text =~ [:=][[:space:]]*(true|false|null)[[:space:]]*,?[[:space:]]*$ ]]; then
+        continue # a JSON or YAML true, false or null value (a flag such as a gate result), not a credential
+      fi
       # The matched text is never printed, so a real secret does not end up in CI logs.
       detail "$path:$lineno: ${rule_names[$i]}"
       findings=$((findings + 1))
