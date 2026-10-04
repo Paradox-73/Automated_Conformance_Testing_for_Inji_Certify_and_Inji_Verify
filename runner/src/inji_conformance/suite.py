@@ -29,7 +29,7 @@ class SuiteError(RuntimeError):
 
 
 class SuiteClient:
-    def __init__(self, base_url: str, *, timeout: float = 20.0):
+    def __init__(self, base_url: str, *, timeout: float = 30.0):
         self.base_url = base_url.rstrip("/")
         self._http = httpx.Client(verify=False, timeout=timeout)  # the suite's own self-signed certificate
 
@@ -80,6 +80,6 @@ class SuiteClient:
     def mark_visited(self, test_id: str, url: str) -> httpx.Response:
         return self._http.post(self._url(f"api/runner/browser/{test_id}/visit"), params={"url": url})
 
-    def get(self, url: str, *, timeout: float = 60.0) -> httpx.Response:
+    def get(self, url: str, *, timeout: float = 120.0) -> httpx.Response:
         """GET an absolute URL on the suite without following redirects (a front-channel request)."""
         return self._http.get(url, follow_redirects=False, timeout=timeout)

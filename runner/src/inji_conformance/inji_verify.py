@@ -117,7 +117,7 @@ def generate_nonce() -> str:
 class VerifyClient:
     """The Inji Verify backend API the harness uses (base URL ends in ``/v1/verify``)."""
 
-    def __init__(self, base_url: str, *, verify: bool | str = True, timeout: float = 30.0):
+    def __init__(self, base_url: str, *, verify: bool | str = True, timeout: float = 60.0):
         self.base_url = base_url.rstrip("/")
         self._http = httpx.Client(verify=verify, timeout=timeout)
 

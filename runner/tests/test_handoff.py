@@ -144,3 +144,29 @@ def test_responder_thread_survives_a_failing_poll():
     assert not responder.is_alive()
     assert responder.errors and "ConnectError" in responder.errors[0]
     assert len(lines) == 1  # the same error is printed once
+
+
+@respx.mock
+def test_suite_read_timeout_is_not_retried():
+    # The suite may already be processing the request; a retry would be a second authorization request.
+    respx.post(f"{VERIFY}/v2/vp-request").mock(
+        return_value=httpx.Response(201, json={"transactionId": "tx", "requestId": "rq", "requestUri": "https://r"})
+    )
+    respx.get(AUTHZ).mock(side_effect=httpx.ReadTimeout("slow"))
+    handoff = authorization_handoff()
+    test = waiting(exposed={"authorization_endpoint": AUTHZ})
+    record = handoff.deliver(test)
+    assert record.http_status is None and record.error.startswith("ReadTimeout")
+    assert not handoff.wants(test)
+
+
+@respx.mock
+def test_suite_connection_error_is_retried():
+    respx.post(f"{VERIFY}/v2/vp-request").mock(
+        return_value=httpx.Response(201, json={"transactionId": "tx", "requestId": "rq", "requestUri": "https://r"})
+    )
+    respx.get(AUTHZ).mock(side_effect=httpx.ConnectError("refused"))
+    handoff = authorization_handoff()
+    test = waiting(exposed={"authorization_endpoint": AUTHZ})
+    handoff.deliver(test)
+    assert handoff.wants(test)

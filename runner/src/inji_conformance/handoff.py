@@ -151,6 +151,10 @@ class AuthorizationRequestHandoff:
         try:
             response = self.suite.get(endpoint + separator + query)
         except httpx.HTTPError as error:
+            if not isinstance(error, httpx.ConnectError):
+                # The request may have reached the suite before the read failed. A second request would be a
+                # second authorization request in the same test, so this test gets no retry.
+                self._done.add(test.test_id)
             return HandoffRecord(
                 test.test_id,
                 test.module,
