@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1500" viewBox="0 0 1280 1500" role="img" aria-labelledby="wf-title wf-desc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <title id="wf-title">Wireframe of the consolidated conformance report (summary.html), badge and diff page</title>
+  <desc id="wf-desc">Low-fidelity layout of summary.html: run header with gate result, run facts and image digests, changes since the previous run, one card per component, filters, the module table with an expanded row, footer; below it the badge and the diff page. Numbered notes on the right explain each part.</desc>
+  <defs>
+    <style>
+      .frame { fill: #ffffff; stroke: #5f6368; stroke-width: 1.5; }
+      .box { fill: #f4f5f7; stroke: #9aa0a6; stroke-width: 1; }
+      .card { fill: #ffffff; stroke: #9aa0a6; stroke-width: 1; }
+      .line { stroke: #c4c7cc; stroke-width: 1; }
+      .h1 { font-size: 22px; font-weight: 700; fill: #202124; }
+      .h2 { font-size: 15px; font-weight: 700; fill: #202124; }
+      .t { fill: #202124; }
+      .m { fill: #5f6368; }
+      .s { font-size: 11px; fill: #5f6368; }
+      .link { fill: #1a5fb4; text-decoration: underline; }
+      .mono { font-family: Consolas, Menlo, monospace; font-size: 12px; fill: #202124; }
+      .note { fill: #fff8e1; stroke: #b08900; stroke-width: 1; }
+      .num { fill: #b08900; }
+      .numt { fill: #ffffff; font-size: 12px; font-weight: 700; }
+      .ok { fill: #1e7b34; }
+      .gap { fill: #8a5300; }
+      .bad { fill: #b3261e; }
+      .na { fill: #5f6368; }
+      .stale { fill: #6b3fa0; }
+      .chip { fill: #ffffff; stroke: #5f6368; stroke-width: 1; }
+      .chipon { fill: #e8eaed; stroke: #202124; stroke-width: 1.5; }
+    </style>
+    <!-- Status icons: the report always prints the word next to the icon, so colour is never the only signal. -->
+    <g id="i-ok"><circle r="7" class="ok"/><path d="M-3.5 0 L-1 2.8 L3.8 -2.8" stroke="#fff" stroke-width="1.8" fill="none"/></g>
+    <g id="i-gap"><path d="M0 -7 L7 6 L-7 6 Z" class="gap"/><rect x="-0.9" y="-3" width="1.8" height="5" fill="#fff"/><rect x="-0.9" y="3" width="1.8" height="1.6" fill="#fff"/></g>
+    <g id="i-bad"><circle r="7" class="bad"/><path d="M-3 -3 L3 3 M3 -3 L-3 3" stroke="#fff" stroke-width="1.8"/></g>
+    <g id="i-na"><circle r="7" class="na"/><path d="M-3.5 0 L3.5 0" stroke="#fff" stroke-width="1.8"/></g>
+    <g id="i-stale"><rect x="-7" y="-7" width="14" height="14" rx="3" class="stale"/><path d="M0 -4 L0 0.5 L3 2.5" stroke="#fff" stroke-width="1.6" fill="none"/></g>
+  </defs>
+
+  <rect width="1280" height="1500" fill="#ffffff"/>
+  <text x="20" y="30" class="h2">summary.html (desktop, light theme; the dark theme swaps the same tokens)</text>
+
+  <!-- Page frame -->
+  <rect x="20" y="44" width="880" height="1056" class="frame"/>
+
+  <!-- 1 Header -->
+  <rect x="20" y="44" width="880" height="72" class="box"/>
+  <text x="40" y="76" class="h1">Inji conformance report</text>
+  <text x="40" y="100" class="m">Combined run 20261004T191000Z-1a2b3c4 · track gate · 2026-10-04 19:08 to 19:43 UTC (34 min 53 s)</text>
+  <rect x="640" y="62" width="128" height="34" rx="17" class="card"/>
+  <use href="#i-ok" x="662" y="79"/>
+  <text x="676" y="84" class="t" font-weight="700">Gate passed</text>
+  <rect x="780" y="62" width="104" height="34" rx="4" class="chip"/>
+  <text x="794" y="84" class="t">Theme: auto</text>
+
+  <!-- 2 Run facts -->
+  <text x="40" y="146" class="h2">Run</text>
+  <text x="40" y="170" class="m">Harness commit</text><text x="170" y="170" class="mono">1a2b3c4 (clean)</text>
+  <text x="40" y="190" class="m">Runner</text><text x="170" y="190" class="mono">inji-conformance 0.1.0</text>
+  <text x="40" y="210" class="m">Suite</text><text x="170" y="210" class="mono">5.3.1 at https://localhost.emobix.co.uk:18443</text>
+  <text x="40" y="230" class="m">Command</text><text x="170" y="230" class="mono">./run-full-stack-conformance.sh</text>
+  <text x="480" y="146" class="h2">Images</text>
+  <line x1="480" y1="156" x2="884" y2="156" class="line"/>
+  <text x="480" y="172" class="s">SERVICE</text><text x="580" y="172" class="s">IMAGE</text><text x="760" y="172" class="s">DIGEST</text><text x="840" y="172" class="s">COMMIT</text>
+  <text x="480" y="192" class="t">suite-server</text><text x="580" y="192" class="mono">conformance-suite:5.3.1</text><text x="760" y="192" class="mono">sha256:9f…</text><text x="840" y="192" class="mono">440eec8</text>
+  <text x="480" y="212" class="t">certify</text><text x="580" y="212" class="mono">inji-certify…:develop</text><text x="760" y="212" class="mono">none</text><text x="840" y="212" class="mono">d6635da</text>
+  <text x="480" y="232" class="t">verify-service</text><text x="580" y="232" class="mono">inji-verify…:1.0.x</text><text x="760" y="232" class="mono">sha256:4c…</text><text x="840" y="232" class="mono">ad3595f</text>
+
+  <!-- 3 Changes since previous run -->
+  <rect x="40" y="252" width="844" height="52" class="card"/>
+  <text x="56" y="274" class="h2">Changes since run 20261003T101500Z-9f8e7d6</text>
+  <text x="56" y="294" class="t">3 changed · 1 added · 0 removed · 22 unchanged · 0 new regressions</text>
+  <text x="560" y="294" class="link">Open the full diff (diff.html)</text>
+
+  <!-- 4 Component cards -->
+  <text x="40" y="334" class="h2">Components</text>
+  <rect x="40" y="344" width="414" height="184" class="card"/>
+  <text x="56" y="368" class="h2">Inji Certify (issuer)</text>
+  <text x="56" y="388" class="s">oid4vci-1_0-issuer-test-plan · sd_jwt_vc · pre_authorization_code · dpop</text>
+  <use href="#i-ok" x="64" y="410"/><text x="78" y="415" class="t">Conforms</text><text x="230" y="415" class="t" font-weight="700">10</text>
+  <use href="#i-gap" x="64" y="432"/><text x="78" y="437" class="t">Known gap</text><text x="230" y="437" class="t" font-weight="700">1</text>
+  <use href="#i-bad" x="64" y="454"/><text x="78" y="459" class="t">Regression</text><text x="230" y="459" class="t" font-weight="700">0</text>
+  <use href="#i-na" x="64" y="476"/><text x="78" y="481" class="t">Not applicable</text><text x="230" y="481" class="t" font-weight="700">4</text>
+  <use href="#i-stale" x="64" y="498"/><text x="78" y="503" class="t">Stale benchmark</text><text x="230" y="503" class="t" font-weight="700">0</text>
+  <text x="270" y="415" class="m">Gate: passed</text>
+  <text x="270" y="437" class="m">Target commit d6635da</text>
+  <text x="270" y="459" class="link">Plan export (zip)</text>
+  <text x="270" y="481" class="m">15 modules · 17 min 44 s</text>
+  <rect x="470" y="344" width="414" height="184" class="card"/>
+  <text x="486" y="368" class="h2">Inji Verify (verifier)</text>
+  <text x="486" y="388" class="s">oid4vp-1final-verifier-test-plan · x509_san_dns · request_uri_signed</text>
+  <use href="#i-ok" x="494" y="410"/><text x="508" y="415" class="t">Conforms</text><text x="660" y="415" class="t" font-weight="700">10</text>
+  <use href="#i-gap" x="494" y="432"/><text x="508" y="437" class="t">Known gap</text><text x="660" y="437" class="t" font-weight="700">1</text>
+  <use href="#i-bad" x="494" y="454"/><text x="508" y="459" class="t">Regression</text><text x="660" y="459" class="t" font-weight="700">0</text>
+  <use href="#i-na" x="494" y="476"/><text x="508" y="481" class="t">Not applicable</text><text x="660" y="481" class="t" font-weight="700">0</text>
+  <use href="#i-stale" x="494" y="498"/><text x="508" y="503" class="t">Stale benchmark</text><text x="660" y="503" class="t" font-weight="700">0</text>
+  <text x="700" y="415" class="m">Gate: passed</text>
+  <text x="700" y="437" class="m">Target commit ad3595f</text>
+  <text x="700" y="459" class="link">Plan export (zip)</text>
+  <text x="700" y="481" class="m">11 modules · 12 min 31 s</text>
+
+  <!-- 5 Filters -->
+  <text x="40" y="560" class="h2">Modules</text>
+  <rect x="40" y="572" width="844" height="48" class="box"/>
+  <text x="56" y="600" class="m">Component</text>
+  <rect x="128" y="583" width="96" height="26" rx="3" class="chip"/><text x="138" y="601" class="t">All ▾</text>
+  <text x="240" y="600" class="m">Verdict</text>
+  <rect x="294" y="583" width="74" height="26" rx="13" class="chipon"/><text x="306" y="601" class="t">☑ Regr.</text>
+  <rect x="374" y="583" width="74" height="26" rx="13" class="chipon"/><text x="386" y="601" class="t">☑ Gap</text>
+  <rect x="454" y="583" width="74" height="26" rx="13" class="chipon"/><text x="466" y="601" class="t">☑ Stale</text>
+  <rect x="534" y="583" width="74" height="26" rx="13" class="chipon"/><text x="546" y="601" class="t">☑ Conf.</text>
+  <rect x="614" y="583" width="74" height="26" rx="13" class="chip"/><text x="626" y="601" class="t">☐ N/A</text>
+  <rect x="700" y="583" width="170" height="26" rx="3" class="chip"/><text x="710" y="601" class="m">Search module or condition</text>
+  <text x="40" y="640" class="s">Showing 22 of 26 modules (not applicable hidden). Regressions sort first.</text>
+
+  <!-- 6 Module table -->
+  <line x1="40" y1="652" x2="884" y2="652" class="line"/>
+  <text x="48" y="670" class="s">COMPONENT</text><text x="130" y="670" class="s">MODULE</text><text x="420" y="670" class="s">SUITE RESULT</text>
+  <text x="520" y="670" class="s">VERDICT</text><text x="640" y="670" class="s">FAILING CONDITIONS</text><text x="760" y="670" class="s">TIME</text><text x="810" y="670" class="s">LINKS</text>
+  <line x1="40" y1="678" x2="884" y2="678" class="line"/>
+
+  <text x="48" y="698" class="t">certify</text><text x="130" y="698" class="t">▸ oid4vci-1_0-issuer-fail-unknown-cred…</text><text x="420" y="698" class="t">FAILED</text>
+  <use href="#i-gap" x="528" y="694"/><text x="542" y="698" class="t">Known gap</text><text x="640" y="698" class="t">1 (expected)</text><text x="760" y="698" class="t">5.2 s</text>
+  <text x="810" y="698" class="link">Log ↗</text><text x="850" y="698" class="link">HTML</text>
+  <line x1="40" y1="708" x2="884" y2="708" class="line"/>
+
+  <text x="48" y="728" class="t">verify</text><text x="130" y="728" class="t">▾ oid4vp-1final-verifier-request-uri-meth…</text><text x="420" y="728" class="t">FAILED</text>
+  <use href="#i-gap" x="528" y="724"/><text x="542" y="728" class="t">Known gap</text><text x="640" y="728" class="t">1 (expected)</text><text x="760" y="728" class="t">8.1 s</text>
+  <text x="810" y="728" class="link">Log ↗</text><text x="850" y="728" class="link">HTML</text>
+  <!-- expanded details -->
+  <rect x="120" y="738" width="756" height="168" class="box"/>
+  <text x="134" y="758" class="h2">Failing conditions</text>
+  <text x="134" y="778" class="mono">PostToRequestUriAndExtractRequestObject · FAILURE · block "Authorization endpoint"</text>
+  <text x="134" y="796" class="t">POST to request_uri returned HTTP 405 · requirement OID4VP-1FINAL-5.10 · listed in the benchmark</text>
+  <text x="134" y="822" class="h2">Benchmark entry</text>
+  <text x="134" y="842" class="t">Owner inji · spec OID4VP-1FINAL-5.10 · issue draft </text><text x="430" y="842" class="link">docs/findings/verify-request-uri-method-post.md</text>
+  <text x="134" y="860" class="m">"The request_uri endpoint answers only GET, so a wallet POST with wallet_nonce is refused."</text>
+  <text x="134" y="886" class="h2">Handoffs</text>
+  <text x="230" y="886" class="t">authorization_request · HTTP 200 · 149 ms · 19:33:05Z</text>
+  <line x1="40" y1="916" x2="884" y2="916" class="line"/>
+
+  <text x="48" y="936" class="t">verify</text><text x="130" y="936" class="t">▸ oid4vp-1final-verifier-happy-flow</text><text x="420" y="936" class="t">REVIEW</text>
+  <use href="#i-ok" x="528" y="932"/><text x="542" y="936" class="t">Conforms</text><text x="640" y="936" class="t">none</text><text x="760" y="936" class="t">6.7 s</text>
+  <text x="810" y="936" class="link">Log ↗</text><text x="850" y="936" class="link">HTML</text>
+  <line x1="40" y1="946" x2="884" y2="946" class="line"/>
+  <text x="48" y="966" class="t">certify</text><text x="130" y="966" class="t">▸ oid4vci-1_0-issuer-happy-flow</text><text x="420" y="966" class="t">PASSED</text>
+  <use href="#i-ok" x="528" y="962"/><text x="542" y="966" class="t">Conforms</text><text x="640" y="966" class="t">none</text><text x="760" y="966" class="t">9.8 s</text>
+  <text x="810" y="966" class="link">Log ↗</text><text x="850" y="966" class="link">HTML</text>
+  <line x1="40" y1="976" x2="884" y2="976" class="line"/>
+  <text x="130" y="1000" class="m">… one row per module of both plans</text>
+
+  <!-- 7 Footer -->
+  <line x1="20" y1="1030" x2="900" y2="1030" class="line"/>
+  <text x="40" y="1056" class="s">Generated by inji-conformance 0.1.0 from results contract v1. Notes from the results files are listed here.</text>
+  <text x="40" y="1076" class="s">The report never includes the rendered suite configuration or any key material.</text>
+
+  <!-- 8 Badge -->
+  <text x="20" y="1140" class="h2">badge.svg</text>
+  <rect x="20" y="1154" width="104" height="20" rx="3" fill="#555555"/>
+  <rect x="124" y="1154" width="300" height="20" rx="3" fill="#8a5300"/>
+  <rect x="124" y="1154" width="6" height="20" fill="#8a5300"/>
+  <text x="30" y="1168" fill="#ffffff" font-size="11" font-family="Verdana, sans-serif">conformance</text>
+  <text x="134" y="1168" fill="#ffffff" font-size="11" font-family="Verdana, sans-serif">certify 10 ok, 1 gap | verify 10 ok, 1 gap</text>
+  <text x="440" y="1168" class="s">Green: gate passed, no known gaps. Amber: gate passed with known gaps. Red: gate failed.</text>
+
+  <!-- 9 Diff page -->
+  <text x="20" y="1220" class="h2">diff.html</text>
+  <rect x="20" y="1232" width="880" height="248" class="frame"/>
+  <text x="40" y="1262" class="h1">Run diff</text>
+  <text x="40" y="1284" class="m">A 20261003T101500Z-9f8e7d6 → B 20261004T191000Z-1a2b3c4 · 3 changed · 1 added · 0 removed · 22 unchanged · 0 new regressions</text>
+  <text x="40" y="1306" class="m">Context: verify-service commit 0bd41e2 → ad3595f; suite 5.3.1 (same)</text>
+  <line x1="40" y1="1320" x2="884" y2="1320" class="line"/>
+  <text x="48" y="1338" class="s">CHANGE</text><text x="130" y="1338" class="s">COMPONENT</text><text x="220" y="1338" class="s">MODULE</text>
+  <text x="520" y="1338" class="s">VERDICT A → B</text><text x="700" y="1338" class="s">CONDITIONS</text>
+  <line x1="40" y1="1346" x2="884" y2="1346" class="line"/>
+  <text x="48" y="1366" class="t">Changed</text><text x="130" y="1366" class="t">certify</text><text x="220" y="1366" class="t">oid4vci-1_0-issuer-happy-flow</text>
+  <use href="#i-bad" x="528" y="1362"/><text x="540" y="1366" class="t">Regression →</text><use href="#i-ok" x="628" y="1362"/><text x="640" y="1366" class="t">Conforms</text>
+  <text x="700" y="1366" class="t">− EnsureHttpStatusCodeIs200</text>
+  <line x1="40" y1="1376" x2="884" y2="1376" class="line"/>
+  <text x="48" y="1396" class="t">Added</text><text x="130" y="1396" class="t">verify</text><text x="220" y="1396" class="t">oid4vp-1final-verifier-request-uri-fetched…</text>
+  <text x="520" y="1396" class="t">(absent) →</text><use href="#i-ok" x="628" y="1392"/><text x="640" y="1396" class="t">Conforms</text>
+  <line x1="40" y1="1406" x2="884" y2="1406" class="line"/>
+  <text x="40" y="1440" class="s">Exit status of "inji-conformance diff A B": 0 same, 16 changed; with --strict: 1 when B has a new regression, else 0.</text>
+  <text x="40" y="1460" class="s">Context differences (images, commits, suite version) are listed but never change the exit status.</text>
+
+  <!-- Notes column -->
+  <g>
+    <rect x="920" y="44" width="340" height="1436" class="note"/>
+    <text x="936" y="72" class="h2">Notes</text>
+
+    <circle cx="944" cy="100" r="10" class="num"/><text x="940" y="104" class="numt">1</text>
+    <text x="962" y="104" class="t">Header: run id, mode, track, times.</text>
+    <text x="962" y="122" class="t">Gate result as icon plus word. Theme</text>
+    <text x="962" y="140" class="t">button cycles auto, light, dark.</text>
+
+    <circle cx="944" cy="172" r="10" class="num"/><text x="940" y="176" class="numt">2</text>
+    <text x="962" y="176" class="t">Run facts from manifest.json: harness</text>
+    <text x="962" y="194" class="t">commit, runner and suite versions, the</text>
+    <text x="962" y="212" class="t">command, every image with its digest</text>
+    <text x="962" y="230" class="t">and commit label. "none" when unknown.</text>
+
+    <circle cx="944" cy="262" r="10" class="num"/><text x="940" y="266" class="numt">3</text>
+    <text x="962" y="266" class="t">Only with --compare PREV: counts from</text>
+    <text x="962" y="284" class="t">the diff and a link to diff.html.</text>
+
+    <circle cx="944" cy="350" r="10" class="num"/><text x="940" y="354" class="numt">4</text>
+    <text x="962" y="354" class="t">One card per component: the five</text>
+    <text x="962" y="372" class="t">verdict counts, the component gate,</text>
+    <text x="962" y="390" class="t">target commit, plan variant, link to</text>
+    <text x="962" y="408" class="t">the plan export zip in the run folder.</text>
+
+    <circle cx="944" cy="586" r="10" class="num"/><text x="940" y="590" class="numt">5</text>
+    <text x="962" y="590" class="t">Filters work without a server (inline</text>
+    <text x="962" y="608" class="t">script). Without script every row is</text>
+    <text x="962" y="626" class="t">shown. Native controls with labels, so</text>
+    <text x="962" y="644" class="t">keyboard and screen readers work.</text>
+
+    <circle cx="944" cy="700" r="10" class="num"/><text x="940" y="704" class="numt">6</text>
+    <text x="962" y="704" class="t">One row per module. "Log" opens the</text>
+    <text x="962" y="722" class="t">live suite log (works while the suite</text>
+    <text x="962" y="740" class="t">runs); "HTML" opens the extracted</text>
+    <text x="962" y="758" class="t">export in the run folder (works after</text>
+    <text x="962" y="776" class="t">teardown). Rows expand (details</text>
+    <text x="962" y="794" class="t">element) to failing conditions, the</text>
+    <text x="962" y="812" class="t">benchmark entry with its reason and</text>
+    <text x="962" y="830" class="t">issue draft, the REVIEW evidence and</text>
+    <text x="962" y="848" class="t">each automated handoff.</text>
+
+    <circle cx="944" cy="1052" r="10" class="num"/><text x="940" y="1056" class="numt">7</text>
+    <text x="962" y="1056" class="t">Footer: generator version, contract</text>
+    <text x="962" y="1074" class="t">version, notes. No configuration.</text>
+
+    <circle cx="944" cy="1164" r="10" class="num"/><text x="940" y="1168" class="numt">8</text>
+    <text x="962" y="1168" class="t">Badge: per-component counts, colour</text>
+    <text x="962" y="1186" class="t">from the gate. White text on each</text>
+    <text x="962" y="1204" class="t">colour meets 4.5:1 contrast.</text>
+
+    <circle cx="944" cy="1262" r="10" class="num"/><text x="940" y="1266" class="numt">9</text>
+    <text x="962" y="1266" class="t">Diff: added, removed and changed</text>
+    <text x="962" y="1284" class="t">verdicts and failing conditions per</text>
+    <text x="962" y="1302" class="t">module, new regressions first, plus</text>
+    <text x="962" y="1320" class="t">context changes (images, commits).</text>
+
+    <text x="936" y="1380" class="s">Status vocabulary, everywhere:</text>
+    <use href="#i-ok" x="944" y="1400"/><text x="958" y="1404" class="t">Conforms</text>
+    <use href="#i-gap" x="1060" y="1400"/><text x="1074" y="1404" class="t">Known gap</text>
+    <use href="#i-bad" x="944" y="1424"/><text x="958" y="1428" class="t">Regression</text>
+    <use href="#i-na" x="1060" y="1424"/><text x="1074" y="1428" class="t">Not applicable</text>
+    <use href="#i-stale" x="944" y="1448"/><text x="958" y="1452" class="t">Stale benchmark</text>
+  </g>
+</svg>
