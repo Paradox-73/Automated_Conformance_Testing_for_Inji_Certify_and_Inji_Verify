@@ -4,8 +4,9 @@ Data that defines a conformance run: which suite test plans run with which optio
 and the JSON Schemas of the files the runner reads and writes.
 
 Lane: runner. Status on 2026-10-04: `schema/` holds the results and benchmark contract
-([`schema/README.md`](schema/README.md)); `plans/` holds the Inji Verify plan template
-([`plans/README.md`](plans/README.md)); `benchmark/` is still empty.
+([`schema/README.md`](schema/README.md)); `plans/` holds the Inji Verify plan template and the Inji Certify
+plan template, the second not yet run against a live stack ([`plans/README.md`](plans/README.md)); `benchmark/`
+is still empty.
 
 ## Planned contents
 

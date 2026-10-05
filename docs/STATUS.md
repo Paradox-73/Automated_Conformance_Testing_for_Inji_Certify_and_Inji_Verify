@@ -6,9 +6,9 @@ Status of the harness on **2026-10-04 at 20:45 IST**, when work stopped. Deadlin
 |---|---|
 | Repository | <https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify> |
 | `main` | `511baf9df86892cbd9850c24106b09c0d2361908` (2026-10-04 16:52 IST), the same commit as `origin/main` |
-| Unfinished work | Branch `wip/2026-10-04-stop`, commit `e8a3f7e` (2026-10-04 20:45 IST): one snapshot commit on top of `main` holding task WP-08's unfinished files. See the WP-08 card. |
+| Unfinished work | Branch `feat/issuer-path` continues task WP-08 from the snapshot branch `wip/2026-10-04-stop` (commit `e8a3f7e`, 2026-10-04 20:45 IST). Code, unit tests and READMEs are done; the live acceptance run is open. See the WP-08 card. |
 
-The branch is on GitHub (pushed 2026-10-04): run `git fetch origin wip/2026-10-04-stop` before you start WP-08.
+The snapshot branch is on GitHub (pushed 2026-10-04) and is kept only as the starting point of `feat/issuer-path`.
 
 How to work on a task: [CONTRIBUTING.md](../CONTRIBUTING.md). The words used below:
 
@@ -39,7 +39,7 @@ but the acceptance check was not run. TODO means nothing was started.
 | WP-05 | platform | Compose v1: suite, Inji Verify, TLS proxy, run-time keys | WP-01 | DONE | `eaac172`, `7d931ba`, `478b318`, `2694161` |
 | WP-06 | runner | Walking skeleton: `inji-conformance run --component verify` with the handoff responder | WP-02, WP-04, WP-05 | DONE | `be987eb`, `f1f83e1`, `a707012`, `345ab93` (compose build change inside `7eb88b4`) |
 | WP-07 | platform | Compose v2: Inji Certify and MinIO | WP-05 | DONE | `bcd8521`, `7eb88b4`, `2dd30a8` |
-| WP-08 | runner | Issuer path: Certify seeding and credential offer handoff | WP-06, WP-07 | PARTIAL | branch `wip/2026-10-04-stop` (`e8a3f7e`), not on `main` |
+| WP-08 | runner | Issuer path: Certify seeding and credential offer handoff | WP-06, WP-07 | PARTIAL | branch `feat/issuer-path` (from `wip/2026-10-04-stop`, `e8a3f7e`), not on `main` |
 | WP-09 | runner | Results parser, benchmark gate, checked REVIEW evidence | WP-06, WP-08 | TODO | |
 | WP-10 | platform | One-command scripts `run-conformance.sh` and `run-full-stack-conformance.sh` | WP-09, WP-13 | TODO | |
 | WP-11 | testrig | TestNG bridge library and the Inji Verify rig integration | WP-03, WP-04 | DONE | `511baf9` |
@@ -122,8 +122,9 @@ the `runner` container is `$HARNESS_RUN_DIR/reports` on the host, `/pki` is `$HA
   FINISHED, none interrupted or timed out; every module that exposed a `credential_offer_endpoint` has a
   `credential_offer` handoff with an HTTP status below 400. The two metadata modules
   (`VCIIssuerMetadataTest`, `VCIIssuerMetadataSignedTest` in the suite) never ask for an offer.
-- **What is on the branch `wip/2026-10-04-stop`** (779 lines added, 41 removed, in 7 files):
-  - `conformance/plans/certify.oid4vci-1_0-issuer.json` (new): variant `fapi_profile=vci`,
+- **What is on the branch `feat/issuer-path`** (2026-10-04; it starts from the seven files of the snapshot
+  branch `wip/2026-10-04-stop`):
+  - `conformance/plans/certify.oid4vci-1_0-issuer.json`: variant `fapi_profile=vci`,
     `credential_format=sd_jwt_vc`, `vci_grant_type=pre_authorization_code`,
     `vci_authorization_code_flow_variant=issuer_initiated`, `client_auth_type=private_key_jwt`,
     `sender_constrain=dpop`, `authorization_request_type=simple`, `fapi_request_method=unsigned`,
@@ -131,37 +132,48 @@ the `runner` container is `$HARNESS_RUN_DIR/reports` on the host, `/pki` is `$HA
     (configuration id `InjiConformanceSdJwtVc`, `vct` `urn:inji-conformance:vct:farmer:1`, key ids
     `CERTIFY_VC_SIGN_EC_R1` / `EC_SECP256R1_SIGN`, ES256, claims `fullName`, `dateOfBirth`, `gender`); a
     `handoff.credential_offer` block (claims, 6-digit transaction code, 600 s expiry).
-  - `runner/src/inji_conformance/inji_certify.py` (new): `CertifyClient`, MOSIP error-envelope check, idempotent
+  - `runner/src/inji_conformance/inji_certify.py`: `CertifyClient`, MOSIP error-envelope check, idempotent
     `seed` (prints `created` or `already present`), `create_offer`, `credential_offer_uri` extraction,
     `new_tx_code`.
-  - `runner/src/inji_conformance/keys.py` (new): fresh P-256 private JWK sets for the suite's two wallet clients
+  - `runner/src/inji_conformance/keys.py`: fresh P-256 private JWK sets for the suite's two wallet clients
     (`client`, `client2`), written only into the staged `certs-keys/` folder, standard library only.
   - `handoff.py`: `CredentialOfferHandoff` (offer, then transaction code; at most 6 offers per module).
   - `run.py`: `--component certify`, seeding before the run, `cmd_seed`, `--variant NAME=VALUE`, environment
-    variable `HARNESS_CERTIFY_URL` (default `https://certify.inji.test:18450`), new `certs_keys` forms.
+    variable `HARNESS_CERTIFY_URL` (default `https://certify.inji.test:18450`), the `certs_keys` forms.
   - `plans.py`: `certs_keys` forms (`{"from": <file>, "as": "json_string"}`, `{"generate": "p256_jwks"}`), the
-    `seed` block, `with_variant`. `cli.py`: `seed` wired to `cmd_seed`, `run --variant`.
-- **Checked on 2026-10-04 after work stopped, on the branch's files** (ruff and pytest only; nothing was run
-  against a live stack):
-  - `ruff check runner`: 1 error, `runner/src/inji_conformance/keys.py:49` SIM108 (use a conditional expression).
-  - `pytest runner/tests`: 276 passed, 3 failed, all in `runner/tests/test_cli.py`:
-    `test_commands_not_in_this_version_say_so[argv0]` and both cases of
-    `test_run_of_parts_not_in_this_version_says_so`. They still expect `seed` and `run --component certify` to
-    say "not available"; update them to the new behaviour (keep the `--combined` case, which still exits 2).
-  - The same pytest run left empty folders `run/reports/<run id>/certify/{config,exports,logs}` in the repository
-    root (ignored by git, so easy to miss). The likely source is the failing case
-    `test_run_of_parts_not_in_this_version_says_so[argv1]`, which now starts a real `run --component certify`
-    with neither `--out` nor `HARNESS_RUN_DIR`. Any test that reaches `run_component` must use pytest's `tmp_path`.
+    `seed` block with `render_seed`, `with_variant`. `cli.py`: `seed` wired to `cmd_seed`, `run --variant`.
+  - Unit tests for all of the above (`runner/tests/test_inji_certify.py`, `test_keys.py`, and new cases in
+    `test_handoff.py`, `test_plans.py`, `test_run.py`, `test_cli.py`), and the README updates
+    (`runner/README.md`, `conformance/plans/README.md`, `conformance/README.md`).
+- **Fixed on the branch after the snapshot** (2026-10-04):
+  - The ruff error in `keys.py` and the three `test_cli.py` cases that still expected "not available".
+  - Tests wrote into `<repo>/run`: an autouse fixture in `runner/tests/conftest.py` now points
+    `HARNESS_RUN_DIR` at pytest's `tmp_path` and clears the other `HARNESS_*` locations for every test, and the
+    readiness limit is read when `wait_until_ready` is called, so a test can set it to 0 instead of waiting 120 s.
+  - The `seed` block was sent to Inji Certify as written in the template: `credentialConfigKeyId` would have
+    been the text `${credential_configuration_id}`, and the `$comment` note was part of the request. Found while
+    writing the seeding tests, before any live run. `plans.render_seed` now replaces the variables and drops the
+    notes; `vcTemplate` stays as written, because its `${claim}` placeholders are Inji Certify's.
+  - While Inji Certify starts, a metadata answer other than HTTP 200 with a JSON object raised `CertifyError`
+    out of `wait_until_ready` and ended `seed` and `run` with a traceback. It now counts as "not ready" and is
+    asked again until the limit (exit 3).
+- **Checked on 2026-10-04 on the branch** (unit level only; nothing was run against a live stack):
+  - `bash scripts/check.sh eol secrets runner`: PASS, PASS, PASS (`ruff` clean, `pytest runner/tests` 395
+    passed, 9 schema examples valid, 3 invalid examples rejected). Run on Linux (aarch64) with Python 3.12.14;
+    `git status --porcelain` showed no run output afterwards.
+  - The client code was read against the Inji Certify source at `203b143` (`CredentialConfigController.java`,
+    `CredentialConfigurationServiceImpl.java`, `ExceptionHandlerAdvice.java`, `PreAuthorizedCodeController.java`,
+    `PreAuthorizedRequest.java`): an unknown configuration id answers HTTP 404 with an envelope, creation
+    answers HTTP 201 with `id` and `status`, and the offer request fields and limits match. The suite side
+    (which endpoints a module exposes, and when) has only been read from the suite source by the snapshot's
+    author and is not confirmed by a run.
 - **What remains**
-  1. Fix the ruff error, the 3 tests and the test that writes into `run/`.
-  2. Unit tests for the new code (none exist yet): envelope errors and idempotent seeding (respx mocks);
-     `credential_offer_uri` extraction (URL-encoded, by value, malformed); `CredentialOfferHandoff` (offer then
-     transaction code, a second offer when a module waits again, the 6-offer limit, tests of another run's alias
-     ignored); `keys.new_private_jwks` (point on the curve, JWK members); the `certs_keys` forms; `--variant`.
-  3. The live acceptance run above, then the same with `--variant sender_constrain=mtls`; write which conditions
-     each variant reached and the chosen gate variant in `conformance/README.md`.
-  4. Update the status table in `runner/README.md` (`seed` and `run --component certify` now work) and add the
-     certify template row to `conformance/plans/README.md`.
+  1. The live acceptance run above, then the same with `--variant sender_constrain=mtls`; write which conditions
+     each variant reached and the chosen gate variant in `conformance/README.md`. Expect the first live run to
+     find problems the unit tests cannot (plan and variant names, configuration keys, the suite's WAITING
+     states); fix them on this branch.
+  2. After the live run: replace "not yet run against a live stack" in `runner/README.md` and
+     `conformance/plans/README.md` with what was measured, and set this task to DONE with the commit ids.
 - **Notes**
   - Inji Certify's admin APIs return many errors as HTTP 200 with `{"response": null, "errors": [...]}`; check
     `errors`, never the status alone.
@@ -184,13 +196,12 @@ the `runner` container is `$HARNESS_RUN_DIR/reports` on the host, `/pki` is `$HA
     passwords in `$HARNESS_RUN_DIR/env.local` belong together: delete all three or none.
   - The compose properties `mosip.certify.pre-auth-code.*-expiry-seconds` are ignored, because the code reads
     `mosip.certify.pre-auth.*`. The handoff sends `expires_in` per offer instead.
-  - How to resume from the branch on your own computer:
+  - How to continue on your own computer:
 
     ```bash
     git fetch origin
-    git switch -c feat/issuer-path origin/main
-    git restore --source=origin/wip/2026-10-04-stop -- conformance/plans/certify.oid4vci-1_0-issuer.json runner/src/inji_conformance
-    git status    # the 7 files show as changed or new; commit them in small reviewed steps
+    git switch feat/issuer-path
+    bash scripts/check.sh runner    # PASS before you change anything
     ```
 
 ### WP-09 runner: Results, benchmark gate, checked REVIEW evidence. TODO

@@ -13,8 +13,10 @@ Lane: runner, except `src/inji_conformance/report/` and `tests/report/`, which b
 | `inji_conformance.model` | Done: typed model of `results.json` v1, the run manifest and the benchmark files, with loaders and validation |
 | `inji-conformance validate` | Done |
 | `run --component verify` | Done: plan template, staged suite scripts, handoff responder, `results.json` without a benchmark |
-| `run --component certify`, `run --combined` | Registered; say "this version runs --component verify only" and exit 2 |
-| `seed`, `gate` | Registered with their options; they print "not available in this version" and exit 2 |
+| `seed certify` | Written and unit-tested (`bash scripts/check.sh runner` PASS, 395 tests, 2026-10-04): idempotent seeding of the `dc+sd-jwt` credential configuration. Not yet run against a live stack |
+| `run --component certify` | Written and unit-tested (same check): seeding, issuer plan template, run-time wallet keys, credential offer and transaction code handoffs, `--variant`, `--no-seed`. Not yet run against a live stack; the first live run is the open step of task WP-08 in [`docs/STATUS.md`](../docs/STATUS.md) |
+| `run --combined` | Registered; prints "--combined is not available in this version; use --component" and exits 2 |
+| `gate` | Registered with its options; prints "not available in this version" and exits 2 |
 | `report`, `diff` | Done (delivery lane): consolidated HTML report, badge, run diff; see [`src/inji_conformance/report/README.md`](src/inji_conformance/report/README.md) |
 
 The data contract itself (schemas, rules, examples) is described in
@@ -36,8 +38,9 @@ adds `pytest`, `respx` and `ruff`.
 
 ```text
 inji-conformance run --component certify|verify | --combined [--target URL] [--modules A,B] [--track gate|haip]
-                     [--no-gate] [--allow-stale] [--serial] [--no-seed] [--timeout-minutes N] [--out DIR]
-inji-conformance seed certify
+                     [--no-gate] [--allow-stale] [--serial] [--no-seed] [--variant NAME=VALUE]...
+                     [--timeout-minutes N] [--out DIR]
+inji-conformance seed certify [--target URL] [--track gate|haip]
 inji-conformance gate --run DIR [--benchmark-dir DIR] [--allow-stale] [--junit FILE]
 inji-conformance report --run DIR [--run DIR] [--combined] [--compare PREV] --out DIR
 inji-conformance diff A B [--out DIR] [--json FILE] [--strict]
@@ -92,6 +95,8 @@ bash scripts/dc.sh down -v
 5. Reads each module from the suite (`/api/plan`, `/api/info`, `/api/log`) and writes `results.json`; deletes the
    staged `certs-keys/` folder, so the run folder holds no private key.
 
+`--component certify` follows the same steps with the differences in [The issuer path](#the-issuer-path).
+
 There is no benchmark yet (it comes in a later version), so every problem is a `regression`. A REVIEW result
 counts as `conforms` only with an evidence image of Inji Verify's verdict, which a later version uploads; until
 then a REVIEW module is recorded as `regression` with the reason "no evidence image". `--no-gate` writes
@@ -111,8 +116,34 @@ and the findings write-up, not runner errors.
 | 0 | Finished; gate passed, or `--no-gate` |
 | 1 | Gate failed |
 | 2 | Bad options or plan template |
-| 3 | Suite or Inji Verify not reachable, or a run key missing |
+| 3 | Suite, Inji Verify or Inji Certify not reachable, a run key missing, or seeding Inji Certify failed |
 | 4 | `--timeout-minutes` (default 30) reached: `run-test-plan.py` is stopped and `results.json` still records every module, unfinished ones as regressions (also with `--no-gate`) |
+
+### The issuer path
+
+`inji-conformance run --component certify` runs the suite plan `oid4vci-1_0-issuer-test-plan` (OpenID4VCI 1.0
+Final; the suite plays the wallet) against Inji Certify, from the template
+`conformance/plans/certify.oid4vci-1_0-issuer.json`. The planned first live run is the acceptance check of task
+WP-08 in [`docs/STATUS.md`](../docs/STATUS.md); nothing in this section has run against a live stack yet.
+
+Differences from the verifier run:
+
+- **Target.** `--target`, else `HARNESS_CERTIFY_URL`, else `https://certify.inji.test:18450`. It is the credential
+  issuer identifier, an origin without a path; Inji Certify's APIs are below `/v1/certify`. Readiness is
+  `GET <target>/.well-known/openid-credential-issuer` answering HTTP 200 with a JSON object.
+- **Seeding.** Before the plan starts, the run adds the credential configuration the plan requests, the same
+  work as `inji-conformance seed certify`; `--no-seed` skips it. Seeding reads the template's `seed` block,
+  `GET`s `/v1/certify/credential-configurations/<id>` and, on HTTP 404, `POST`s the configuration and reads it
+  back. It prints `seed certify: credential configuration <id> created` or `... already present`, so it can run
+  any number of times. An existing configuration with that id is never changed.
+- **Errors inside HTTP 200.** Inji Certify reports many errors as HTTP 200 with
+  `{"response": null, "errors": [...]}`. Every call checks `errors` (`inji_certify.py`), and such an answer fails
+  seeding (exit 3) or the handoff (recorded with its error code and message).
+- **Keys.** The suite's two wallet clients (`client`, `client2`) each get a fresh P-256 private JWK set for the
+  run (`keys.py`, standard library only); the mTLS client certificate and key come from `pki-init`. All of them
+  exist only in the staged `certs-keys/` folder, which is deleted when the run ends.
+- **Variants.** `--variant NAME=VALUE` (repeatable) replaces or adds one variant value of the template for this
+  run, for example `--variant sender_constrain=mtls`.
 
 ### The handoff responder
 
@@ -122,6 +153,8 @@ A thread that polls `GET /api/runner/running` every second and handles only test
 | Suite state | Action | `handoffs[].kind` |
 |---|---|---|
 | WAITING, `authorization_endpoint` exposed | `POST /v1/verify/v2/vp-request` at Inji Verify, then `GET <authorization_endpoint>?<query>` with the query string the Inji Verify SDK puts in its `openid4vp://authorize?` QR code | `authorization_request` |
+| WAITING, `credential_offer_endpoint` exposed, no `tx_code_endpoint` | `POST /v1/certify/pre-authorized-data` at Inji Certify with the template's claims, a new random transaction code and the expiry, then `GET <credential_offer_endpoint>?credential_offer_uri=<uri from the offer>` | `credential_offer` |
+| WAITING, `tx_code_endpoint` exposed after an offer of this run | `GET <tx_code_endpoint>` with `code=<that offer's transaction code>` | `tx_code` |
 | WAITING, `browser.urls` not yet visited | `GET` the URL, then `POST /api/runner/browser/{id}/visit` | `browser_visit` |
 | CONFIGURED for 5 s | `POST /api/runner/{id}` (the suite starts nearly every test by itself) | `start_test` |
 
@@ -131,6 +164,10 @@ browser's `URLSearchParams` (`~` encoded, `*` not, space as `+`), which `urllib.
 `tests/golden/sdk_query.mjs` runs the SDK function under Node.js on the cases in `sdk_query_cases.json`. The
 golden test compares the Python output with the stored `sdk_query.json`; when Node.js is installed, a second test
 checks that the stored file still matches what the SDK function produces.
+
+A test that waits for an offer again gets a new one (pre-authorized codes are single-use), up to 6 offers per
+test. An offer the suite may already hold (a read timeout after the request was sent) is not repeated. The
+transaction code itself is never written to a record.
 
 Each handoff is printed as one line (`handoff authorization_request <module> (<test id>): HTTP 302 in 140 ms`),
 appended to `logs/handoffs.jsonl` and copied into the module's `handoffs` in `results.json`.
@@ -145,6 +182,9 @@ appended to `logs/handoffs.jsonl` and copied into the module's `handoffs` in `re
 <out>/verify/logs/handoffs.jsonl                         one JSON line per handoff
 <out>/verify/suite-scripts/                              staged suite scripts (keys removed after the run)
 ```
+
+A certify run writes the same layout below `<out>/certify/`, with
+`config/certify.oid4vci-1_0-issuer.json`.
 
 ## How `report` and `diff` reach the report package
 
@@ -162,9 +202,11 @@ keeps working.
 | `src/inji_conformance/model.py` | Data contract: dataclasses, schema loading, validation rules, `load_*` and `dump` |
 | `src/inji_conformance/cli.py` | The `inji-conformance` command |
 | `src/inji_conformance/run.py` | `run`: readiness checks, staging, the `run-test-plan.py` subprocess, results assembly |
-| `src/inji_conformance/plans.py` | Plan templates: loading, `${...}` and certs-keys rendering, the plan spec |
+| `src/inji_conformance/plans.py` | Plan templates: loading, `${...}`, certs-keys and seed rendering, variant overrides, the plan spec |
 | `src/inji_conformance/handoff.py` | The handoff responder thread and its handoff kinds |
 | `src/inji_conformance/inji_verify.py` | Inji Verify API client and the SDK-identical query string |
+| `src/inji_conformance/inji_certify.py` | Inji Certify API client: error envelopes, idempotent seeding, pre-authorized offers |
+| `src/inji_conformance/keys.py` | Run-time P-256 private JWK sets for the suite's wallet clients |
 | `src/inji_conformance/suite.py` | The suite REST calls the harness makes itself |
 | `src/inji_conformance/collect.py` | Suite log entries and outcomes to `results.json` modules and verdicts |
 | `Dockerfile` | Runner image; build context is the repository root, `Dockerfile.dockerignore` limits what is sent |
