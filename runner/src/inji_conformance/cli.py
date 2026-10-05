@@ -56,6 +56,12 @@ def _run_handler(args: argparse.Namespace) -> int:
     return cmd_run(args)
 
 
+def _seed_handler(args: argparse.Namespace) -> int:
+    from inji_conformance.run import cmd_seed
+
+    return cmd_seed(args)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # validate
 # ---------------------------------------------------------------------------------------------------------------
@@ -201,13 +207,23 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--allow-stale", action="store_true", help="stale benchmark entries warn instead of failing")
     run.add_argument("--serial", action="store_true", help="with --combined: one plan after the other")
     run.add_argument("--no-seed", action="store_true", help="do not seed Inji Certify before the issuer plan")
+    run.add_argument(
+        "--variant",
+        action="append",
+        metavar="NAME=VALUE",
+        help="replace one variant value of the plan template, for example sender_constrain=mtls (repeatable)",
+    )
     run.add_argument("--timeout-minutes", type=float, metavar="N", help="time limit for the whole run")
     run.add_argument("--out", type=Path, metavar="DIR", help="run folder to write into")
     run.set_defaults(handler=_run_handler)
 
     seed = commands.add_parser("seed", help="prepare a component for the suite (idempotent)")
     seed.add_argument("component", choices=[Component.CERTIFY.value])
-    seed.set_defaults(handler=_not_available("seed"))
+    seed.add_argument("--target", metavar="URL", help="issuer URL of Inji Certify (default: the compose one)")
+    seed.add_argument(
+        "--track", choices=[t.value for t in Track], default=Track.GATE.value, help="plan template to seed for"
+    )
+    seed.set_defaults(handler=_seed_handler)
 
     gate = commands.add_parser("gate", help="apply the benchmark to a run and exit with the gate's code")
     gate.add_argument("--run", required=True, type=Path, metavar="DIR", help="component run folder")

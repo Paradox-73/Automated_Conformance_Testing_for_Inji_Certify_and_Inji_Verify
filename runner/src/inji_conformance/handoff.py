@@ -8,6 +8,9 @@ acts in the suite's web page. The responder runs next to the script in a backgro
   one suite never touch each other's tests;
 - WAITING with an exposed ``authorization_endpoint`` (verifier tests): asks Inji Verify for an authorization
   request and sends its query string to that endpoint (``AuthorizationRequestHandoff``);
+- WAITING with an exposed ``credential_offer_endpoint`` or ``tx_code_endpoint`` (issuer tests): asks Inji Certify for
+  a pre-authorized offer, hands its URI to the suite's wallet, then sends the offer's transaction code
+  (``CredentialOfferHandoff``);
 - WAITING with front-channel URLs nobody visited: requests each URL and marks it visited;
 - CONFIGURED for longer than a grace period: starts the test (the suite starts almost every test by itself, so
   this only fires for a test that waits for a manual start).
@@ -22,6 +25,7 @@ import dataclasses
 import json
 import threading
 import time
+import urllib.parse
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,6 +33,7 @@ from typing import Any, Protocol
 
 import httpx
 
+from inji_conformance.inji_certify import CertifyClient, CertifyError, new_tx_code
 from inji_conformance.inji_verify import VerifyClient, VerifyError, authorization_query
 from inji_conformance.model import HandoffKind
 from inji_conformance.suite import SuiteClient
@@ -180,6 +185,149 @@ class AuthorizationRequestHandoff:
             error=None if response.status_code < 400 else response.text[:300],
             data=data,
         )
+
+
+class CredentialOfferHandoff:
+    """Issuer tests: deliver a fresh Inji Certify offer, then its transaction code, each time a test waits for one.
+
+    In the issuer-initiated pre-authorized code flow the suite exposes ``credential_offer_endpoint``
+    (``<suite>/test/a/<alias>/credential_offer``) and waits. Without ``vci.static_tx_code`` in the configuration the
+    suite then exposes ``tx_code_endpoint`` and waits again for the code the user would type into the wallet
+    (``AbstractVCIIssuerTestModule.java`` at release-v5.3.1, ``handleCredentialOffer``). The handoff therefore:
+
+    1. WAITING, ``credential_offer_endpoint`` exposed, no ``tx_code_endpoint``: ``POST /pre-authorized-data`` with
+       the claims and a new random transaction code, then
+       ``GET <credential_offer_endpoint>?credential_offer_uri=<uri>``;
+    2. WAITING, ``tx_code_endpoint`` exposed, an offer of ours waiting for its code: ``GET <tx_code_endpoint>`` with
+       ``code=<that code>``; the suite then redeems the code and requests the credential;
+    3. a test that waits for an offer again (the multiple-clients module runs the flow once per client; the suite
+       removes ``tx_code_endpoint`` while it waits for an offer) gets a new offer, because pre-authorized codes
+       are single-use.
+
+    The suite handles both requests synchronously, so when the GET returns the test is already in its next state.
+    A test gets at most ``max_offers`` offers, so a test that keeps refusing them cannot loop forever.
+    """
+
+    def __init__(
+        self,
+        suite: SuiteClient,
+        certify: CertifyClient,
+        credential_configuration_id: str,
+        claims: Mapping[str, Any],
+        *,
+        tx_code_length: int = 6,
+        expires_in: int = 600,
+        max_offers: int = 6,
+    ):
+        self.suite = suite
+        self.certify = certify
+        self.config_id = credential_configuration_id
+        self.claims = dict(claims)
+        self.tx_code_length = tx_code_length
+        self.expires_in = expires_in
+        self.max_offers = max_offers
+        self._offers: dict[str, int] = {}  # test id -> offers delivered (or attempted)
+        self._pending_tx_code: dict[str, str] = {}  # test id -> code of the offer the suite holds
+
+    def _waits_for_tx_code(self, test: TestView) -> bool:
+        return bool(test.exposed.get("tx_code_endpoint")) and test.test_id in self._pending_tx_code
+
+    def _waits_for_offer(self, test: TestView) -> bool:
+        return (
+            bool(test.exposed.get("credential_offer_endpoint"))
+            and not test.exposed.get("tx_code_endpoint")
+            and self._offers.get(test.test_id, 0) < self.max_offers
+        )
+
+    def wants(self, test: TestView) -> bool:
+        return test.status == "WAITING" and (self._waits_for_tx_code(test) or self._waits_for_offer(test))
+
+    def deliver(self, test: TestView) -> HandoffRecord:
+        if self._waits_for_tx_code(test):
+            return self._deliver_tx_code(test)
+        return self._deliver_offer(test)
+
+    def _deliver_offer(self, test: TestView) -> HandoffRecord:
+        number = self._offers.get(test.test_id, 0) + 1
+        self._offers[test.test_id] = number
+        self._pending_tx_code.pop(test.test_id, None)
+        endpoint = str(test.exposed["credential_offer_endpoint"])
+        at = utc_now()
+        started = time.monotonic()
+
+        def failed(detail: str, error: Exception, data: dict[str, str] | None = None) -> HandoffRecord:
+            return HandoffRecord(
+                test.test_id,
+                test.module,
+                HandoffKind.CREDENTIAL_OFFER,
+                at,
+                None,
+                _ms(started),
+                detail=f"offer {number}: {detail}",
+                error=f"{type(error).__name__}: {error}",
+                data=data or {},
+            )
+
+        tx_code = new_tx_code(self.tx_code_length) if self.tx_code_length else None
+        try:
+            offer = self.certify.create_offer(self.config_id, self.claims, tx_code=tx_code, expires_in=self.expires_in)
+        except (CertifyError, httpx.HTTPError) as error:
+            return failed("POST /v1/certify/pre-authorized-data to Inji Certify", error)
+        sent = time.monotonic()
+        try:
+            response = self.suite.get(_with_query(endpoint, {"credential_offer_uri": offer.offer_uri}))
+        except httpx.HTTPError as error:
+            if not isinstance(error, httpx.ConnectError):
+                # The suite may have taken the offer before the read failed. Another offer would reach a test that
+                # no longer waits for one, so this test gets no further offer.
+                self._offers[test.test_id] = self.max_offers
+            return failed("GET credential_offer_endpoint", error, {"offer_uri": offer.offer_uri})
+        if response.status_code < 400 and offer.tx_code:
+            self._pending_tx_code[test.test_id] = offer.tx_code
+        return HandoffRecord(
+            test.test_id,
+            test.module,
+            HandoffKind.CREDENTIAL_OFFER,
+            at,
+            response.status_code,
+            _ms(started),
+            detail=f"offer {number}: Inji Certify offer {offer.offer_uri.rsplit('/', 1)[-1]} "
+            f"({'with' if offer.tx_code else 'without'} tx_code) delivered by reference; "
+            f"suite answered in {_ms(sent):.0f} ms",
+            error=None if response.status_code < 400 else response.text[:300],
+            data={"offer_uri": offer.offer_uri},
+        )
+
+    def _deliver_tx_code(self, test: TestView) -> HandoffRecord:
+        code = self._pending_tx_code.pop(test.test_id)
+        endpoint = str(test.exposed["tx_code_endpoint"])
+        at = utc_now()
+        started = time.monotonic()
+        try:
+            response = self.suite.get(_with_query(endpoint, {"code": code}))
+            status, error = response.status_code, (None if response.status_code < 400 else response.text[:300])
+        except httpx.HTTPError as exc:
+            status, error = None, f"{type(exc).__name__}: {exc}"
+        return HandoffRecord(
+            test.test_id,
+            test.module,
+            HandoffKind.TX_CODE,
+            at,
+            status,
+            _ms(started),
+            detail=f"transaction code of offer {self._offers.get(test.test_id, 0)} delivered to tx_code_endpoint; "
+            "the suite redeems the code and requests the credential within this call",
+            error=error,
+        )
+
+
+def _with_query(url: str, params: Mapping[str, str]) -> str:
+    """``url`` with ``params`` set in its query string, replacing values of the same name (such as the
+    ``code=your_tx_code`` example value in the suite's ``tx_code_endpoint``)."""
+    parts = urllib.parse.urlsplit(url)
+    query = [(k, v) for k, v in urllib.parse.parse_qsl(parts.query, keep_blank_values=True) if k not in params]
+    query += list(params.items())
+    return urllib.parse.urlunsplit(parts._replace(query=urllib.parse.urlencode(query)))
 
 
 class BrowserVisitHandoff:

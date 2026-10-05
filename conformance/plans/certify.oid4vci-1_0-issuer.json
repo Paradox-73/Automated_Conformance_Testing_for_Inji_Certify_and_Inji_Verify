@@ -1,0 +1,94 @@
+{
+  "$comment": "OpenID4VCI 1.0 Final issuer plan against Inji Certify; format in conformance/plans/README.md. The suite plays the wallet; the pre-authorized code flow needs no login page.",
+  "component": "certify",
+  "track": "gate",
+  "plan": "oid4vci-1_0-issuer-test-plan",
+  "variant": {
+    "fapi_profile": "vci",
+    "credential_format": "sd_jwt_vc",
+    "vci_grant_type": "pre_authorization_code",
+    "vci_authorization_code_flow_variant": "issuer_initiated",
+    "client_auth_type": "private_key_jwt",
+    "sender_constrain": "dpop",
+    "authorization_request_type": "simple",
+    "fapi_request_method": "unsigned",
+    "vci_credential_encryption": "plain"
+  },
+  "modules": [],
+  "parameters": {
+    "credential_configuration_id": "InjiConformanceSdJwtVc"
+  },
+  "certs_keys": {
+    "client-jwks.json": {"generate": "p256_jwks"},
+    "client2-jwks.json": {"generate": "p256_jwks"},
+    "suite-mtls-client.crt.json": {"from": "suite-mtls-client.crt", "as": "json_string"},
+    "suite-mtls-client.key.json": {"from": "suite-mtls-client.key", "as": "json_string"}
+  },
+  "config": {
+    "alias": "inji-certify-${run_id}",
+    "description": "Inji Certify at ${target_url}, harness run ${run_id}",
+    "vci": {
+      "$comment": "The issuer identifier is an origin without a path, so the suite finds the metadata at <origin>/.well-known/openid-credential-issuer. The configuration id is the one 'inji-conformance seed certify' creates.",
+      "credential_issuer_url": "${target_url}",
+      "credential_configuration_id": "${credential_configuration_id}"
+    },
+    "client": {
+      "$comment": "Inji Certify does not authenticate clients at its token endpoint (Pre_Authorized_Code.md, limitation 1); the suite still signs a client assertion with this run-time key.",
+      "client_id": "inji-conformance-wallet",
+      "jwks": {"$certs_keys": "client-jwks.json"}
+    },
+    "client2": {
+      "$comment": "Second wallet client of the multiple-clients module.",
+      "client_id": "inji-conformance-wallet-2",
+      "jwks": {"$certs_keys": "client2-jwks.json"}
+    },
+    "mtls": {
+      "$comment": "Client certificate from pki-init. Used when sender_constrain=mtls (the access token is bound to this certificate); the TLS proxy asks for it with ssl_verify_client optional_no_ca.",
+      "cert": {"$certs_keys": "suite-mtls-client.crt.json"},
+      "key": {"$certs_keys": "suite-mtls-client.key.json"}
+    },
+    "mtls2": {
+      "cert": {"$certs_keys": "suite-mtls-client.crt.json"},
+      "key": {"$certs_keys": "suite-mtls-client.key.json"}
+    }
+  },
+  "seed": {
+    "credential_configuration": {
+      "$comment": "Body of POST /v1/certify/credential-configurations. vcTemplate is written as JSON here; the runner sends it base64-encoded as Certify requires. The vct is a URN, so the suite does not try to fetch SD-JWT VC type metadata for it. Key ids and algorithm as in the upstream api-testrig's dc+sd-jwt case (AddCredentialConfigurationSd_Jwt.yml).",
+      "credentialConfigKeyId": "${credential_configuration_id}",
+      "credentialFormat": "dc+sd-jwt",
+      "sdJwtVct": "urn:inji-conformance:vct:farmer:1",
+      "signatureAlgo": "ES256",
+      "keyManagerAppId": "CERTIFY_VC_SIGN_EC_R1",
+      "keyManagerRefId": "EC_SECP256R1_SIGN",
+      "didUrl": "did:web:certify.inji.test%3A18450",
+      "scope": "inji_conformance_sd_jwt_vc",
+      "sdClaim": "$.fullName",
+      "displayOrder": ["fullName", "dateOfBirth", "gender"],
+      "metaDataDisplay": [{"name": "Inji conformance test credential (SD-JWT VC)", "locale": "en"}],
+      "vcTemplate": {
+        "fullName": "${fullName}",
+        "dateOfBirth": "${dateOfBirth}",
+        "gender": "${gender}"
+      },
+      "sdJwtClaims": {
+        "fullName": {"display": [{"name": "Full name", "locale": "en"}]},
+        "dateOfBirth": {"display": [{"name": "Date of birth", "locale": "en"}]},
+        "gender": {"display": [{"name": "Gender", "locale": "en"}]}
+      }
+    }
+  },
+  "handoff": {
+    "credential_offer": {
+      "$comment": "Body of POST /v1/certify/pre-authorized-data for every offer; the claims must match the configuration's claims. Each offer carries a new random numeric transaction code that the responder sends to the suite's tx_code_endpoint.",
+      "credential_configuration_id": "${credential_configuration_id}",
+      "claims": {
+        "fullName": "Asha Test-Farmer",
+        "dateOfBirth": "1990-01-15",
+        "gender": "Female"
+      },
+      "tx_code_length": 6,
+      "expires_in": 600
+    }
+  }
+}

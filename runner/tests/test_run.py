@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import time
 from pathlib import Path
 
+import httpx
 import pytest
+import respx
 
 from inji_conformance import model, plans, run
-from inji_conformance.handoff import HandoffRecord, Responder
+from inji_conformance.handoff import CredentialOfferHandoff, HandoffRecord, Responder
+from inji_conformance.inji_certify import CertifyClient, CertifyError
 from inji_conformance.model import Component, ExitCode, HandoffKind, Track
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -147,3 +151,235 @@ def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate
     assert results.plan.export == "verify/exports/test-log-PLAN.zip"
     assert results.gating is (not no_gate)
     assert results.gate.exit_code is (ExitCode.TIMEOUT if timed_out else ExitCode.OK)
+
+
+# --------------------------------------------------------------------------------------------------------------
+# Issuer path: certs-keys forms, variants, seeding, the offer handoff, results
+# --------------------------------------------------------------------------------------------------------------
+
+CERTIFY = "https://certify.inji.test:18450"
+CERTIFY_RUN_VALUES = {
+    "run_id": "20261004T193000Z-abc123",
+    "target_url": CERTIFY,
+    "suite_url": "https://localhost.emobix.co.uk:18443",
+}
+# Stand-ins for the files pki-init writes; only their line structure matters here.
+PEM_CERT = "-----BEGIN CERTIFICATE-----\nMIIBszCCAVmgAwIBAgIU\nq0aB\n-----END CERTIFICATE-----\n"
+PEM_KEY = "first line of the key file\nsecond line\nlast line\n"
+
+
+def certify_template() -> plans.PlanTemplate:
+    return plans.find_template(REPO_ROOT / "conformance" / "plans", Component.CERTIFY)
+
+
+def fill_like_run_test_plan(config_text: str, certs_keys: Path) -> dict:
+    """What run-test-plan.py does before it creates the plan: every ``{<file>}`` becomes the content of
+    ``certs-keys/<file>`` with newlines turned into spaces, then the text is parsed as JSON."""
+    for path in certs_keys.iterdir():
+        config_text = config_text.replace("{" + path.name + "}", path.read_text(encoding="utf-8").replace("\n", " "))
+    return json.loads(config_text)
+
+
+def test_certify_config_filled_from_the_staged_keys_is_valid_and_complete(tmp_path):
+    pki = tmp_path / "pki"
+    pki.mkdir()
+    (pki / "suite-mtls-client.crt").write_text(PEM_CERT, encoding="utf-8")
+    (pki / "suite-mtls-client.key").write_text(PEM_KEY, encoding="utf-8")
+    template = certify_template()
+
+    script = run.stage_scripts(REPO_ROOT, tmp_path / "stage", pki, dict(template.certs_keys))
+    config = fill_like_run_test_plan(plans.render_config(template, CERTIFY_RUN_VALUES), script.parent / "certs-keys")
+
+    # PEM text keeps its line breaks although the script flattens the file it reads.
+    assert config["mtls"] == config["mtls2"] == {"cert": PEM_CERT, "key": PEM_KEY}
+    (key,) = config["client"]["jwks"]["keys"]
+    (key2,) = config["client2"]["jwks"]["keys"]
+    assert (key["kty"], key["crv"], key["alg"]) == ("EC", "P-256", "ES256") and "d" in key
+    assert key["kid"].startswith("client-jwks-") and key2["kid"].startswith("client2-jwks-")
+    assert key["d"] != key2["d"]  # each wallet client has its own key
+
+
+def test_generated_keys_are_new_for_every_run(tmp_path):
+    forms = {"client-jwks.json": {"generate": "p256_jwks"}}
+    first = run.stage_scripts(REPO_ROOT, tmp_path / "a", tmp_path, forms).parent / "certs-keys" / "client-jwks.json"
+    second = run.stage_scripts(REPO_ROOT, tmp_path / "b", tmp_path, forms).parent / "certs-keys" / "client-jwks.json"
+    assert first.read_text() != second.read_text()
+
+
+def test_json_string_form_without_its_source_is_an_environment_error(tmp_path):
+    with pytest.raises(run.RunError, match=r"missing \(pki-init writes it\)") as caught:
+        run.stage_certs_keys(tmp_path, tmp_path, {"c.json": {"from": "suite-mtls-client.crt", "as": "json_string"}})
+    assert caught.value.exit_code is ExitCode.ENVIRONMENT_NOT_READY
+
+
+def test_unknown_certs_keys_form_is_a_usage_error(tmp_path):
+    with pytest.raises(run.RunError, match=r"certs_keys\.k\.json: unknown form") as caught:
+        run.stage_certs_keys(tmp_path, tmp_path, {"k.json": {"generate": "rsa_jwks"}})
+    assert caught.value.exit_code is ExitCode.USAGE
+
+
+def test_variant_options_become_a_mapping():
+    assert run.variant_overrides(None) == {}
+    assert run.variant_overrides(["sender_constrain=mtls", "a=b=c"]) == {"sender_constrain": "mtls", "a": "b=c"}
+    assert run.variant_overrides(["a=1", "a=2"]) == {"a": "2"}  # the last one wins
+
+
+@pytest.mark.parametrize("option", ["sender_constrain", "=mtls", "sender_constrain=", ""])
+def test_variant_option_must_be_name_and_value(option):
+    with pytest.raises(plans.PlanError, match="--variant expects NAME=VALUE"):
+        run.variant_overrides([option])
+
+
+def test_wait_until_ready_keeps_asking_while_certify_starts():
+    answers = iter([CertifyError("issuer metadata: HTTP 502", 502), httpx.ConnectError("refused"), True])
+
+    def check() -> bool:
+        answer = next(answers)
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    run.wait_until_ready(check, "Inji Certify", timeout_s=30, interval_s=0)
+    assert next(answers, None) is None  # all three answers were used
+
+
+def test_wait_until_ready_reads_the_default_limit_when_called(monkeypatch):
+    monkeypatch.setattr(run, "READY_TIMEOUT_S", 0)
+    with pytest.raises(run.RunError, match="is not ready after 0 s"):
+        run.wait_until_ready(lambda: False, "thing", interval_s=0)
+
+
+@respx.mock
+def test_seed_component_sends_the_rendered_configuration():
+    api = f"{CERTIFY}/v1/certify/credential-configurations"
+    answers = iter([httpx.Response(404, json={"errors": [{"errorCode": "invalid_request"}]})])
+    respx.get(f"{api}/InjiConformanceSdJwtVc").mock(
+        side_effect=lambda _request: next(
+            answers, httpx.Response(200, json={"credentialConfigKeyId": "InjiConformanceSdJwtVc"})
+        )
+    )
+    add = respx.post(api).mock(return_value=httpx.Response(201, json={"id": "InjiConformanceSdJwtVc"}))
+
+    message = run.seed_component(CertifyClient(CERTIFY), certify_template(), {"target_url": CERTIFY})
+
+    assert message == "seed certify: credential configuration InjiConformanceSdJwtVc created"
+    sent = json.loads(add.calls.last.request.content)
+    assert sent["credentialConfigKeyId"] == "InjiConformanceSdJwtVc"
+    assert (sent["credentialFormat"], sent["signatureAlgo"]) == ("dc+sd-jwt", "ES256")
+    assert isinstance(sent["vcTemplate"], str) and "$comment" not in sent
+
+
+@respx.mock
+def test_seed_component_failure_is_an_environment_error():
+    respx.get(f"{CERTIFY}/v1/certify/credential-configurations/InjiConformanceSdJwtVc").mock(
+        side_effect=httpx.ConnectError("refused")
+    )
+    with pytest.raises(run.RunError, match="seeding Inji Certify failed") as caught:
+        run.seed_component(CertifyClient(CERTIFY), certify_template())
+    assert caught.value.exit_code is ExitCode.ENVIRONMENT_NOT_READY
+
+
+def test_seed_component_needs_a_seed_block():
+    verify_template = plans.find_template(REPO_ROOT / "conformance" / "plans", Component.VERIFY)
+    with pytest.raises(plans.PlanError, match=r"seed\.credential_configuration is missing"):
+        run.seed_component(CertifyClient(CERTIFY), verify_template)
+
+
+def test_certify_handoff_comes_from_the_template():
+    template = certify_template()
+    settings = plans.render_handoff(template, CERTIFY_RUN_VALUES)
+    (handoff,) = run.component_handoffs(template, settings, None, None, CertifyClient(CERTIFY))  # type: ignore[arg-type]
+    assert isinstance(handoff, CredentialOfferHandoff)
+    assert handoff.config_id == "InjiConformanceSdJwtVc"
+    assert handoff.claims == {"fullName": "Asha Test-Farmer", "dateOfBirth": "1990-01-15", "gender": "Female"}
+    assert (handoff.tx_code_length, handoff.expires_in) == (6, 600)
+    assert run.component_handoffs(template, settings, None, None, None) == []  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [{}, {"credential_offer": {"claims": {}}}, {"credential_offer": {"credential_configuration_id": "x"}}],
+)
+def test_incomplete_certify_handoff_block_is_a_plan_error(settings):
+    with pytest.raises(plans.PlanError, match="handoff block is incomplete"):
+        run.component_handoffs(certify_template(), settings, None, None, CertifyClient(CERTIFY))  # type: ignore[arg-type]
+
+
+class FakeIssuerSuite(FakeSuite):
+    """A plan of three issuer modules: one passed, one failed at the credential request, one never started."""
+
+    def plan(self, plan_id):
+        return {
+            "modules": [
+                {"testModule": "oid4vci-1_0-issuer-metadata-test", "instances": ["m1"]},
+                {"testModule": "oid4vci-1_0-issuer-happy-flow", "instances": ["old", "h1"]},
+                {"testModule": "oid4vci-1_0-issuer-happy-flow-multiple-clients", "instances": []},
+            ]
+        }
+
+    def test_info(self, test_id):
+        result = "PASSED" if test_id == "m1" else "FAILED"
+        return {"status": "FINISHED", "result": result, "variant": {"sender_constrain": "dpop"}}
+
+    def test_log(self, test_id):
+        if test_id == "m1":
+            return []
+        return [
+            {"blockId": "b1", "startBlock": True, "msg": "Call credential endpoint", "time": 1791148800000},
+            {
+                "src": "EnsureHttpStatusCodeIs200or202",
+                "blockId": "b1",
+                "result": "FAILURE",
+                "msg": "invalid_dpop_proof",
+                "requirements": ["OID4VCI-1FINAL-8.3"],
+                "time": 1791148803000,
+            },
+        ]
+
+
+def test_build_results_for_an_issuer_run(tmp_path, schema_dir, capsys):
+    template = certify_template()
+    folder = tmp_path / "certify"
+    (folder / "config").mkdir(parents=True)
+    (folder / "exports").mkdir()
+    config = folder / "config" / f"{template.name}.json"
+    config.write_text("{}", encoding="utf-8")
+    responder = Responder(None, "alias", [])  # type: ignore[arg-type]
+    for kind, status in ((HandoffKind.CREDENTIAL_OFFER, 204), (HandoffKind.TX_CODE, 204)):
+        responder.records.append(
+            HandoffRecord("h1", "oid4vci-1_0-issuer-happy-flow", kind, "2026-10-04T19:31:01Z", status, 85.0)
+        )
+    ctx = run.RunContext(
+        run_id="20261004T193000Z-abc123",
+        component=Component.CERTIFY,
+        track=Track.GATE,
+        template=template,
+        started_at="2026-01-01T00:00:00Z",
+        suite_url="https://localhost.emobix.co.uk:18443",
+        suite_version="5.3.1",
+        target_url=CERTIFY,
+        out=tmp_path,
+        folder=folder,
+        config_path=config,
+        modules=(),  # the whole plan
+        no_gate=True,
+    )
+
+    results = run.build_results(ctx, FakeIssuerSuite(), None, "PLAN", responder)  # type: ignore[arg-type]
+
+    path = tmp_path / "results.json"
+    model.dump(results, path)
+    assert model.validate(model.read_json(path), model.DocumentKind.RESULTS, schema_dir) == []
+    assert results.component is Component.CERTIFY and results.plan.variant["sender_constrain"] == "dpop"
+    metadata, happy, multiple = results.modules
+    assert (metadata.verdict.value, metadata.handoffs) == ("conforms", ())  # the metadata module needs no offer
+    assert happy.test_id == "h1"  # the latest instance
+    assert [h.kind for h in happy.handoffs] == [HandoffKind.CREDENTIAL_OFFER, HandoffKind.TX_CODE]
+    assert happy.failures[0].condition == "EnsureHttpStatusCodeIs200or202"
+    assert happy.failures[0].block == "Call credential endpoint"
+    assert (multiple.status.value, multiple.verdict.value) == ("NOT_STARTED", "regression")
+    assert results.gate.exit_code is ExitCode.OK and results.gating is False
+    run.print_summary(results, path)
+    summary = capsys.readouterr().out
+    assert "[credential_offer HTTP 204 85 ms, tx_code HTTP 204 85 ms]" in summary
+    assert "(3 modules, gate not applied)" in summary

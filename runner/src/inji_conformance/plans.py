@@ -11,6 +11,15 @@ things to the ``config`` block:
   the plan, so private keys never appear in the rendered file.
 
 Keys named ``$comment`` are notes for people and are dropped from the rendered config.
+
+``certs_keys`` says how each file of the staged ``certs-keys/`` folder is made (``stage_certs_keys`` in
+``inji_conformance.run``): a plain string copies that file of the run's key folder; ``{"from": <file>, "as":
+"json_string"}`` writes the file's text as one JSON string literal (for PEM certificates and keys inside the
+configuration); ``{"generate": "p256_jwks"}`` writes a fresh private JWK set made for this run only.
+
+``seed`` holds what the component needs before the plan can run (Inji Certify: the credential configuration the
+plan requests). ``render_seed`` replaces its variables like the ``config`` block, except inside ``vcTemplate``,
+which is Inji Certify's own template: its ``${claim}`` placeholders are Certify's and stay as written.
 """
 
 from __future__ import annotations
@@ -33,6 +42,10 @@ _SPEC_VALUE = re.compile(r"^[A-Za-z0-9_\-=,./ \\]+$")
 # Marks a certs-keys reference in the JSON text so that render_config can unquote it; plain ASCII, so json.dumps
 # leaves it unchanged.
 _CERTS_KEYS_MARK = "@@inji-conformance-certs-keys@@"
+# Ways a certs-keys file can be made besides a plain copy (see the module docstring).
+CERTS_KEYS_FORMS = {"as": ("json_string",), "generate": ("p256_jwks",)}
+# Keys of a seed block that are sent as written: their ${...} placeholders belong to the component, not to us.
+SEED_VERBATIM_KEYS = ("vcTemplate",)
 
 
 class PlanError(ValueError):
@@ -54,6 +67,7 @@ class PlanTemplate:
     config: Mapping[str, Any]
     handoff: Mapping[str, Any]
     review: Mapping[str, Any]
+    seed: Mapping[str, Any] = dataclasses.field(default_factory=dict)
 
     @property
     def name(self) -> str:
@@ -96,6 +110,9 @@ def load_template(path: str | Path) -> PlanTemplate:
         if not isinstance(value, str) or not _SPEC_VALUE.match(value):
             raise PlanError(f"{path}: variant {key}={value!r} is not a valid variant value")
     modules = tuple(data.get("modules", ()))
+    certs_keys = dict(data.get("certs_keys", {}))
+    for target, source in certs_keys.items():
+        _check_certs_keys_entry(path, target, source)
     if not all(isinstance(m, str) and _SPEC_NAME.match(m) for m in modules):
         raise PlanError(f"{path}: 'modules' must be a list of module names")
     return PlanTemplate(
@@ -106,11 +123,36 @@ def load_template(path: str | Path) -> PlanTemplate:
         variant=dict(variant),
         modules=modules,
         parameters={str(k): str(v) for k, v in data.get("parameters", {}).items()},
-        certs_keys=dict(data.get("certs_keys", {})),
+        certs_keys=certs_keys,
         config=need("config", dict),
         handoff=dict(data.get("handoff", {})),
         review=dict(data.get("review", {})),
+        seed=dict(data.get("seed", {})),
     )
+
+
+def _check_certs_keys_entry(path: Path, target: str, source: Any) -> None:
+    if not re.match(r"^[A-Za-z0-9._-]+$", target):
+        raise PlanError(f"{path}: certs_keys file name {target!r} is not a plain file name")
+    if isinstance(source, str):
+        return
+    if isinstance(source, Mapping):
+        if set(source) == {"from", "as"} and isinstance(source["from"], str) and source["as"] in CERTS_KEYS_FORMS["as"]:
+            return
+        if set(source) == {"generate"} and source["generate"] in CERTS_KEYS_FORMS["generate"]:
+            return
+    raise PlanError(
+        f"{path}: certs_keys.{target} must be a file name, {{'from': <file>, 'as': 'json_string'}} "
+        "or {'generate': 'p256_jwks'}"
+    )
+
+
+def with_variant(template: PlanTemplate, overrides: Mapping[str, str]) -> PlanTemplate:
+    """``template`` with variant values replaced or added (``run --variant name=value``)."""
+    for key, value in overrides.items():
+        if not _SPEC_NAME.match(key) or not _SPEC_VALUE.match(value):
+            raise PlanError(f"variant {key}={value!r} is not a valid variant name and value")
+    return dataclasses.replace(template, variant={**template.variant, **overrides})
 
 
 def find_template(plans_dir: Path, component: Component, track: Track = Track.GATE) -> PlanTemplate:
@@ -164,6 +206,28 @@ def render_config(template: PlanTemplate, run_values: Mapping[str, str]) -> str:
 def render_handoff(template: PlanTemplate, run_values: Mapping[str, str]) -> dict[str, Any]:
     """The ``handoff`` block with variables replaced."""
     return substitute(template.handoff, {**template.parameters, **run_values})
+
+
+def render_seed(template: PlanTemplate, run_values: Mapping[str, str] | None = None) -> dict[str, Any]:
+    """The ``seed`` block with variables replaced and ``$comment`` keys dropped.
+
+    ``vcTemplate`` inside a seed entry is kept as written (see the module docstring). A seed is meant to stay the
+    same from run to run, so pass only values that do (``target_url``), never ``run_id``.
+    """
+    variables = {**template.parameters, **(run_values or {})}
+    rendered: dict[str, Any] = {}
+    for name, block in template.seed.items():
+        if name == COMMENT_KEY:
+            continue
+        if not isinstance(block, Mapping):
+            rendered[name] = substitute(block, variables)
+            continue
+        rendered[name] = {
+            key: value if key in SEED_VERBATIM_KEYS else substitute(value, variables)
+            for key, value in block.items()
+            if key != COMMENT_KEY
+        }
+    return rendered
 
 
 def plan_spec(template: PlanTemplate, config_path: str, modules: Sequence[str] | None = None) -> list[str]:

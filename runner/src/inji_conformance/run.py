@@ -1,17 +1,20 @@
 """``inji-conformance run``: one component's suite test plan from start to ``results.json``.
 
-Steps for ``--component verify`` (the issuer path follows the same steps with its own handoffs):
+Steps for ``--component verify`` and ``--component certify``:
 
-1. wait until the suite and Inji Verify answer (exit 3 when they do not);
-2. render the plan template into ``<out>/<component>/config/<template>.json``;
-3. stage the suite's scripts, vendored unchanged in ``third_party/oidf-conformance-suite/scripts``, into
+1. wait until the suite and the Inji component answer (exit 3 when they do not);
+2. Inji Certify only, unless ``--no-seed``: add the credential configuration the plan requests (``cmd_seed``,
+   idempotent), so a fresh stack needs no manual step;
+3. render the plan template into ``<out>/<component>/config/<template>.json``;
+4. stage the suite's scripts, vendored unchanged in ``third_party/oidf-conformance-suite/scripts``, into
    ``<out>/<component>/suite-scripts/`` with a ``certs-keys/`` folder holding this run's keys:
    ``run-test-plan.py`` reads every file in the ``certs-keys`` folder next to itself and fills the config's
    ``{<file>}`` placeholders with them;
-4. start ``run-test-plan.py`` (dev mode, ``--export-dir``) and the handoff responder side by side; the script's
-   output goes to the console and to ``logs/run-test-plan.log``;
-5. read each module's outcome from the suite and write ``results.json``;
-6. remove the staged ``certs-keys`` folder, so no private key stays in the report folder.
+5. start ``run-test-plan.py`` (dev mode, ``--export-dir``) and the handoff responder side by side; the script's
+   output goes to the console and to ``logs/run-test-plan.log``. The responder answers Inji Verify's tests with
+   authorization requests and Inji Certify's tests with credential offers and transaction codes;
+6. read each module's outcome from the suite and write ``results.json``;
+7. remove the staged ``certs-keys`` folder, so no private key stays in the report folder.
 
 Run folder layout (``--out``)::
 
@@ -26,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import json
 import os
 import secrets
 import shutil
@@ -33,21 +37,25 @@ import subprocess
 import sys
 import threading
 import time
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
-from inji_conformance import model, plans
+from inji_conformance import keys, model, plans
 from inji_conformance.collect import module_result, plan_modules, review_from_vp_result, transaction_id
 from inji_conformance.handoff import (
     AuthorizationRequestHandoff,
     BrowserVisitHandoff,
+    CredentialOfferHandoff,
+    Handoff,
     Responder,
     StartTestHandoff,
     utc_now,
 )
+from inji_conformance.inji_certify import CertifyClient, CertifyError
+from inji_conformance.inji_certify import seed as seed_certify
 from inji_conformance.inji_verify import VerifyClient
 from inji_conformance.model import Component, ExitCode, Track
 from inji_conformance.suite import SuiteClient, SuiteError
@@ -56,12 +64,14 @@ from inji_conformance.suite import SuiteClient, SuiteError
 ENV_SUITE_URL = "HARNESS_SUITE_URL"
 ENV_SUITE_MTLS_URL = "HARNESS_SUITE_MTLS_URL"
 ENV_VERIFY_URL = "HARNESS_VERIFY_URL"
+ENV_CERTIFY_URL = "HARNESS_CERTIFY_URL"
 ENV_PKI_DIR = "HARNESS_PKI_DIR"
 ENV_REPORTS_DIR = "HARNESS_REPORTS_DIR"
 ENV_HOME = "INJI_CONFORMANCE_HOME"  # folder holding third_party/ and conformance/ (the image sets it)
 
 DEFAULT_SUITE_URL = "https://localhost.emobix.co.uk:18443"
 DEFAULT_VERIFY_URL = "https://verify.inji.test:18451/v1/verify"
+DEFAULT_CERTIFY_URL = "https://certify.inji.test:18450"  # issuer identifier: an origin, the APIs are below /v1/certify
 DEFAULT_TIMEOUT_MINUTES = 30.0
 READY_TIMEOUT_S = 120.0
 SUITE_SCRIPTS = ("run-test-plan.py", "conformance.py", "test_plan_parser.py")
@@ -112,8 +122,13 @@ def default_out_dir(run_id: str) -> Path:
 # ---------------------------------------------------------------------------------------------------------------
 
 
-def wait_until_ready(check, what: str, timeout_s: float = READY_TIMEOUT_S, interval_s: float = 3.0) -> None:
-    """Call ``check`` (returns True when ready) until it succeeds; RunError(ENVIRONMENT_NOT_READY) after timeout."""
+def wait_until_ready(check, what: str, timeout_s: float | None = None, interval_s: float = 3.0) -> None:
+    """Call ``check`` (returns True when ready) until it succeeds; RunError(ENVIRONMENT_NOT_READY) after timeout.
+
+    ``timeout_s`` defaults to ``READY_TIMEOUT_S``, read when the call is made.
+    """
+    if timeout_s is None:
+        timeout_s = READY_TIMEOUT_S
     deadline = time.monotonic() + timeout_s
     last = "no answer"
     while True:
@@ -121,27 +136,45 @@ def wait_until_ready(check, what: str, timeout_s: float = READY_TIMEOUT_S, inter
             if check():
                 return
             last = "not ready"
-        except (httpx.HTTPError, SuiteError) as error:
+        except (httpx.HTTPError, SuiteError, CertifyError) as error:
             last = f"{type(error).__name__}: {error}"
         if time.monotonic() >= deadline:
             raise RunError(f"{what} is not ready after {timeout_s:.0f} s ({last})", ExitCode.ENVIRONMENT_NOT_READY)
         time.sleep(interval_s)
 
 
-def stage_scripts(home: Path, stage: Path, pki_dir: Path, certs_keys: dict[str, str]) -> Path:
+def stage_scripts(home: Path, stage: Path, pki_dir: Path, certs_keys: dict[str, object]) -> Path:
     """Copy the vendored suite scripts into ``stage`` and fill ``stage/certs-keys``; returns the script path."""
     if stage.exists():
         shutil.rmtree(stage)
-    keys = stage / "certs-keys"
-    keys.mkdir(parents=True)
+    (stage / "certs-keys").mkdir(parents=True)
     for name in SUITE_SCRIPTS:
         shutil.copy2(home / SCRIPTS_RELATIVE / name, stage / name)
-    for target, source in certs_keys.items():
-        path = pki_dir / source
+    stage_certs_keys(stage / "certs-keys", pki_dir, certs_keys)
+    return stage / "run-test-plan.py"
+
+
+def stage_certs_keys(folder: Path, pki_dir: Path, certs_keys: dict[str, object]) -> None:
+    """Write each ``certs_keys`` entry of a plan template into ``folder`` (forms: ``inji_conformance.plans``)."""
+
+    def source_text(name: str) -> str:
+        path = pki_dir / name
         if not path.is_file():
             raise RunError(f"run key {path} is missing (pki-init writes it)", ExitCode.ENVIRONMENT_NOT_READY)
-        shutil.copyfile(path, keys / target)
-    return stage / "run-test-plan.py"
+        return path.read_text(encoding="utf-8")
+
+    for target, source in certs_keys.items():
+        if isinstance(source, str):
+            text = source_text(source)
+        elif isinstance(source, dict) and source.get("as") == "json_string":
+            # run-test-plan.py turns newlines of a certs-keys file into spaces; as a JSON string literal the PEM
+            # text keeps its line breaks, and the config uses the placeholder without quotes.
+            text = json.dumps(source_text(str(source["from"])))
+        elif isinstance(source, dict) and source.get("generate") == "p256_jwks":
+            text = json.dumps(keys.new_private_jwks(target.split(".", 1)[0]))
+        else:
+            raise RunError(f"certs_keys.{target}: unknown form {source!r}", ExitCode.USAGE)
+        (folder / target).write_text(text, encoding="utf-8", newline="\n")
 
 
 def run_script(
@@ -203,8 +236,8 @@ def relative(path: Path, root: Path) -> str:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    if args.combined or args.component != Component.VERIFY.value:
-        print("inji-conformance run: this version runs --component verify only", file=sys.stderr)
+    if args.combined:
+        print("inji-conformance run: --combined is not available in this version; use --component", file=sys.stderr)
         return ExitCode.USAGE
     try:
         return run_component(args, Component(args.component))
@@ -214,12 +247,66 @@ def cmd_run(args: argparse.Namespace) -> int:
         return code
 
 
+def cmd_seed(args: argparse.Namespace) -> int:
+    """``inji-conformance seed certify``: add the credential configuration the issuer plan requests (idempotent)."""
+    try:
+        home = harness_home()
+        template = plans.find_template(home / "conformance" / "plans", Component.CERTIFY, Track(args.track))
+        target_url = (args.target or os.environ.get(ENV_CERTIFY_URL, DEFAULT_CERTIFY_URL)).rstrip("/")
+        certify = CertifyClient(target_url, verify=tls_verify(pki_folder()))
+        try:
+            wait_until_ready(lambda: bool(certify.issuer_metadata()), f"Inji Certify at {target_url}")
+            print(seed_component(certify, template, {"target_url": target_url}))
+        finally:
+            certify.close()
+    except (RunError, plans.PlanError) as error:
+        code = error.exit_code if isinstance(error, RunError) else ExitCode.USAGE
+        print(f"inji-conformance seed: {error}", file=sys.stderr)
+        return code
+    return ExitCode.OK
+
+
+def seed_component(
+    certify: CertifyClient, template: plans.PlanTemplate, run_values: Mapping[str, str] | None = None
+) -> str:
+    """Seed Inji Certify from the template's rendered ``seed.credential_configuration``; the one-line outcome."""
+    definition = plans.render_seed(template, run_values).get("credential_configuration")
+    if not isinstance(definition, dict):
+        raise plans.PlanError(f"{template.path.name}: seed.credential_configuration is missing")
+    try:
+        return seed_certify(certify, definition).message()
+    except (CertifyError, httpx.HTTPError) as error:
+        raise RunError(f"seeding Inji Certify failed: {error}", ExitCode.ENVIRONMENT_NOT_READY) from error
+
+
+def pki_folder() -> Path:
+    return Path(os.environ.get(ENV_PKI_DIR) or os.path.join(os.environ.get("HARNESS_RUN_DIR", "run"), "pki"))
+
+
+def tls_verify(pki_dir: Path) -> bool | str:
+    """The run's test CA when pki-init wrote one, else no certificate check (the Inji hosts use that CA)."""
+    ca_file = pki_dir / "ca.crt"
+    return str(ca_file) if ca_file.is_file() else False
+
+
+def variant_overrides(values: Sequence[str] | None) -> dict[str, str]:
+    """``--variant NAME=VALUE`` options as a mapping."""
+    overrides = {}
+    for item in values or ():
+        name, sep, value = item.partition("=")
+        if not sep or not name or not value:
+            raise plans.PlanError(f"--variant expects NAME=VALUE, not {item!r}")
+        overrides[name] = value
+    return overrides
+
+
 def run_component(args: argparse.Namespace, component: Component) -> int:
     started_at = utc_now()
     deadline = time.monotonic() + 60 * (args.timeout_minutes or DEFAULT_TIMEOUT_MINUTES)
     home = harness_home()
     track = Track(args.track)
     template = plans.find_template(home / "conformance" / "plans", component, track)
+    template = plans.with_variant(template, variant_overrides(getattr(args, "variant", None)))
     run_id = new_run_id()
     out = Path(args.out) if args.out else default_out_dir(run_id)
     folder = out / component.value
@@ -227,13 +314,18 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         (folder / sub).mkdir(parents=True, exist_ok=True)
 
     suite_url = os.environ.get(ENV_SUITE_URL, DEFAULT_SUITE_URL).rstrip("/")
-    target_url = (args.target or os.environ.get(ENV_VERIFY_URL, DEFAULT_VERIFY_URL)).rstrip("/")
-    pki_dir = Path(os.environ.get(ENV_PKI_DIR) or os.path.join(os.environ.get("HARNESS_RUN_DIR", "run"), "pki"))
-    ca_file = pki_dir / "ca.crt"
-    print(f"run {run_id}: {component.value} plan {template.plan} against {target_url}; results in {folder}")
+    if component is Component.VERIFY:
+        default_target = os.environ.get(ENV_VERIFY_URL, DEFAULT_VERIFY_URL)
+    else:
+        default_target = os.environ.get(ENV_CERTIFY_URL, DEFAULT_CERTIFY_URL)
+    target_url = (args.target or default_target).rstrip("/")
+    pki_dir = pki_folder()
+    variant = ", ".join(f"{k}={v}" for k, v in template.variant.items())
+    print(f"run {run_id}: {component.value} plan {template.plan} [{variant}] against {target_url}; results in {folder}")
 
     suite = SuiteClient(suite_url)
-    verify = VerifyClient(target_url, verify=str(ca_file) if ca_file.is_file() else False)
+    verify = VerifyClient(target_url, verify=tls_verify(pki_dir)) if component is Component.VERIFY else None
+    certify = CertifyClient(target_url, verify=tls_verify(pki_dir)) if component is Component.CERTIFY else None
     try:
         server: dict = {}
 
@@ -242,7 +334,14 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             return True
 
         wait_until_ready(suite_ready, f"the conformance suite at {suite_url}")
-        wait_until_ready(lambda: verify.health() == 200, f"Inji Verify at {target_url}")
+        if verify is not None:
+            wait_until_ready(lambda: verify.health() == 200, f"Inji Verify at {target_url}")
+        if certify is not None:
+            wait_until_ready(lambda: bool(certify.issuer_metadata()), f"Inji Certify at {target_url}")
+            if getattr(args, "no_seed", False):
+                print("seed certify: skipped (--no-seed)")
+            else:
+                print(seed_component(certify, template, {"target_url": target_url}))
 
         run_values = {"run_id": run_id, "target_url": target_url, "suite_url": suite_url}
         alias = plans.substitute(template.config.get("alias", ""), {**template.parameters, **run_values})
@@ -251,7 +350,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             raise plans.PlanError(f"{template.path.name}: config.alias must contain ${{run_id}}")
         config_path = folder / "config" / f"{template.name}.json"
         config_path.write_text(plans.render_config(template, run_values), encoding="utf-8", newline="\n")
-        handoff_settings = plans.render_handoff(template, run_values).get("authorization_request", {})
+        handoff_settings = plans.render_handoff(template, run_values)
 
         stage = folder / "suite-scripts"
         script = stage_scripts(home, stage, pki_dir, dict(template.certs_keys))
@@ -271,20 +370,11 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             "PYTHONUNBUFFERED": "1",
         }
 
+        handoffs = component_handoffs(template, handoff_settings, suite, verify, certify)
         responder = Responder(
             suite,
             alias,
-            [
-                AuthorizationRequestHandoff(
-                    suite,
-                    verify,
-                    client_id=handoff_settings["client_id"],
-                    dcql_query=handoff_settings["dcql_query"],
-                    response_mode=handoff_settings.get("response_mode"),
-                ),
-                BrowserVisitHandoff(suite),
-                StartTestHandoff(suite),
-            ],
+            [*handoffs, BrowserVisitHandoff(suite), StartTestHandoff(suite)],
             log_path=folder / "logs" / "handoffs.jsonl",
         )
         (folder / "logs" / "handoffs.jsonl").write_text("", encoding="utf-8")
@@ -318,11 +408,50 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         results = build_results(context, suite, verify, plan_id, responder)
     finally:
         suite.close()
-        verify.close()
+        for client in (verify, certify):
+            if client is not None:
+                client.close()
 
     model.dump(results, folder / "results.json")
     print_summary(results, folder / "results.json")
     return int(results.gate.exit_code) if results.gate else ExitCode.OK
+
+
+def component_handoffs(
+    template: plans.PlanTemplate,
+    settings: dict,
+    suite: SuiteClient,
+    verify: VerifyClient | None,
+    certify: CertifyClient | None,
+) -> list[Handoff]:
+    """The component's own handoffs, configured from the template's ``handoff`` block."""
+    try:
+        if verify is not None:
+            request = settings["authorization_request"]
+            return [
+                AuthorizationRequestHandoff(
+                    suite,
+                    verify,
+                    client_id=request["client_id"],
+                    dcql_query=request["dcql_query"],
+                    response_mode=request.get("response_mode"),
+                )
+            ]
+        if certify is not None:
+            offer = settings["credential_offer"]
+            return [
+                CredentialOfferHandoff(
+                    suite,
+                    certify,
+                    str(offer["credential_configuration_id"]),
+                    offer["claims"],
+                    tx_code_length=int(offer.get("tx_code_length", 6)),
+                    expires_in=int(offer.get("expires_in", 600)),
+                )
+            ]
+    except (KeyError, TypeError, ValueError) as error:
+        raise plans.PlanError(f"{template.path.name}: handoff block is incomplete: {error!r}") from error
+    return []
 
 
 @dataclasses.dataclass(frozen=True)
@@ -346,7 +475,7 @@ class RunContext:
 
 
 def build_results(
-    ctx: RunContext, suite: SuiteClient, verify: VerifyClient, plan_id: str | None, responder: Responder
+    ctx: RunContext, suite: SuiteClient, verify: VerifyClient | None, plan_id: str | None, responder: Responder
 ) -> model.Results:
     """Read every module of the plan from the suite and assemble results.json."""
     template = ctx.template
@@ -359,7 +488,7 @@ def build_results(
         log = suite.test_log(test_id) if test_id else []
         handoffs = responder.records_for(test_id) if test_id else []
         review = None
-        if info and info.get("result") == "REVIEW":
+        if info and info.get("result") == "REVIEW" and verify is not None:
             tx = transaction_id(handoffs)
             review = review_from_vp_result(template.expected_review(name), verify.vp_result(tx) if tx else None)
         modules.append(

@@ -6,10 +6,17 @@ import argparse
 import json
 import types
 
+import httpx
 import pytest
+import respx
 
 from inji_conformance import __version__, cli
+from inji_conformance import run as run_module
 from inji_conformance.model import ExitCode
+
+SUITE = "https://localhost.emobix.co.uk:18443"
+CERTIFY = "https://certify.inji.test:18450"
+CERTIFY_CONFIGURATION = f"{CERTIFY}/v1/certify/credential-configurations/InjiConformanceSdJwtVc"
 
 
 def run(capsys, *argv):
@@ -167,30 +174,120 @@ def test_usage_errors_exit_2(capsys, argv):
     capsys.readouterr()
 
 
-@pytest.mark.parametrize(
-    "argv",
-    [
-        ["seed", "certify"],
-        ["gate", "--run", "x", "--allow-stale", "--junit", "j.xml"],
-    ],
-)
-def test_commands_not_in_this_version_say_so(capsys, argv):
-    code, _, err = run(capsys, *argv)
+def test_gate_is_not_in_this_version(capsys):
+    code, _, err = run(capsys, "gate", "--run", "x", "--allow-stale", "--junit", "j.xml")
     assert code == ExitCode.USAGE
-    assert f"inji-conformance {argv[0]}: not available in this version" in err
+    assert "inji-conformance gate: not available in this version" in err
 
 
-@pytest.mark.parametrize(
-    "argv",
-    [
-        ["run", "--combined", "--track", "haip", "--serial", "--allow-stale"],
-        ["run", "--component", "certify", "--no-gate"],
-    ],
-)
-def test_run_of_parts_not_in_this_version_says_so(capsys, argv):
-    code, _, err = run(capsys, *argv)
+def test_combined_run_is_not_in_this_version(capsys):
+    code, _, err = run(capsys, "run", "--combined", "--track", "haip", "--serial", "--allow-stale")
     assert code == ExitCode.USAGE
-    assert "inji-conformance run: this version runs --component verify only" in err
+    assert "inji-conformance run: --combined is not available in this version; use --component" in err
+
+
+@respx.mock
+def test_seed_certify_creates_the_configuration_once(capsys):
+    respx.get(f"{CERTIFY}/.well-known/openid-credential-issuer").mock(
+        return_value=httpx.Response(200, json={"credential_issuer": CERTIFY})
+    )
+    stored: dict = {}
+
+    def read(_request):
+        if stored:
+            return httpx.Response(200, json={"credentialConfigKeyId": stored["credentialConfigKeyId"]})
+        return httpx.Response(404, json={"response": None, "errors": [{"errorCode": "invalid_request"}]})
+
+    def add(request):
+        stored.update(json.loads(request.content))
+        return httpx.Response(201, json={"id": stored["credentialConfigKeyId"], "status": "active"})
+
+    respx.get(CERTIFY_CONFIGURATION).mock(side_effect=read)
+    add_route = respx.post(f"{CERTIFY}/v1/certify/credential-configurations").mock(side_effect=add)
+
+    first = run(capsys, "seed", "certify")
+    second = run(capsys, "seed", "certify")
+
+    assert first[:2] == (ExitCode.OK, "seed certify: credential configuration InjiConformanceSdJwtVc created\n")
+    assert second[:2] == (
+        ExitCode.OK,
+        "seed certify: credential configuration InjiConformanceSdJwtVc already present\n",
+    )
+    assert add_route.call_count == 1
+    # What reached Inji Certify is the rendered seed block: no template variables, no notes.
+    assert stored["credentialConfigKeyId"] == "InjiConformanceSdJwtVc" and "$comment" not in stored
+
+
+@respx.mock
+def test_seed_certify_reports_an_error_inside_http_200(capsys):
+    respx.get(f"{CERTIFY}/.well-known/openid-credential-issuer").mock(
+        return_value=httpx.Response(200, json={"credential_issuer": CERTIFY})
+    )
+    respx.get(CERTIFY_CONFIGURATION).mock(return_value=httpx.Response(404, json={"errors": [{"errorCode": "x"}]}))
+    respx.post(f"{CERTIFY}/v1/certify/credential-configurations").mock(
+        return_value=httpx.Response(
+            200, json={"response": None, "errors": [{"errorCode": "unsupported_format", "errorMessage": "no"}]}
+        )
+    )
+    code, out, err = run(capsys, "seed", "certify")
+    assert (code, out) == (ExitCode.ENVIRONMENT_NOT_READY, "")
+    assert "inji-conformance seed: seeding Inji Certify failed" in err and "unsupported_format: no" in err
+
+
+@respx.mock
+def test_seed_certify_without_a_stack_exits_3(capsys, monkeypatch):
+    monkeypatch.setattr(run_module, "READY_TIMEOUT_S", 0)
+    respx.get(f"{CERTIFY}/.well-known/openid-credential-issuer").mock(side_effect=httpx.ConnectError("refused"))
+    code, _, err = run(capsys, "seed", "certify")
+    assert code == ExitCode.ENVIRONMENT_NOT_READY
+    assert f"inji-conformance seed: Inji Certify at {CERTIFY} is not ready" in err
+
+
+@respx.mock
+def test_seed_takes_the_issuer_from_target_or_the_environment(capsys, monkeypatch):
+    monkeypatch.setattr(run_module, "READY_TIMEOUT_S", 0)
+    monkeypatch.setenv("HARNESS_CERTIFY_URL", "https://from-env.example/")
+    respx.get("https://from-env.example/.well-known/openid-credential-issuer").mock(return_value=httpx.Response(503))
+    respx.get("https://from-option.example/.well-known/openid-credential-issuer").mock(return_value=httpx.Response(503))
+    assert "Inji Certify at https://from-env.example is not ready" in run(capsys, "seed", "certify")[2]
+    err = run(capsys, "seed", "certify", "--target", "https://from-option.example")[2]
+    assert "Inji Certify at https://from-option.example is not ready" in err and "HTTP 503" in err
+
+
+@respx.mock
+@pytest.mark.parametrize("with_out", [True, False])
+def test_run_certify_without_a_stack_exits_3_and_writes_only_into_the_run_folder(
+    capsys, monkeypatch, tmp_path, with_out
+):
+    monkeypatch.setattr(run_module, "READY_TIMEOUT_S", 0)
+    monkeypatch.chdir(tmp_path)
+    respx.get(f"{SUITE}/api/server").mock(side_effect=httpx.ConnectError("refused"))
+    argv = ["run", "--component", "certify", "--no-gate"]
+    if with_out:
+        argv += ["--out", str(tmp_path / "out")]
+
+    code, out, err = run(capsys, *argv)
+
+    assert code == ExitCode.ENVIRONMENT_NOT_READY
+    assert f"inji-conformance run: the conformance suite at {SUITE} is not ready" in err
+    assert "certify plan oid4vci-1_0-issuer-test-plan [fapi_profile=vci, " in out
+    assert f"against {CERTIFY}" in out
+    # Without --out the run folder is $HARNESS_RUN_DIR/reports/<run id>, which the tests point at tmp_path.
+    folders = sorted(str(p.relative_to(tmp_path).parent.as_posix()) for p in tmp_path.rglob("certify"))
+    if with_out:
+        assert folders == ["out"]
+    else:
+        (folder,) = folders
+        assert folder.startswith("harness-run/reports/")
+
+
+def test_run_certify_rejects_a_malformed_variant_option(capsys, tmp_path):
+    code, _, err = run(
+        capsys, "run", "--component", "certify", "--variant", "sender_constrain", "--out", str(tmp_path / "out")
+    )
+    assert code == ExitCode.USAGE
+    assert "inji-conformance run: --variant expects NAME=VALUE, not 'sender_constrain'" in err
+    assert not (tmp_path / "out").exists()
 
 
 def test_run_parses_the_documented_options():
@@ -198,6 +295,24 @@ def test_run_parses_the_documented_options():
         ["run", "--component", "verify", "--modules", "a, b", "--target", "https://verify.inji.test:18451"]
     )
     assert (args.component, args.modules, args.track, args.no_gate) == ("verify", ["a", "b"], "gate", False)
+    assert (args.variant, args.no_seed) == (None, False)
+
+
+def test_run_parses_the_issuer_options():
+    args = cli.build_parser().parse_args(
+        [
+            "run",
+            "--component",
+            "certify",
+            "--no-seed",
+            "--variant",
+            "sender_constrain=mtls",
+            "--variant",
+            "client_auth_type=client_attestation",
+        ]
+    )
+    assert args.no_seed is True
+    assert args.variant == ["sender_constrain=mtls", "client_auth_type=client_attestation"]
 
 
 # --------------------------------------------------------------------------------------------------------------
