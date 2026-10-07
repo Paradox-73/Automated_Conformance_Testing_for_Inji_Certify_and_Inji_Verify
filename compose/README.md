@@ -194,7 +194,7 @@ the team's diff.
 | File | Upstream | Licence | Team change |
 |---|---|---|---|
 | `suite/nginx.conf` | `openid/conformance-suite` `nginx/nginx.conf` at tag `release-v5.3.1` (commit `440eec8`) | MIT, [`suite/LICENSE.txt`](suite/LICENSE.txt) | `listen 18443`/`18444` and the matching `X-Forwarded-Port` headers instead of 8443/8444; `proxy_pass` to `suite-server`; header comment |
-| `verify/init.sql` | `inji/inji-verify` `docker-compose/db-init/init.sql` at `release-1.0.x` commit `6a6ab3b` | Apache-2.0, [`verify/LICENSE`](verify/LICENSE) | none |
+| `verify/init.sql` | `inji/inji-verify` `docker-compose/db-init/init.sql` at `release-1.0.x` commit `6a6ab3b` | Apache-2.0, [`verify/LICENSE`](verify/LICENSE) | `vp_submission` brought in line with the upstream `db_scripts` DDL of the same commit (response code columns, nullable token, keys): without them the 1.0.x service answers HTTP 500 to every wallet response |
 | `certify/config/certify-default.properties` | `inji/inji-certify` `docker-compose/docker-compose-injistack/config/` at `release-1.0.x` commit `203b143` | Apache-2.0, [`certify/LICENSE`](certify/LICENSE) | Certify as its own authorization server, HTTPS domain, database host, passwords from `env.local`; see [`certify/README.md`](certify/README.md) |
 | `certify/config/certify-csvdp-farmer.properties`, `certify/certify_init.sql`, `certify/certify-nginx.conf` | same commit, `docker-compose/docker-compose-injistack/` | Apache-2.0 | none (`certify-nginx.conf` is the reference for `tls-proxy/sites/certify.conf`, not mounted) |
 

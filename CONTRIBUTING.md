@@ -270,7 +270,7 @@ the pull request from your fork.
 | `pull access denied` for `minio/minio` or `minio/mc` | Those images are no longer published; the defaults use the `pgsty` builds. |
 | `inji-conformance run` exits 3 | The suite or the Inji component did not answer within 120 s, or a key from `pki-init` is missing. Start the stack with `up -d --wait` first. |
 | `inji-conformance run` exits 4 | The whole run hit `--timeout-minutes` (default 30); `results.json` is still written. Free Docker resources or raise the limit. |
-| Verifier modules fail at the wallet's response with HTTP 500 from Inji Verify | Known open problem: `compose/verify/init.sql` lacks the column `vp_submission.response_code`. See [docs/STATUS.md](docs/STATUS.md). |
+| Verifier modules fail at the wallet's response with HTTP 500 from Inji Verify | The Verify database was created before `compose/verify/init.sql` gained the `vp_submission` response code columns (2026-10-07). The database has no volume, so `bash scripts/dc.sh down -v` and a new `up` recreate it. |
 | Changes to `conformance/plans/` have no effect in a run | The runner image copies `conformance/`. Rebuild it: `bash scripts/dc.sh --profile tools build runner`. |
 | First Maven build of a testrig takes 8-15 minutes | Downloads, and the rig pom declares a snapshots repository that Maven probes for every artifact. Keep `~/.m2`; pass a mirror through `MAVEN_ARGS` if you have one. |
 | A rig report lands in the wrong place or is missing (Windows) | TestNG's output folder is relative to the working directory: keep `conformance.report.dir` on the same drive as the working directory. |
