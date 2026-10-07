@@ -18,7 +18,8 @@
 #   containers running as that user can write them on Linux;
 # - HARNESS_RUN_DIR as a native path and Git Bash path rewriting turned off, so bind mounts work on Windows;
 # - HARNESS_UID and HARNESS_GID, the user the pki-init and runner containers run as (files they write stay
-#   owned by the calling user on Linux).
+#   owned by the calling user on Linux);
+# - "--profile *" for "down" when no profile is named, so "bash scripts/dc.sh down -v" stops every service.
 #
 # Settings: HARNESS_RUN_DIR, HARNESS_COMPOSE_PROJECT (see scripts/lib/common.sh). Image overrides such as
 # VERIFY_IMAGE are read from the environment or from env.local.
@@ -83,6 +84,34 @@ ensure_env_file() {
   trap - EXIT
 }
 
+# with_down_profiles ARGS...: the arguments for compose, with "--profile *" in front when the subcommand is "down"
+# and no profile was named. A plain "down" leaves services that were started with a profile running, and a later
+# "up" silently reuses that old stack. Only the subcommand counts: "run --rm runner sh -c down" is left alone.
+with_down_profiles() {
+  local arg expect_value=0 subcommand='' has_profile=0
+  for arg in "$@"; do
+    if ((expect_value)); then
+      expect_value=0
+      continue
+    fi
+    case $arg in
+      --profile | --profile=*) has_profile=1 ;;&
+      --profile | -f | --file | --env-file | -p | --project-name | --project-directory | --ansi | --progress | \
+        --parallel) expect_value=1 ;;
+      -*) ;;
+      *)
+        subcommand=$arg
+        break
+        ;;
+    esac
+  done
+  if [[ $subcommand == down ]] && ((!has_profile)); then
+    printf '%s\0' --profile '*' "$@"
+  elif (($#)); then
+    printf '%s\0' "$@"
+  fi
+}
+
 main() {
   harness_require_cmd docker "install Docker with the Compose v2 plugin"
   [[ $HARNESS_COMPOSE_PROJECT == ps01-* ]] ||
@@ -104,14 +133,15 @@ main() {
   HARNESS_RUN_DIR=$(harness_native_path "$run_dir")
   export HARNESS_UID HARNESS_GID HARNESS_RUN_DIR
 
-  local root
+  local root args=()
   root=$(harness_native_path "$HARNESS_ROOT")
+  mapfile -d '' -t args < <(with_down_profiles "$@")
   MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' exec docker compose \
     --project-name "$HARNESS_COMPOSE_PROJECT" \
     --project-directory "$root" \
     --file "$root/docker-compose.yml" \
     --env-file "$HARNESS_RUN_DIR/env.local" \
-    "$@"
+    "${args[@]}"
 }
 
 main "$@"

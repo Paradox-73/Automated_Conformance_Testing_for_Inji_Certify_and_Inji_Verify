@@ -143,6 +143,48 @@ TESTS=$((TESTS + 1))
 name="no lock folder or temporary file is left behind"
 if [[ -z $(find "$run_dir" -maxdepth 1 -name 'env.local.*') ]]; then ok "$name"; else not_ok "$name" "leftovers"; fi
 
+# --- down stops every profile ---------------------------------------------------------------------------------------
+# caller_args: the arguments compose got after the four harness options (8 lines), without the stub's 3 env lines.
+caller_args() {
+  tail -n +10 <<<"$LOG" | head -n -3
+}
+
+TESTS=$((TESTS + 1))
+name="down without a profile gets --profile '*', so services started with a profile stop too"
+run_dc "$WORK/run1" down -v
+if ((RC == 0)) && [[ $(caller_args) == "$(printf '%s\n' --profile '*' down -v)" ]]; then
+  ok "$name"
+else
+  not_ok "$name" "exit $RC, got: $(caller_args)"
+fi
+
+TESTS=$((TESTS + 1))
+name="down with a named profile is passed unchanged"
+run_dc "$WORK/run1" --profile verify down -v
+if [[ $(caller_args) == "$(printf '%s\n' --profile verify down -v)" ]]; then
+  ok "$name"
+else
+  not_ok "$name" "got: $(caller_args)"
+fi
+
+TESTS=$((TESTS + 1))
+name="down as an argument of another subcommand is left alone"
+run_dc "$WORK/run1" run --rm runner sh -c down
+if [[ $(caller_args) == "$(printf '%s\n' run --rm runner sh -c down)" ]]; then
+  ok "$name"
+else
+  not_ok "$name" "got: $(caller_args)"
+fi
+
+TESTS=$((TESTS + 1))
+name="an option value that reads 'down' is not taken for the subcommand"
+run_dc "$WORK/run1" --progress down ps
+if [[ $(caller_args) == "$(printf '%s\n' --progress down ps)" ]]; then
+  ok "$name"
+else
+  not_ok "$name" "got: $(caller_args)"
+fi
+
 # --- refusals -----------------------------------------------------------------------------------------------------
 TESTS=$((TESTS + 1))
 name="a project name outside ps01-* is refused with exit status 2"
