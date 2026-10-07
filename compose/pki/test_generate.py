@@ -23,7 +23,15 @@ def b64url_decode(value: str) -> bytes:
 
 
 def run_openssl(*args: str, stdin: bytes | None = None) -> str:
-    done = subprocess.run(["openssl", *args], input=stdin, capture_output=True, check=True)
+    """Runs openssl; `stdin` goes in through a temporary file (`-in`), because the openssl of Git for Windows
+    reads standard input in text mode and corrupts binary input such as a DER certificate."""
+    if stdin is None:
+        done = subprocess.run(["openssl", *args], capture_output=True, check=True)
+        return done.stdout.decode("ascii")
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / "input"
+        path.write_bytes(stdin)
+        done = subprocess.run(["openssl", *args, "-in", str(path)], capture_output=True, check=True)
     return done.stdout.decode("ascii")
 
 
