@@ -5,10 +5,10 @@ Status of the harness on **2026-10-04 at 20:45 IST**, when work stopped. Deadlin
 | Item | Value |
 |---|---|
 | Repository | <https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify> |
-| `main` | `511baf9df86892cbd9850c24106b09c0d2361908` (2026-10-04 16:52 IST), the same commit as `origin/main` |
-| Unfinished work | Branch `feat/issuer-path` continues task WP-08 from the snapshot branch `wip/2026-10-04-stop` (commit `e8a3f7e`, 2026-10-04 20:45 IST). Code, unit tests and READMEs are done; the live acceptance run is open. See the WP-08 card. |
+| `main` | Holds every finished task, WP-08's code and unit tests (`158e917`, `177474c`) and the two platform fixes (`992bc68` to `c4404a6`). Branches `feat/issuer-path`, `fix/platform-open-problems` and `wip/2026-10-04-stop` are merged and deleted. |
+| Unfinished work | WP-08: code, unit tests and READMEs are on `main`; the live acceptance run is open. See the WP-08 card. |
 
-The snapshot branch is on GitHub (pushed 2026-10-04) and is kept only as the starting point of `feat/issuer-path`.
+Start every task from an up-to-date `main` on a new branch.
 
 How to work on a task: [CONTRIBUTING.md](../CONTRIBUTING.md). The words used below:
 
@@ -39,7 +39,7 @@ but the acceptance check was not run. TODO means nothing was started.
 | WP-05 | platform | Compose v1: suite, Inji Verify, TLS proxy, run-time keys | WP-01 | DONE | `eaac172`, `7d931ba`, `478b318`, `2694161` |
 | WP-06 | runner | Walking skeleton: `inji-conformance run --component verify` with the handoff responder | WP-02, WP-04, WP-05 | DONE | `be987eb`, `f1f83e1`, `a707012`, `345ab93` (compose build change inside `7eb88b4`) |
 | WP-07 | platform | Compose v2: Inji Certify and MinIO | WP-05 | DONE | `bcd8521`, `7eb88b4`, `2dd30a8` |
-| WP-08 | runner | Issuer path: Certify seeding and credential offer handoff | WP-06, WP-07 | PARTIAL | branch `feat/issuer-path` (from `wip/2026-10-04-stop`, `e8a3f7e`), not on `main` |
+| WP-08 | runner | Issuer path: Certify seeding and credential offer handoff | WP-06, WP-07 | PARTIAL | on `main`: `158e917`, `177474c` (unit level; live run left) |
 | WP-09 | runner | Results parser, benchmark gate, checked REVIEW evidence | WP-06, WP-08 | TODO | |
 | WP-10 | platform | One-command scripts `run-conformance.sh` and `run-full-stack-conformance.sh` | WP-09, WP-13 | TODO | |
 | WP-11 | testrig | TestNG bridge library and the Inji Verify rig integration | WP-03, WP-04 | DONE | `511baf9` |
@@ -200,7 +200,7 @@ the `runner` container is `$HARNESS_RUN_DIR/reports` on the host, `/pki` is `$HA
 
     ```bash
     git fetch origin
-    git switch feat/issuer-path
+    git switch -c wp-08-live origin/main
     bash scripts/check.sh runner    # PASS before you change anything
     ```
 
