@@ -207,6 +207,12 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--no-seed", action="store_true", help="do not seed Inji Certify before the issuer plan")
     run.add_argument("--benchmark-dir", type=Path, metavar="DIR", help="default: conformance/benchmark")
     run.add_argument(
+        "--template",
+        metavar="NAME",
+        help="plan template from conformance/plans to run instead of the default one, for example "
+        "verify.oid4vp-1final-verifier-x509-san-dns",
+    )
+    run.add_argument(
         "--variant",
         action="append",
         metavar="NAME=VALUE",

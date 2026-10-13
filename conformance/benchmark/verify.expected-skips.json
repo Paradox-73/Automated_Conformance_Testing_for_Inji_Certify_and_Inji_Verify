@@ -1,0 +1,11 @@
+[
+  {
+    "test-name": "oid4vp-1final-verifier-request-uri-method-post",
+    "variant": "*",
+    "configuration-filename": "*verify.oid4vp-1final-verifier-x509-san-dns.json",
+    "comment": "The module needs request_uri_method=post in the authorization request; Inji Verify never sends it, so the suite skips the module.",
+    "owner": "inji",
+    "spec": "OID4VP-1FINAL-5.10",
+    "issue": "docs/findings/verify-request-uri-method-post.md"
+  }
+]

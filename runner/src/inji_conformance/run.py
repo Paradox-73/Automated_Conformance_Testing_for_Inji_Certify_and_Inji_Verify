@@ -48,8 +48,14 @@ from pathlib import Path
 
 import httpx
 
-from inji_conformance import benchmark, keys, model, plans
-from inji_conformance.collect import module_result, plan_modules, review_from_vp_result, transaction_id
+from inji_conformance import benchmark, keys, manifest, model, plans
+from inji_conformance.collect import (
+    evidence_path,
+    module_result,
+    plan_modules,
+    review_from_vp_result,
+    transaction_id,
+)
 from inji_conformance.handoff import (
     AuthorizationRequestHandoff,
     BrowserVisitHandoff,
@@ -57,12 +63,13 @@ from inji_conformance.handoff import (
     Handoff,
     Responder,
     StartTestHandoff,
+    VerificationEvidenceHandoff,
     utc_now,
 )
 from inji_conformance.inji_certify import CertifyClient, CertifyError
 from inji_conformance.inji_certify import seed as seed_certify
 from inji_conformance.inji_verify import VerifyClient
-from inji_conformance.model import Component, ExitCode, Track
+from inji_conformance.model import Component, ExitCode, RunMode, Track
 from inji_conformance.suite import SuiteClient, SuiteError
 
 # Settings from the environment; the compose runner service sets the first four.
@@ -183,7 +190,7 @@ def stage_certs_keys(folder: Path, pki_dir: Path, certs_keys: dict[str, object])
 
 
 def run_script(
-    command: Sequence[str], cwd: Path, env: dict[str, str], log_path: Path, deadline: float
+    command: Sequence[str], cwd: Path, env: dict[str, str], log_path: Path, deadline: float, *, label: str = "suite"
 ) -> tuple[int | None, str | None]:
     """Run ``run-test-plan.py``, copying its output to the console and the log; returns (exit code, plan id).
 
@@ -210,7 +217,7 @@ def run_script(
             for line in process.stdout:
                 log.write(line)
                 log.flush()
-                print(f"suite | {line}", end="", flush=True)
+                print(f"{label} | {line}", end="", flush=True)
                 # The script prefixes its lines with a timestamp, so the marker is searched, not matched at the start.
                 if marker in line and not plan_id:
                     plan_id.append(line.split(marker, 1)[1].strip())
@@ -241,15 +248,62 @@ def relative(path: Path, root: Path) -> str:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
+    """One component, or both with ``--combined``: at the same time, or one after the other with ``--serial``.
+
+    The components share the run id and the run folder (``<out>/certify``, ``<out>/verify``); their aliases differ
+    (``inji-certify-<run id>``, ``inji-verify-<run id>``), so the two responders never touch each other's tests.
+    The exit code is the highest of the components' codes. ``manifest.json`` records the wall time of each plan.
+    """
+    started_at = utc_now()
+    run_id = new_run_id()
+    out = Path(args.out) if args.out else default_out_dir(run_id)
+    components = [Component.CERTIFY, Component.VERIFY] if args.combined else [Component(args.component)]
+    parallel = bool(args.combined and not args.serial)
+    outcomes: dict[Component, tuple[int, model.Results | None]] = {}
+
+    def one(component: Component) -> None:
+        prefix = f"inji-conformance run ({component.value})" if args.combined else "inji-conformance run"
+        try:
+            outcomes[component] = run_component(args, component, run_id=run_id, out=out, label=component.value)
+        except (RunError, plans.PlanError) as error:
+            code = error.exit_code if isinstance(error, RunError) else ExitCode.USAGE
+            print(f"{prefix}: {error}", file=sys.stderr)
+            outcomes[component] = (int(code), None)
+        except Exception as error:  # one plan's crash must not hide the other plan's results
+            print(f"{prefix}: {type(error).__name__}: {error}", file=sys.stderr)
+            outcomes[component] = (int(ExitCode.ENVIRONMENT_NOT_READY), None)
+            if not parallel:
+                raise
+
+    if parallel:
+        threads = [threading.Thread(target=one, args=(c,), name=f"plan-{c.value}") for c in components]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+    else:
+        for component in components:
+            one(component)
+
+    worst = max(code for code, _results in outcomes.values())
+    finished = [(results, code) for code, results in (outcomes[c] for c in components) if results is not None]
+    if finished:
+        written = manifest.build(
+            run_id,
+            RunMode.COMBINED if args.combined else RunMode.COMPONENT,
+            Track(args.track),
+            started_at,
+            utc_now(),
+            finished,
+            parallel=parallel if args.combined else None,
+            out=out,
+            command=sys.argv,
+        )
+        if written is not None and (not args.combined or len(finished) == len(components)):
+            print(f"manifest: {manifest.write(written, out)}")
     if args.combined:
-        print("inji-conformance run: --combined is not available in this version; use --component", file=sys.stderr)
-        return ExitCode.USAGE
-    try:
-        return run_component(args, Component(args.component))
-    except (RunError, plans.PlanError) as error:
-        code = error.exit_code if isinstance(error, RunError) else ExitCode.USAGE
-        print(f"inji-conformance run: {error}", file=sys.stderr)
-        return code
+        print(f"combined run {run_id}: " + ", ".join(f"{c.value} exit {outcomes[c][0]}" for c in components))
+    return worst
 
 
 def cmd_gate(args: argparse.Namespace) -> int:
@@ -340,15 +394,25 @@ def variant_overrides(values: Sequence[str] | None) -> dict[str, str]:
     return overrides
 
 
-def run_component(args: argparse.Namespace, component: Component) -> int:
+def run_component(
+    args: argparse.Namespace,
+    component: Component,
+    *,
+    run_id: str | None = None,
+    out: Path | None = None,
+    label: str = "suite",
+) -> tuple[int, model.Results]:
+    """Run one component's plan and write its results.json; returns (exit code, results)."""
     started_at = utc_now()
     deadline = time.monotonic() + 60 * (args.timeout_minutes or DEFAULT_TIMEOUT_MINUTES)
     home = harness_home()
     track = Track(args.track)
-    template = plans.find_template(home / "conformance" / "plans", component, track)
+    template = plans.find_template(
+        home / "conformance" / "plans", component, track, name=getattr(args, "template", None)
+    )
     template = plans.with_variant(template, variant_overrides(getattr(args, "variant", None)))
-    run_id = new_run_id()
-    out = Path(args.out) if args.out else default_out_dir(run_id)
+    run_id = run_id or new_run_id()
+    out = out or (Path(args.out) if args.out else default_out_dir(run_id))
     folder = out / component.value
     for sub in ("config", "exports", "logs"):
         (folder / sub).mkdir(parents=True, exist_ok=True)
@@ -394,7 +458,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         bench = None
         expected_args: list[str] = []
         if not args.no_gate:
-            bench = load_benchmark(args, home, component)
+            bench = load_benchmark(args, home, component).for_config(relative(config_path, folder))
             if args.modules:
                 # run-test-plan.py fails on an entry that matches no module of the run, so a run of selected
                 # modules uses only the entries for those modules, for the script and for the gate alike.
@@ -433,6 +497,18 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         }
 
         handoffs = component_handoffs(template, handoff_settings, suite, verify, certify)
+        requests = next((h for h in handoffs if isinstance(h, AuthorizationRequestHandoff)), None)
+        if requests is not None and verify is not None:
+            handoffs.append(
+                VerificationEvidenceHandoff(
+                    suite,
+                    verify,
+                    requests.transactions,
+                    folder / "evidence",
+                    template.expected_review,
+                    relative_to=out,
+                )
+            )
         responder = Responder(
             suite,
             alias,
@@ -442,7 +518,9 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         (folder / "logs" / "handoffs.jsonl").write_text("", encoding="utf-8")
         responder.start()
         try:
-            script_code, plan_id = run_script(command, folder, env, folder / "logs" / "run-test-plan.log", deadline)
+            script_code, plan_id = run_script(
+                command, folder, env, folder / "logs" / "run-test-plan.log", deadline, label=label
+            )
         finally:
             responder.stop()
             shutil.rmtree(stage / "certs-keys", ignore_errors=True)
@@ -484,7 +562,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
 
     model.dump(results, folder / "results.json")
     print_summary(results, folder / "results.json")
-    return int(results.gate.exit_code) if results.gate else ExitCode.OK
+    return (int(results.gate.exit_code) if results.gate else int(ExitCode.OK)), results
 
 
 def component_handoffs(
@@ -565,7 +643,9 @@ def build_results(
         review = None
         if info and info.get("result") == "REVIEW" and verify is not None:
             tx = transaction_id(handoffs)
-            review = review_from_vp_result(template.expected_review(name), verify.vp_result(tx) if tx else None)
+            review = review_from_vp_result(
+                template.expected_review(name), verify.vp_result(tx) if tx else None, evidence_path(handoffs)
+            )
         result = module_result(
             name,
             test_id,

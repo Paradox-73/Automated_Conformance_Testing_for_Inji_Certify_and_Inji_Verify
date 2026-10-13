@@ -15,6 +15,7 @@ from inji_conformance.handoff import HandoffRecord
 from inji_conformance.model import (
     Failure,
     Handoff,
+    HandoffKind,
     Links,
     ModuleResult,
     ModuleStatus,
@@ -154,10 +155,11 @@ def module_result(
     )
 
 
-def review_from_vp_result(expected: str, vp_result: Mapping[str, Any] | None) -> Review:
+def review_from_vp_result(expected: str, vp_result: Mapping[str, Any] | None, evidence: str | None = None) -> Review:
     """What Inji Verify reported for the presentation (``GET /vp-result``), against what the module expects.
 
-    No evidence image yet: the suite's own evidence page fills the screenshot placeholder for now.
+    ``evidence`` is the image of that verdict the responder uploaded into the suite's placeholder (relative to the
+    run folder), or None when none was uploaded.
     """
     if not vp_result or "vpResultStatus" not in vp_result:
         observed = ReviewOutcome.MISSING
@@ -165,7 +167,7 @@ def review_from_vp_result(expected: str, vp_result: Mapping[str, Any] | None) ->
         observed = ReviewOutcome.VALID
     else:
         observed = ReviewOutcome.INVALID
-    return Review(expected=ReviewOutcome(expected), observed=observed, evidence=None)
+    return Review(expected=ReviewOutcome(expected), observed=observed, evidence=evidence)
 
 
 def plan_modules(plan: Mapping[str, Any], selected: Sequence[str] | None) -> list[tuple[str, str | None]]:
@@ -178,6 +180,14 @@ def plan_modules(plan: Mapping[str, Any], selected: Sequence[str] | None) -> lis
         instances = module.get("instances") or []
         out.append((name, str(instances[-1]) if instances else None))
     return out
+
+
+def evidence_path(handoffs: Sequence[HandoffRecord]) -> str | None:
+    """The evidence image of the last successful upload into the suite's placeholder."""
+    for record in reversed(handoffs):
+        if record.kind is HandoffKind.VERIFICATION_EVIDENCE and record.error is None and record.data.get("evidence"):
+            return record.data["evidence"]
+    return None
 
 
 def transaction_id(handoffs: Sequence[HandoffRecord]) -> str | None:

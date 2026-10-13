@@ -17,13 +17,46 @@ PLANS_DIR = REPO_ROOT / "conformance" / "plans"
 RUN_VALUES = {"run_id": "20261004T193000Z-abc123", "target_url": "https://verify.inji.test:18451/v1/verify"}
 
 
+X509_TEMPLATE = "verify.oid4vp-1final-verifier-x509-san-dns"
+
+
 @pytest.fixture
 def verify_template() -> plans.PlanTemplate:
-    return plans.find_template(PLANS_DIR, Component.VERIFY, Track.GATE)
+    """The x509_san_dns configuration: the one with every kind of template field (client, signed request)."""
+    return plans.find_template(PLANS_DIR, Component.VERIFY, Track.GATE, name=X509_TEMPLATE)
+
+
+def test_default_verify_template_uses_the_redirect_uri_client_id():
+    default = plans.find_template(PLANS_DIR, Component.VERIFY, Track.GATE)
+    assert default.name == "verify.oid4vp-1final-verifier" and not default.alternative
+    assert default.variant == {
+        "vp_profile": "plain_vp",
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "response_mode": "direct_post",
+    }
+    handoff = plans.render_handoff(default, RUN_VALUES)["authorization_request"]
+    assert handoff["client_id"] == "redirect_uri:https://verify.inji.test:18451/v1/verify/v2/vp-submission/direct-post"
+    assert "$comment" not in handoff
+
+
+def test_alternative_templates_run_only_when_named(tmp_path):
+    for name in ("verify.a", "verify.b"):
+        data = json.loads((PLANS_DIR / f"{X509_TEMPLATE}.json").read_text(encoding="utf-8"))
+        data["alternative"] = name == "verify.b"
+        (tmp_path / f"{name}.json").write_text(json.dumps(data), encoding="utf-8")
+    assert plans.find_template(tmp_path, Component.VERIFY).name == "verify.a"
+    assert plans.find_template(tmp_path, Component.VERIFY, name="verify.b").name == "verify.b"
+    with pytest.raises(plans.PlanError, match=r"no plan template verify\.c\.json .*known: verify\.a, verify\.b"):
+        plans.find_template(tmp_path, Component.VERIFY, name="verify.c")
+    with pytest.raises(plans.PlanError, match="is a verify gate template"):
+        plans.find_template(tmp_path, Component.CERTIFY, name="verify.a")
 
 
 def test_verify_template_selects_the_1_0_final_variant(verify_template):
     assert verify_template.plan == "oid4vp-1final-verifier-test-plan"
+    assert verify_template.alternative
     assert verify_template.variant == {
         "vp_profile": "plain_vp",
         "credential_format": "sd_jwt_vc",
@@ -39,14 +72,15 @@ def test_rendered_config_is_the_suite_format_without_keys(verify_template):
     assert '"signing_jwk": {suite-signing.jwk.json}' in text
     config = json.loads(text.replace("{suite-signing.jwk.json}", '{"kty": "EC"}'))
     assert config["alias"] == "inji-verify-20261004T193000Z-abc123"
-    assert config["client"] == {"client_id": "test.example.com"}
+    assert config["client"] == {"client_id": "verify.inji.test"}
     assert "$comment" not in text
-    assert config["browser"][0]["match"] == "https://*/test/a/*/verification-evidence"
+    # No scripted browser: the responder uploads Inji Verify's verdict into the screenshot placeholder.
+    assert "browser" not in config
 
 
 def test_handoff_block_gets_the_run_values(verify_template):
     handoff = plans.render_handoff(verify_template, RUN_VALUES)["authorization_request"]
-    assert handoff["client_id"] == "x509_san_dns:test.example.com"
+    assert handoff["client_id"] == "x509_san_dns:verify.inji.test"
     assert handoff["dcql_query"]["credentials"][0]["meta"] == {"vct_values": ["urn:eudi:pid:1"]}
 
 

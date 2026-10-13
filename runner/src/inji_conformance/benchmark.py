@@ -90,6 +90,21 @@ class Benchmark:
             self.files,
         )
 
+    def for_config(self, config_file: str) -> Benchmark:
+        """Only the entries whose ``configuration-filename`` pattern matches ``config_file``.
+
+        One benchmark file serves every plan template of a component (for example the default verifier
+        configuration and the x509_san_dns one); ``run-test-plan.py`` must get only the entries of the
+        configuration it runs, or it reports the others as unused.
+        """
+
+        def matches(entry: ExpectedFailure | ExpectedSkip) -> bool:
+            return fnmatch.fnmatch(config_file, entry.configuration_filename)
+
+        return Benchmark(
+            tuple(e for e in self.failures if matches(e)), tuple(e for e in self.skips if matches(e)), self.files
+        )
+
     def write(self, folder: Path, component: Component) -> tuple[Path, Path]:
         """Write the entries as the two benchmark files into ``folder`` (for ``run-test-plan.py``)."""
         folder.mkdir(parents=True, exist_ok=True)
@@ -310,7 +325,7 @@ def unused_entries(results: model.Results, benchmark: Benchmark) -> list[Expecte
     modules = [(module.name, {**results.plan.variant, **(module.variant or {})}) for module in results.modules]
     return [
         entry
-        for entry in (*benchmark.failures, *benchmark.skips)
+        for entry in benchmark.for_config(config_file).failures + benchmark.for_config(config_file).skips
         if not any(applies(entry, name, config_file, variant) for name, variant in modules)
     ]
 

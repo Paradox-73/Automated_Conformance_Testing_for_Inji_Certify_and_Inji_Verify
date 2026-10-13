@@ -11,6 +11,9 @@ acts in the suite's web page. The responder runs next to the script in a backgro
 - WAITING with an exposed ``credential_offer_endpoint`` or ``tx_code_endpoint`` (issuer tests): asks Inji Certify for
   a pre-authorized offer, hands its URI to the suite's wallet, then sends the offer's transaction code
   (``CredentialOfferHandoff``);
+- WAITING with a screenshot placeholder (``uploadsRequired``, verifier tests that end in REVIEW): reads Inji
+  Verify's verdict for the test's transaction (``GET /vp-result/{transactionId}``), renders it to a PNG and uploads it
+  into the placeholder (``VerificationEvidenceHandoff``);
 - WAITING with front-channel URLs nobody visited: requests each URL and marks it visited;
 - CONFIGURED for longer than a grace period: starts the test (the suite starts almost every test by itself, so
   this only fires for a test that waits for a manual start).
@@ -119,6 +122,7 @@ class AuthorizationRequestHandoff:
         self.max_attempts = max_attempts
         self._attempts: dict[str, int] = {}
         self._done: set[str] = set()
+        self.transactions: dict[str, str] = {}  # test id -> Inji Verify transaction id of the delivered request
 
     def wants(self, test: TestView) -> bool:
         return (
@@ -172,6 +176,8 @@ class AuthorizationRequestHandoff:
                 data=data,
             )
         self._done.add(test.test_id)
+        if data["transaction_id"]:
+            self.transactions[test.test_id] = data["transaction_id"]
         by = "request_uri" if request.get("requestUri") else "value"
         return HandoffRecord(
             test.test_id,
@@ -319,6 +325,150 @@ class CredentialOfferHandoff:
             "the suite redeems the code and requests the credential within this call",
             error=error,
         )
+
+
+class VerificationEvidenceHandoff:
+    """Verifier tests that end in REVIEW: upload an image of Inji Verify's own verdict into the suite's placeholder.
+
+    The suite cannot see the verifier's result screen, so after the presentation it asks for a screenshot and waits
+    (``browser.uploadsRequired``). A person would upload a screenshot of Inji Verify's result page. The harness reads
+    the same verdict from Inji Verify's API (``GET /vp-result/{transactionId}`` of the transaction the authorization
+    request created), draws it as a PNG (``render_evidence``), keeps it in ``evidence/`` and uploads it with
+    ``POST /api/log/{id}/images/{placeholder}``. The suite then finishes the module with result REVIEW, and the
+    results builder compares the verdict with the one the module expects.
+    """
+
+    kind = HandoffKind.VERIFICATION_EVIDENCE
+
+    def __init__(
+        self,
+        suite: SuiteClient,
+        verify: VerifyClient,
+        transactions: Mapping[str, str],
+        evidence_dir: Path,
+        expected: Callable[[str], str],
+        *,
+        relative_to: Path | None = None,
+        max_attempts: int = 3,
+        result_wait_s: float = 10.0,
+    ):
+        self.suite = suite
+        self.verify = verify
+        self.transactions = transactions
+        self.evidence_dir = evidence_dir
+        self.expected = expected
+        self.relative_to = relative_to
+        self.max_attempts = max_attempts
+        self.result_wait_s = result_wait_s
+        self._attempts: dict[str, int] = {}
+        self._done: set[str] = set()
+
+    def wants(self, test: TestView) -> bool:
+        required = test.browser.get("uploadsRequired")
+        return (
+            test.status == "WAITING"
+            and isinstance(required, int)
+            and required > 0
+            and test.test_id in self.transactions
+            and test.test_id not in self._done
+            and self._attempts.get(test.test_id, 0) < self.max_attempts
+        )
+
+    def _vp_result(self, transaction: str) -> Mapping[str, Any] | None:
+        deadline = time.monotonic() + self.result_wait_s
+        while True:
+            result = self.verify.vp_result(transaction)
+            if result or time.monotonic() >= deadline:
+                return result
+            time.sleep(1.0)
+
+    def deliver(self, test: TestView) -> HandoffRecord:
+        self._attempts[test.test_id] = self._attempts.get(test.test_id, 0) + 1
+        transaction = self.transactions[test.test_id]
+        at = utc_now()
+        started = time.monotonic()
+
+        def failed(detail: str, error: str) -> HandoffRecord:
+            return HandoffRecord(
+                test.test_id, test.module, self.kind, at, None, _ms(started), detail=detail, error=error
+            )
+
+        try:
+            placeholders = [str(i["upload"]) for i in self.suite.images(test.test_id) if i.get("upload")]
+            result = self._vp_result(transaction)
+        except (VerifyError, httpx.HTTPError, ValueError) as error:
+            return failed("reading the placeholder and Inji Verify's verdict", f"{type(error).__name__}: {error}")
+        if not placeholders:
+            return failed("GET /api/log/{id}/images", "the suite lists no open placeholder")
+        if not result:
+            return failed(f"GET /vp-result/{transaction}", "Inji Verify has no verdict for the transaction")
+        png = render_evidence(test.module, test.test_id, transaction, result, self.expected(test.module))
+        self.evidence_dir.mkdir(parents=True, exist_ok=True)
+        path = self.evidence_dir / f"{test.module}-{test.test_id}.png"
+        path.write_bytes(png)
+        shown = path.relative_to(self.relative_to).as_posix() if self.relative_to else path.as_posix()
+        statuses = []
+        for placeholder in placeholders:
+            try:
+                statuses.append(self.suite.upload_image(test.test_id, placeholder, png).status_code)
+            except httpx.HTTPError as error:
+                return failed(f"POST /api/log/{{id}}/images/{placeholder}", f"{type(error).__name__}: {error}")
+        status = max(statuses)
+        if status < 400:
+            self._done.add(test.test_id)
+        return HandoffRecord(
+            test.test_id,
+            test.module,
+            self.kind,
+            at,
+            status,
+            _ms(started),
+            detail=f"Inji Verify's verdict {result.get('vpResultStatus')} for {transaction} uploaded into "
+            f"{len(placeholders)} placeholder(s) as {shown}",
+            error=None if status < 400 else f"the suite answered HTTP {status}",
+            data={"evidence": shown, "transaction_id": transaction},
+        )
+
+
+def render_evidence(module: str, test_id: str, transaction: str, result: Mapping[str, Any], expected: str) -> bytes:
+    """A PNG that shows Inji Verify's verdict for one presentation, as its result page would."""
+    import io
+
+    from PIL import Image, ImageDraw, ImageFont
+
+    status = str(result.get("vpResultStatus", "UNKNOWN"))
+    credentials = [r for r in result.get("vcResults") or [] if isinstance(r, Mapping)]
+    lines = [
+        ("Presentation " + ("verified" if status == "SUCCESS" else "NOT verified") + f"  ({status})", 28),
+        (f"Credentials: {len(credentials)}", 18),
+        *[(f"  credential {n}: {r.get('verificationStatus', 'unknown')}", 18) for n, r in enumerate(credentials, 1)],
+        ("", 10),
+        (f"Inji Verify transaction {transaction}", 16),
+        (f"Conformance suite module {module} ({test_id})", 16),
+        (f"Verdict the module expects: {expected}", 16),
+        ("", 10),
+        (f"Drawn by inji-conformance at {utc_now()} from Inji Verify's GET /vp-result/{transaction}.", 14),
+    ]
+
+    def font(size: int) -> ImageFont.ImageFont:
+        try:
+            return ImageFont.load_default(size=size)
+        except TypeError:  # Pillow before 10.1 has one fixed-size default font
+            return ImageFont.load_default()
+
+    width, height = 1000, 70 + sum(size + 12 for _text, size in lines)
+    image = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(image)
+    banner = (22, 128, 61) if status == "SUCCESS" else (180, 35, 24)
+    draw.rectangle([0, 0, width, 44], fill=banner)
+    draw.text((20, 10), "Inji Verify - verification result", fill="white", font=font(20))
+    y = 60
+    for text, size in lines:
+        draw.text((20, y), text, fill=(20, 20, 20), font=font(size))
+        y += size + 12
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
 
 
 def _with_query(url: str, params: Mapping[str, str]) -> str:

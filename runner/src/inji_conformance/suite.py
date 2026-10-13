@@ -15,12 +15,15 @@ Endpoints (suite source ``TestRunner.java``, ``TestInfoApi.java``, ``LogApi.java
 - ``GET /api/info/{id}``: name, alias, plan id, status, result;
 - ``GET /api/log/{id}``: log entries;
 - ``GET /api/plan/{id}``: plan with its modules and their test ids;
+- ``GET /api/log/{id}/images``: the module's image entries; one with ``upload`` is a placeholder still waiting;
+- ``POST /api/log/{id}/images/{placeholder}``: fill a placeholder with an image (body: a ``data:`` URL);
 - ``GET /api/plan/exporthtml/{id}``: the plan's results as a zip of HTML pages (what ``conformance.py exporthtml``
   downloads; ``run-test-plan.py --export-dir`` saves only the JSON export).
 """
 
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 from typing import Any
 
@@ -70,6 +73,16 @@ class SuiteClient:
 
     def plan(self, plan_id: str) -> dict[str, Any] | None:
         return self._get_json(f"api/plan/{plan_id}", missing_ok=True)
+
+    def images(self, test_id: str) -> list[dict[str, Any]]:
+        return list(self._get_json(f"api/log/{test_id}/images") or [])
+
+    def upload_image(self, test_id: str, placeholder: str, png: bytes) -> httpx.Response:
+        """Fill a screenshot placeholder, as the suite's upload page does."""
+        body = "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+        return self._http.post(
+            self._url(f"api/log/{test_id}/images/{placeholder}"), content=body, headers={"Content-Type": "text/plain"}
+        )
 
     def export_html(self, plan_id: str) -> tuple[str, bytes]:
         """The plan's HTML export: (file name the suite gives it, zip bytes)."""

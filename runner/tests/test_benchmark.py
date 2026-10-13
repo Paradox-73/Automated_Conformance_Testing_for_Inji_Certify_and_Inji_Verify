@@ -269,6 +269,14 @@ def test_restricted_to_keeps_only_entries_for_the_selected_modules(tmp_path):
     assert json.loads(paths[1].read_text(encoding="utf-8")) == []
 
 
+def test_entries_for_another_configuration_are_left_out(tmp_path):
+    other = failure_entry("a", "X", configuration_filename="*verify.other.json")
+    entries = bench([failure_entry("a", "X"), other], tmp_path=tmp_path)
+    assert [e.configuration_filename for e in entries.for_config(CONFIG).failures] == [PATTERN]
+    results = results_of(module("a", SuiteResult.FAILED, (fail("X"),)))
+    assert benchmark.unused_entries(results, entries) == []
+
+
 def test_unused_entries_are_found(tmp_path):
     entries = bench([failure_entry("a", "X"), failure_entry("zzz", "Y")], tmp_path=tmp_path)
     results = results_of(module("a", SuiteResult.FAILED, (fail("X"),)))
@@ -355,6 +363,6 @@ def test_gate_command_usage_errors(tmp_path, capsys):
 
 def test_repository_benchmark_files_are_valid():
     folder = Path(__file__).resolve().parents[2] / "conformance" / "benchmark"
-    for component in (Component.CERTIFY,):
+    for component in Component:
         loaded = benchmark.load(folder, component)
         assert loaded.files, f"no benchmark files for {component.value}"

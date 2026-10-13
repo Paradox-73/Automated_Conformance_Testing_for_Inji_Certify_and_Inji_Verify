@@ -1,0 +1,68 @@
+{
+  "$comment": "Alternative verifier configuration (run it with --template verify.oid4vp-1final-verifier-x509-san-dns): signed request objects with an x509_san_dns client id. Inji Verify signs them with Ed25519 (EdDSA), and suite release-v5.3.1 cannot verify an EdDSA request object against its x5c certificate, so every module stops at ValidateRequestObjectSignatureAgainstX5cHeader before the presentation (measured 2026-10-14). Kept to show that gap; the default template tests the presentation checks.",
+  "alternative": true,
+  "component": "verify",
+  "track": "gate",
+  "plan": "oid4vp-1final-verifier-test-plan",
+  "variant": {
+    "vp_profile": "plain_vp",
+    "credential_format": "sd_jwt_vc",
+    "client_id_prefix": "x509_san_dns",
+    "request_method": "request_uri_signed",
+    "response_mode": "direct_post"
+  },
+  "modules": [],
+  "parameters": {
+    "verify_x509_san_dns_host": "verify.inji.test"
+  },
+  "certs_keys": {
+    "suite-signing.jwk.json": "suite-signing.jwk.json"
+  },
+  "config": {
+    "alias": "inji-verify-${run_id}",
+    "description": "Inji Verify at ${target_url}, harness run ${run_id}",
+    "client": {
+      "$comment": "x509_san_dns: the suite adds the prefix itself and compares the result with the request's client_id. The host is the SAN of the certificate pki-init issues for Inji Verify's request signing key (compose/pki/generate.py, PKI_VERIFY_HOST).",
+      "client_id": "${verify_x509_san_dns_host}"
+    },
+    "credential": {
+      "$comment": "Private JWK with x5c the suite signs the presented SD-JWT VC with. Inji Verify takes the issuer key from x5c, so no trust setup is needed.",
+      "signing_jwk": {
+        "$certs_keys": "suite-signing.jwk.json"
+      }
+    }
+  },
+  "handoff": {
+    "authorization_request": {
+      "client_id": "x509_san_dns:${verify_x509_san_dns_host}",
+      "response_mode": "direct_post",
+      "dcql_query": {
+        "credentials": [
+          {
+            "id": "pid",
+            "format": "dc+sd-jwt",
+            "meta": {
+              "vct_values": [
+                "urn:eudi:pid:1"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "review": {
+    "$comment": "Verdict Inji Verify must show for a module the suite ends in REVIEW: the presented credential is valid unless the module tampers with it.",
+    "default": "valid",
+    "invalid": [
+      "oid4vp-1final-verifier-invalid-session-transcript",
+      "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "oid4vp-1final-verifier-invalid-credential-signature",
+      "oid4vp-1final-verifier-invalid-sd-hash",
+      "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "oid4vp-1final-verifier-kb-jwt-iat-in-future"
+    ]
+  }
+}

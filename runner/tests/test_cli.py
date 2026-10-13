@@ -180,10 +180,11 @@ def test_gate_reports_a_missing_run_folder(capsys):
     assert "inji-conformance gate: no results file at" in err
 
 
-def test_combined_run_is_not_in_this_version(capsys):
+def test_combined_haip_run_without_templates_names_each_component(capsys):
     code, _, err = run(capsys, "run", "--combined", "--track", "haip", "--serial", "--allow-stale")
     assert code == ExitCode.USAGE
-    assert "inji-conformance run: --combined is not available in this version; use --component" in err
+    assert "inji-conformance run (certify): expected one haip plan template for certify" in err
+    assert "inji-conformance run (verify): expected one haip plan template for verify" in err
 
 
 @respx.mock

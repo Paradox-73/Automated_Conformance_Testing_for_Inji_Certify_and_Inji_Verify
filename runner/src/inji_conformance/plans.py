@@ -68,6 +68,7 @@ class PlanTemplate:
     handoff: Mapping[str, Any]
     review: Mapping[str, Any]
     seed: Mapping[str, Any] = dataclasses.field(default_factory=dict)
+    alternative: bool = False  # run only when named with --template; the one without it is the default
 
     @property
     def name(self) -> str:
@@ -128,6 +129,7 @@ def load_template(path: str | Path) -> PlanTemplate:
         handoff=dict(data.get("handoff", {})),
         review=dict(data.get("review", {})),
         seed=dict(data.get("seed", {})),
+        alternative=bool(data.get("alternative", False)),
     )
 
 
@@ -155,12 +157,24 @@ def with_variant(template: PlanTemplate, overrides: Mapping[str, str]) -> PlanTe
     return dataclasses.replace(template, variant={**template.variant, **overrides})
 
 
-def find_template(plans_dir: Path, component: Component, track: Track = Track.GATE) -> PlanTemplate:
-    """The one template in ``plans_dir`` for ``component`` and ``track``."""
+def find_template(
+    plans_dir: Path, component: Component, track: Track = Track.GATE, name: str | None = None
+) -> PlanTemplate:
+    """The template called ``name`` (file name without ``.json``), else the one default template in ``plans_dir`` for
+    ``component`` and ``track`` (templates marked ``"alternative": true`` run only when named)."""
+    if name:
+        path = plans_dir / f"{name.removesuffix('.json')}.json"
+        if not path.is_file():
+            known = ", ".join(p.stem for p in sorted(plans_dir.glob(f"{component.value}.*.json")))
+            raise PlanError(f"no plan template {path.name} in {plans_dir} (known: {known})")
+        template = load_template(path)
+        if template.component is not component or template.track is not track:
+            raise PlanError(f"{path.name} is a {template.component.value} {template.track.value} template")
+        return template
     found = []
     for path in sorted(plans_dir.glob(f"{component.value}.*.json")):
         template = load_template(path)
-        if template.component is component and template.track is track:
+        if template.component is component and template.track is track and not template.alternative:
             found.append(template)
     if len(found) != 1:
         names = ", ".join(t.path.name for t in found) or "none"

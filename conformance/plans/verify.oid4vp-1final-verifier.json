@@ -1,52 +1,34 @@
 {
-  "$comment": "OpenID4VP 1.0 Final verifier plan against Inji Verify; format in conformance/plans/README.md. The suite plays the wallet.",
+  "$comment": "OpenID4VP 1.0 Final verifier plan against Inji Verify; format in conformance/plans/README.md. The suite plays the wallet. The client id is Inji Verify's response_uri with the redirect_uri prefix, and the request travels by value in the URL (url_query), so the suite reaches the presentation checks; the x509_san_dns configuration is verify.oid4vp-1final-verifier-x509-san-dns.json.",
   "component": "verify",
   "track": "gate",
   "plan": "oid4vp-1final-verifier-test-plan",
   "variant": {
     "vp_profile": "plain_vp",
     "credential_format": "sd_jwt_vc",
-    "client_id_prefix": "x509_san_dns",
-    "request_method": "request_uri_signed",
+    "client_id_prefix": "redirect_uri",
+    "request_method": "url_query",
     "response_mode": "direct_post"
   },
   "modules": [],
-  "parameters": {
-    "verify_x509_san_dns_host": "test.example.com"
-  },
+  "parameters": {},
   "certs_keys": {
     "suite-signing.jwk.json": "suite-signing.jwk.json"
   },
   "config": {
     "alias": "inji-verify-${run_id}",
     "description": "Inji Verify at ${target_url}, harness run ${run_id}",
-    "client": {
-      "$comment": "x509_san_dns: the suite adds the prefix itself and compares the result with the request's client_id. The host is the SAN of the certificate Inji Verify signs request objects with.",
-      "client_id": "${verify_x509_san_dns_host}"
-    },
     "credential": {
       "$comment": "Private JWK with x5c the suite signs the presented SD-JWT VC with. Inji Verify takes the issuer key from x5c, so no trust setup is needed.",
-      "signing_jwk": {"$certs_keys": "suite-signing.jwk.json"}
-    },
-    "browser": [
-      {
-        "comment": "Temporary: the suite's own evidence page fills the verification-result screenshot placeholder (as in the suite's vp-verifier-test-config.json). A later version uploads Inji Verify's own verdict instead.",
-        "match": "https://*/test/a/*/verification-evidence",
-        "tasks": [
-          {
-            "task": "Capture verification evidence",
-            "match": "https://*/test/a/*/verification-evidence",
-            "commands": [
-              ["wait", "xpath", "//*", 10, ".*Deferred verification evidence.*", "update-image-placeholder"]
-            ]
-          }
-        ]
+      "signing_jwk": {
+        "$certs_keys": "suite-signing.jwk.json"
       }
-    ]
+    }
   },
   "handoff": {
     "authorization_request": {
-      "client_id": "x509_san_dns:${verify_x509_san_dns_host}",
+      "$comment": "redirect_uri:<response_uri>. Inji Verify accepts this client id only when the URI equals its own response_uri (measured 2026-10-14: the /v2/ path), and then returns the request by value.",
+      "client_id": "redirect_uri:${target_url}/v2/vp-submission/direct-post",
       "response_mode": "direct_post",
       "dcql_query": {
         "credentials": [
@@ -54,7 +36,9 @@
             "id": "pid",
             "format": "dc+sd-jwt",
             "meta": {
-              "vct_values": ["urn:eudi:pid:1"]
+              "vct_values": [
+                "urn:eudi:pid:1"
+              ]
             }
           }
         ]
