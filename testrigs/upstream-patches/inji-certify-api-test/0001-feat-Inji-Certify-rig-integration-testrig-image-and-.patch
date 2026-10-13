@@ -1,0 +1,285 @@
+From 1ff1a86c71149252aa665eda2c34d44a8cfead3d Mon Sep 17 00:00:00 2001
+From: nikunj169 <nikunjmahajan9937@gmail.com>
+Date: Wed, 14 Oct 2026 03:29:40 +0530
+Subject: [PATCH] feat: Inji Certify rig integration, testrig image and report
+ upload (WP-12)
+
+- Inji Certify rig: OpenIDConformanceTest (one row per issuer module,
+  TC_OIDF_CERTIFY_nn), the two conformance suite files and
+  ConformanceRigRunner. The runner leaves out what InjiTestRunner does before
+  any test that needs a full MOSIP deployment: health checker, Keycloak
+  users, OTP listener and setup, partner setup, database cleanup. Of the
+  per-row checks only the skip list and run scope apply.
+- Bridge: RigRun.applyUploadSettings puts push-reports-to-s3 and the s3-*
+  keys into apitest-commons' configuration. apitest-commons lets the
+  environment replace only keys its property files have, and the rigs have
+  none of these, so the upload never ran before (measured 2026-10-14).
+- testrigs/build.sh: both shaded jars with the host's Maven (JDK 21 or
+  newer), else in the maven:3.9.11-eclipse-temurin-21 image; --image builds
+  ps01-harness/testrig:local from testrigs/Dockerfile (Temurin 21 JRE,
+  Python 3 with the runner, both jars and suite files).
+- testrigs/run-testrig.sh certify|verify --results FILE | --invoke: the rig
+  in the image on the compose network, upload to MinIO when it runs.
+
+Measured 2026-10-14 (stack certify or verify plus reports):
+bash testrigs/build.sh --image: jars in 95 s (warm cache), image built
+bash testrigs/run-testrig.sh certify --invoke: exit 0, report
+  ..._T-15_P-3_S-0_F-0_I-3_KI-9.html; MinIO automationtests/injicertify/ lists it
+bash testrigs/run-testrig.sh verify --invoke: exit 0, report
+  ..._T-11_P-11_S-0_F-0_I-0_KI-0.html; MinIO automationtests/injiverify/ lists it
+bash scripts/check.sh testrigs: PASS
+
+Signed-off-by: nikunj169 <nikunjmahajan9937@gmail.com>
+---
+ pom.xml                                       |  1 +
+ .../testrunner/ConformanceRigRunner.java      | 93 +++++++++++++++++++
+ .../testscripts/OpenIDConformanceTest.java    | 81 ++++++++++++++++
+ .../injicertifyConformanceMasterTestSuite.xml | 17 ++++
+ .../injicertifyConformanceSuite.xml           | 14 +++
+ 5 files changed, 206 insertions(+)
+ create mode 100644 testrigs/inji-certify-api-test/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
+ create mode 100644 testrigs/inji-certify-api-test/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
+ create mode 100644 testrigs/inji-certify-api-test/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
+ create mode 100644 testrigs/inji-certify-api-test/testNgXmlFiles/injicertifyConformanceSuite.xml
+
+diff --git a/pom.xml b/pom.xml
+index 1758969..44aa0ae 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -74,6 +74,7 @@
+ 			<artifactId>apitest-commons</artifactId>
+ 			<version>1.6.0</version>
+ 		</dependency>
++		<dependency><groupId>io.mosip.testrig.apitest.commons</groupId><artifactId>apitest-commons-conformance</artifactId><version>0.1.0-SNAPSHOT</version></dependency>
+ 		<dependency>
+ 			<groupId>com.github.openjson</groupId>
+ 			<artifactId>openjson</artifactId>
+diff --git a/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java b/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
+new file mode 100644
+index 0000000..30d3982
+--- /dev/null
++++ b/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
+@@ -0,0 +1,93 @@
++// SPDX-License-Identifier: MIT
++package io.inji.testrig.apirig.injicertify.testrunner;
++
++import java.nio.file.Path;
++
++import org.apache.log4j.Logger;
++
++import io.inji.testrig.apirig.injicertify.testscripts.OpenIDConformanceTest;
++import io.inji.testrig.apirig.injicertify.utils.InjiCertifyConfigManager;
++import io.mosip.testrig.apirig.conformance.rig.RigRun;
++import io.mosip.testrig.apirig.conformance.rig.TestNgResults;
++import io.mosip.testrig.apirig.testrunner.BaseTestCase;
++import io.mosip.testrig.apirig.testrunner.ExtractResource;
++import io.mosip.testrig.apirig.utils.AdminTestUtil;
++import io.mosip.testrig.apirig.utils.AuthTestsUtil;
++import io.mosip.testrig.apirig.utils.GlobalConstants;
++import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
++
++/**
++ * Runs only the OpenID conformance suite of the Inji Certify rig and exits with a code a pipeline can gate on.
++ *
++ * <p>Start-up is the part of {@link InjiTestRunner#main} a conformance run needs (resource extraction, config,
++ * {@code BaseTestCase} initialisation, skip list). It leaves out what {@code InjiTestRunner} does before any test
++ * and what needs a full MOSIP deployment: the health checker thread, the Keycloak user creation, the OTP listener
++ * and OTP setup, the PMS and partner set-up, and the database cleanup. The TestNG output and the
++ * {@code EmailableReport} HTML go to {@code conformance.report.dir} (default {@code ${HARNESS_RUN_DIR}/testrig/injicertify});
++ * S3 upload follows the usual {@code push-reports-to-s3} and {@code s3-*} settings.
++ *
++ * <p>Exit code: 0 when no row failed, 1 when a row failed (a conformance regression or a runner problem), 2 when
++ * the run could not start or TestNG wrote no results. The stock runner exits 0 or, on a start-up failure, 1.
++ *
++ * <pre>
++ * java -Dmodules=injicertify -Denv.user=ps01 -Denv.endpoint=https://certify.inji.test:18450 \
++ *      -Denv.testLevel=smokeAndRegression -Dconformance.results.file=results.json \
++ *      -cp apitest-injicertify-...-jar-with-dependencies.jar \
++ *      io.inji.testrig.apirig.injicertify.testrunner.ConformanceRigRunner
++ * </pre>
++ */
++public final class ConformanceRigRunner {
++	private static final Logger LOGGER = Logger.getLogger(ConformanceRigRunner.class);
++
++	/** Master suite with the EmailableReport listener; it includes injicertifyConformanceSuite.xml. */
++	static final String SUITE_FILE = "injicertifyConformanceMasterTestSuite.xml";
++
++	private ConformanceRigRunner() {
++	}
++
++	public static void main(String[] args) {
++		int exitCode;
++		try {
++			exitCode = run();
++		} catch (Exception | LinkageError e) {
++			LOGGER.error("conformance rig run failed before TestNG finished", e);
++			exitCode = TestNgResults.EXIT_ERROR;
++		}
++		LOGGER.info("conformance rig run exit code " + exitCode);
++		// Exit explicitly: apitest-commons leaves non-daemon threads behind.
++		System.exit(exitCode);
++	}
++
++	static int run() {
++		Path reportDir = RigRun.reportDir(GlobalConstants.INJICERTIFY);
++		String runType = InjiTestRunner.getRunType();
++
++		BaseTestCase.setRunContext(runType, InjiTestRunner.jarUrl);
++		ExtractResource.removeOldMosipTestTestResource();
++		if ("JAR".equalsIgnoreCase(runType)) {
++			ExtractResource.extractCommonResourceFromJar();
++		} else {
++			ExtractResource.copyCommonResources();
++		}
++		AdminTestUtil.init();
++		InjiCertifyConfigManager.init();
++		RigRun.keepReportCopyIn(reportDir);
++		LOGGER.info("report upload settings: " + RigRun.applyUploadSettings());
++
++		// InjiTestRunner.suiteSetup without the OTP listener, which waits for a MOSIP notification service.
++		BaseTestCase.initialize();
++		if (!"JAR".equalsIgnoreCase(runType)) {
++			AuthTestsUtil.removeOldMosipTempTestResource();
++		}
++		BaseTestCase.currentModule = BaseTestCase.runContext + GlobalConstants.INJICERTIFY;
++		BaseTestCase.certsForModule = BaseTestCase.runContext + GlobalConstants.INJICERTIFY;
++		AdminTestUtil.copymoduleSpecificAndConfigFile(GlobalConstants.INJICERTIFY);
++
++		SkipTestCaseHandler.loadTestcaseToBeSkippedList("testCaseSkippedList.txt");
++		BaseTestCase.setReportName(OpenIDConformanceTest.REPORT_MODULE);
++
++		Path suite = RigRun.suiteFile(SUITE_FILE, "inji");
++		LOGGER.info("conformance suite " + suite + ", report folder " + reportDir);
++		return RigRun.runSuite(suite, reportDir, LOGGER::info);
++	}
++}
+diff --git a/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java b/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
+new file mode 100644
+index 0000000..9abf080
+--- /dev/null
++++ b/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: MIT
++package io.inji.testrig.apirig.injicertify.testscripts;
++
++import org.apache.log4j.Level;
++import org.apache.log4j.Logger;
++import org.testng.ITest;
++import org.testng.ITestResult;
++import org.testng.SkipException;
++import org.testng.annotations.AfterMethod;
++import org.testng.annotations.BeforeClass;
++import org.testng.annotations.DataProvider;
++import org.testng.annotations.Test;
++
++import io.inji.testrig.apirig.injicertify.utils.InjiCertifyConfigManager;
++import io.inji.testrig.apirig.injicertify.utils.InjiCertifyUtil;
++import io.mosip.testrig.apirig.conformance.testng.ConformanceTestSupport;
++import io.mosip.testrig.apirig.dto.TestCaseDTO;
++import io.mosip.testrig.apirig.testrunner.BaseTestCase;
++import io.mosip.testrig.apirig.utils.GlobalConstants;
++import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
++
++/**
++ * OpenID Foundation conformance results for Inji Certify, one report row per conformance test module.
++ *
++ * <p>The rows come from the conformance runner's {@code results.json}: either an existing file
++ * ({@code -Dconformance.results.file=...}) or a runner this class starts against {@code env.endpoint}
++ * ({@code -Dconformance.runner.command=...}). With neither, the class reports one Ignored row, so the stock
++ * {@code InjiTestRunner}, which runs every {@code *MasterTestSuite*} file, still passes without a conformance setup.
++ * The mapping from verdicts to pass, fail, Known Issue and Ignored lives in the apitest-commons-conformance library.
++ *
++ * <p>Same shape as the other scripts of this rig ({@link SimplePost}): {@code ITest}, a {@code testcaselist} data
++ * provider of {@link TestCaseDTO}s, and an {@code @AfterMethod} that names each row. Of the rig's per-row checks
++ * ({@code InjiCertifyUtil.isTestCaseValidForExecution}) only the skip list and the run scope apply: the use-case and
++ * captcha checks are about the rig's own issuance flows, and the use-case filter would skip every conformance row.
++ */
++public class OpenIDConformanceTest extends InjiCertifyUtil implements ITest {
++	private static final Logger logger = Logger.getLogger(OpenIDConformanceTest.class);
++
++	/** Report name part; keeps the conformance report apart from the rig's API report. */
++	public static final String REPORT_MODULE = GlobalConstants.INJICERTIFY + "-conformance";
++
++	private final ConformanceTestSupport conformance = new ConformanceTestSupport("certify", "InjiCertify");
++	protected String testCaseName = "";
++
++	@BeforeClass
++	public static void setUp() {
++		logger.setLevel(InjiCertifyConfigManager.IsDebugEnabled() ? Level.ALL : Level.ERROR);
++		// EmailableReport reads the name when the suite ends, so this also applies under the stock InjiTestRunner.
++		BaseTestCase.setReportName(REPORT_MODULE);
++	}
++
++	@Override
++	public String getTestName() {
++		return testCaseName;
++	}
++
++	@DataProvider(name = "testcaselist")
++	public Object[] getTestCaseList() {
++		Object[] rows = conformance.testCases();
++		logger.info("OpenID conformance rows: " + rows.length);
++		return rows;
++	}
++
++	@Test(dataProvider = "testcaselist")
++	public void test(TestCaseDTO testCaseDTO) {
++		testCaseName = testCaseDTO.getTestCaseName();
++		String id = testCaseDTO.getUniqueIdentifier() == null ? "" : testCaseDTO.getUniqueIdentifier().trim();
++		if (!testCasesInRunScope.isEmpty() && !testCasesInRunScope.contains(id)) {
++			throw new SkipException(GlobalConstants.NOT_IN_RUN_SCOPE_MESSAGE);
++		}
++		if (SkipTestCaseHandler.isTestCaseInSkippedList(testCaseName)) {
++			throw new SkipException(GlobalConstants.KNOWN_ISSUES);
++		}
++		conformance.check(testCaseDTO);
++	}
++
++	@AfterMethod(alwaysRun = true)
++	public void setResultTestName(ITestResult result) {
++		result.setAttribute("TestCaseName", testCaseName);
++	}
++}
+diff --git a/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml b/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
+new file mode 100644
+index 0000000..8a2294f
+--- /dev/null
++++ b/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
++<!--
++  SPDX-License-Identifier: MIT
++  OpenID Foundation conformance results for Inji Certify, in the stock master/child shape of this rig:
++  EmailableReport leaves out every suite whose name contains "Master Suite" and reports the child suites, so the
++  rows live in injicertifyConformanceSuite.xml. The stock InjiTestRunner also runs this file (its name contains
++  "mastertestsuite"); without conformance.results.file or conformance.runner.command it reports one Ignored row.
++-->
++<suite name="Inji-Certify OpenID Conformance Master Suite">
++	<listeners>
++		<listener class-name="io.mosip.testrig.apirig.report.EmailableReport" />
++	</listeners>
++	<suite-files>
++		<suite-file path="injicertifyConformanceSuite.xml" />
++	</suite-files>
++</suite>
+diff --git a/testNgXmlFiles/injicertifyConformanceSuite.xml b/testNgXmlFiles/injicertifyConformanceSuite.xml
+new file mode 100644
+index 0000000..74579c2
+--- /dev/null
++++ b/testNgXmlFiles/injicertifyConformanceSuite.xml
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
++<!--
++  SPDX-License-Identifier: MIT
++  One row per OpenID conformance test module of the issuer plan run against Inji Certify (TC_OIDF_CERTIFY_nn).
++  Included from injicertifyConformanceMasterTestSuite.xml; see OpenIDConformanceTest for the settings.
++-->
++<suite name="Inji-Certify OpenID Conformance">
++	<test name="OpenIDConformance">
++		<classes>
++			<class name="io.inji.testrig.apirig.injicertify.testscripts.OpenIDConformanceTest" />
++		</classes>
++	</test>
++</suite>
