@@ -593,7 +593,8 @@ class Responder(threading.Thread):
             try:
                 self.poll_once()
             except Exception as error:  # keep watching: one failed poll must not end the run's handoffs
-                message = f"{type(error).__name__}: {error}"
+                # One line: an error can quote a whole HTML error page of the suite's proxy.
+                message = " ".join(f"{type(error).__name__}: {error}".split())[:300]
                 if not self.errors or self.errors[-1] != message:
                     self.echo(f"responder: poll failed: {message}")
                 self.errors.append(message)

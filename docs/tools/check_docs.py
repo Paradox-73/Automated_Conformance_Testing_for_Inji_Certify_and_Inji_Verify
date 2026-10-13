@@ -2,7 +2,7 @@
 """Checks of the repository's Markdown documents; ``bash scripts/check.sh docs`` runs it.
 
 Standard library only. Every Markdown file git tracks (or would add) is checked, except imported upstream trees
-(``third_party/``, ``testrigs/inji-*-api-test/``). The rules:
+(``third_party/``, ``testrigs/inji-*-api-test/``) and generated run evidence (``docs/evidence/``). The rules:
 
 - ``lint``: a subset of markdownlint: the file starts with a level-1 heading (MD041), heading levels go down one
   step at a time (MD001), no trailing spaces (MD009), no tab characters outside code blocks (MD010), no two blank
@@ -36,6 +36,7 @@ from pathlib import Path
 
 EARLIEST_RUN = dt.date(2026, 10, 4)
 UPSTREAM = ("third_party/", "testrigs/inji-certify-api-test/", "testrigs/inji-verify-api-test/")
+GENERATED = ("docs/evidence/",)  # files the runner wrote (summary.md of a run), copied as evidence
 NOT_DATED = ("docs/STATUS.md", "docs/design/")
 COMMAND_LANGUAGES = {"bash", "sh", "shell", "console"}
 FINDING_HEADINGS = (
@@ -137,7 +138,7 @@ def markdown_files(root: Path) -> list[str]:
         ).stdout.splitlines()
     except (OSError, subprocess.CalledProcessError):
         listed = [p.relative_to(root).as_posix() for p in root.rglob("*.md") if "/run/" not in f"/{p}"]
-    return sorted({name for name in listed if (root / name).is_file() and not name.startswith(UPSTREAM)})
+    return sorted({name for name in listed if (root / name).is_file() and not name.startswith(UPSTREAM + GENERATED)})
 
 
 # ---------------------------------------------------------------------------------------------------------------

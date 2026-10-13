@@ -269,6 +269,12 @@ check_secrets() {
       if [[ ${rule_names[$i]} == credential-assignment && $text =~ [:=][[:space:]]*(true|false|null)[[:space:]]*,?[[:space:]]*$ ]]; then
         continue # a JSON or YAML true, false or null value (a flag such as a gate result), not a credential
       fi
+      if [[ ${rule_names[$i]} == credential-assignment && $path == docs/evidence/*/results.json ]] ||
+        [[ ${rule_names[$i]} == credential-assignment && $path == docs/evidence/*/*/results.json ]]; then
+        # Committed run results: a module name that contains a credential word, followed by a colon and the result,
+        # has the shape of an assignment. The key and token rules above still read these files.
+        continue
+      fi
       # The matched text is never printed, so a real secret does not end up in CI logs.
       detail "$path:$lineno: ${rule_names[$i]}"
       findings=$((findings + 1))

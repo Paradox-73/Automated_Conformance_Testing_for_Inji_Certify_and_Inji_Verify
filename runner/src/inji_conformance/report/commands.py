@@ -70,7 +70,12 @@ def add_diff_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def write_text(path: Path, text: str) -> None:
-    """Write UTF-8 with LF endings through a temporary file, so a reader never sees a half-written report."""
+    """Write UTF-8 with LF endings through a temporary file, so a reader never sees a half-written report.
+
+    Carriage returns inside the text (for example an error page a server answered with CRLF, quoted in a note) become
+    plain line feeds, so the report is LF throughout.
+    """
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
     path.parent.mkdir(parents=True, exist_ok=True)
     handle, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
