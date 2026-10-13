@@ -9,7 +9,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-happy-flow",
@@ -33,7 +33,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-minimal-cnf-jwk",
@@ -57,7 +57,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-request-uri-fetched-twice",
@@ -81,7 +81,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
@@ -105,7 +105,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-invalid-credential-signature",
@@ -129,7 +129,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-invalid-sd-hash",
@@ -153,7 +153,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
@@ -177,7 +177,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
@@ -201,7 +201,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
@@ -225,7 +225,7 @@
     "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
     "owner": "suite",
     "spec": "OID4VP-1FINAL-5.9.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",

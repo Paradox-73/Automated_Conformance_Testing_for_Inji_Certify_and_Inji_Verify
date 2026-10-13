@@ -1,0 +1,275 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T221457Z-54242c",
+  "component": "verify",
+  "track": "gate",
+  "gating": true,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://verify.inji.test:18451/v1/verify"
+  },
+  "plan": {
+    "name": "oid4vp-1final-verifier-test-plan",
+    "variant": {
+      "vp_profile": "plain_vp",
+      "credential_format": "sd_jwt_vc",
+      "client_id_prefix": "redirect_uri",
+      "request_method": "url_query",
+      "response_mode": "direct_post"
+    },
+    "id": "8bvnhHzCwaMjj",
+    "config_file": "verify/config/verify.oid4vp-1final-verifier.json"
+  },
+  "modules": [
+    {
+      "name": "oid4vp-1final-verifier-happy-flow",
+      "test_id": "6iBuDlPb7dGGvtR",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "regression",
+      "verdict_reason": "result REVIEW: Inji Verify's verdict was missing, and no evidence image of it was uploaded, so the review is not confirmed",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T221457Z-54242c",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "valid",
+        "observed": "missing",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-happy-flow-6iBuDlPb7dGGvtR.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 1147.1,
+          "at": "2026-10-13T22:15:37Z",
+          "detail": "Inji Verify request req_02a68510-4704-463e-a7ce-8465f630634a (by value) delivered to authorization_endpoint; suite answered in 720 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 1263.9,
+          "at": "2026-10-13T22:15:39Z",
+          "detail": "Inji Verify's verdict SUCCESS for txn_1b265f35-d138-47ab-b3a3-db546562a6d6 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-happy-flow-6iBuDlPb7dGGvtR.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=6iBuDlPb7dGGvtR",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-happy-flow-6iBuDlPb7dGGvtR.html"
+      },
+      "duration_s": 4.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-minimal-cnf-jwk",
+      "test_id": "HvAO9MX9rsRHTvS",
+      "status": "INTERRUPTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module ended in status INTERRUPTED: handoff not delivered or timeout",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T221457Z-54242c",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 60030.2,
+          "at": "2026-10-13T22:15:41Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "The read operation timed out"
+        },
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 1104.3,
+          "at": "2026-10-13T22:16:43Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "POST /v2/vp-request returned HTTP 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.30.5</center>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 8.8,
+          "at": "2026-10-13T22:16:45Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "POST /v2/vp-request returned HTTP 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.30.5</center>\r\n</body>\r\n</html>\r\n"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=HvAO9MX9rsRHTvS",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-minimal-cnf-jwk-HvAO9MX9rsRHTvS.html"
+      },
+      "duration_s": 240.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-method-post",
+      "test_id": "OHKBQZbD4X9YEH3",
+      "status": "WAITING",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module ended in status WAITING: handoff not delivered or timeout",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T221457Z-54242c",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 53.7,
+          "at": "2026-10-13T22:19:42Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "POST /v2/vp-request returned HTTP 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.30.5</center>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 6.3,
+          "at": "2026-10-13T22:19:43Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "POST /v2/vp-request returned HTTP 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.30.5</center>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+          "kind": "authorization_request",
+          "http_status": null,
+          "duration_ms": 14.2,
+          "at": "2026-10-13T22:19:44Z",
+          "detail": "POST /v2/vp-request to Inji Verify",
+          "error": "POST /v2/vp-request returned HTTP 502: <html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.30.5</center>\r\n</body>\r\n</html>\r\n"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=OHKBQZbD4X9YEH3",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-method-post-OHKBQZbD4X9YEH3.html"
+      },
+      "duration_s": 0.0
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-fetched-twice",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-credential-signature",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-sd-hash",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",
+      "test_id": null,
+      "status": "NOT_STARTED",
+      "result": null,
+      "verdict": "regression",
+      "verdict_reason": "the module never started",
+      "failures": [],
+      "benchmark": [],
+      "handoffs": []
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "conforms": 0,
+    "known_gap": 0,
+    "regression": 11,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": false,
+    "exit_code": 4,
+    "messages": [
+      "the run reached its time limit; modules that did not finish are regressions"
+    ]
+  },
+  "started_at": "2026-10-13T22:15:35Z",
+  "finished_at": "2026-10-13T22:20:35Z"
+}

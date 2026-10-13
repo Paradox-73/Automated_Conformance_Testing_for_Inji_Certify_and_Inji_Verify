@@ -1,0 +1,654 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T222630Z-e4420c",
+  "component": "certify",
+  "track": "gate",
+  "gating": false,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://certify.inji.test:18450"
+  },
+  "plan": {
+    "name": "oid4vci-1_0-issuer-test-plan",
+    "variant": {
+      "fapi_profile": "vci",
+      "credential_format": "sd_jwt_vc",
+      "vci_grant_type": "pre_authorization_code",
+      "vci_authorization_code_flow_variant": "issuer_initiated",
+      "client_auth_type": "private_key_jwt",
+      "sender_constrain": "dpop",
+      "authorization_request_type": "simple",
+      "fapi_request_method": "unsigned",
+      "vci_credential_encryption": "plain"
+    },
+    "id": "bn1svgCZwkNw9",
+    "config_file": "certify/config/certify.oid4vci-1_0-issuer.json",
+    "export": "certify/exports/oid4vci-1_0-issuer-test-plan-private_key_jwt-dpop-sd_jwt_vc-issuer_initiated-simple-unsigned-disabled-pre_authorization_code-plain-vci-bn1svgCZwkNw9-13-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test",
+      "test_id": "0Y9kElaKgpi8drB",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckForUnexpectedParametersInCredentialIssuerMetadata, CheckForUnexpectedParametersInServerMetadata, VCICredentialIssuerMetadataValidation, VCIValidateFormatOfCredentialConfigurationsInMetadata",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "VCICredentialIssuerMetadataValidation",
+          "severity": "FAILURE",
+          "message": "Found invalid entries in OID4VCI Credential Issuer metadata input",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInCredentialIssuerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OID4VCI Credential Issuer metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'vci.allow_unexpected_credential_issuer_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VCIValidateFormatOfCredentialConfigurationsInMetadata",
+          "severity": "WARNING",
+          "message": "Found credential configurations with unsupported formats",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINALA-A.2",
+            "OID4VCI-1FINALA-A.3.1",
+            "OID4VCI-1FINALA-A.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'server.allow_unexpected_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Verify OAuth Authorization Server Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.3",
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=0Y9kElaKgpi8drB",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-0Y9kElaKgpi8drB.html"
+      },
+      "duration_s": 1.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test-signed",
+      "test_id": "uTnyEWLuQioNPaR",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: EnsureContentTypeApplicationJwt, VCIDecodeSignedCredentialIssuerMetadata",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureContentTypeApplicationJwt",
+          "severity": "FAILURE",
+          "message": "Couldn't find content-type header in endpoint_response",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "RFC8414-3.2"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VCIDecodeSignedCredentialIssuerMetadata",
+          "severity": "FAILURE",
+          "message": "If present, a string is expected for credential_issuer_metadata_endpoint_response body but JsonNull was found",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=uTnyEWLuQioNPaR",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-signed-uTnyEWLuQioNPaR.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow",
+      "test_id": "SABs8SOSwwrQ6Ck",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=SABs8SOSwwrQ6Ck",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-SABs8SOSwwrQ6Ck.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-additional-requests",
+      "test_id": "Ja65w5EWYT4ZEf3",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Ja65w5EWYT4ZEf3",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-additional-requests-Ja65w5EWYT4ZEf3.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-multiple-clients",
+      "test_id": "wXjZq8cZ9M3EZCb",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=wXjZq8cZ9M3EZCb",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-multiple-clients-wXjZq8cZ9M3EZCb.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-skip-notification",
+      "test_id": "Cw9MDVzTTL3OX8d",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Cw9MDVzTTL3OX8d",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-skip-notification-Cw9MDVzTTL3OX8d.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-batch-issuance",
+      "test_id": "PbWCfSt7QEIxTKt",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=PbWCfSt7QEIxTKt",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-batch-issuance-PbWCfSt7QEIxTKt.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-nonce",
+      "test_id": "qxNktEGSdDYXXSX",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=qxNktEGSdDYXXSX",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-nonce-qxNktEGSdDYXXSX.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature",
+      "test_id": "Dqtou7Vz0t3E2QU",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Dqtou7Vz0t3E2QU",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-Dqtou7Vz0t3E2QU.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-key-attestation-signature",
+      "test_id": "xhj1c9SwyUAGQTf",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=xhj1c9SwyUAGQTf",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-xhj1c9SwyUAGQTf.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-missing-proof",
+      "test_id": "J2lcKBfaujY5zIM",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=J2lcKBfaujY5zIM",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-missing-proof-J2lcKBfaujY5zIM.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm",
+      "test_id": "PFRoBtlEYYHYR2t",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=PFRoBtlEYYHYR2t",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-PFRoBtlEYYHYR2t.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+      "test_id": "cELGxJiiqtcvZas",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=cELGxJiiqtcvZas",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-configuration-cELGxJiiqtcvZas.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-identifier",
+      "test_id": "BBKHFUqWgaPNvSf",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=BBKHFUqWgaPNvSf",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-identifier-BBKHFUqWgaPNvSf.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-on-access-token-in-query",
+      "test_id": "yWGAFIeTlvsSqWb",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: CheckServerConfiguration",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222630Z-e4420c",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "CheckServerConfiguration",
+          "severity": "FAILURE",
+          "message": "Couldn't find required component",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=yWGAFIeTlvsSqWb",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-on-access-token-in-query-yWGAFIeTlvsSqWb.html"
+      },
+      "duration_s": 0.1
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "conforms": 0,
+    "known_gap": 0,
+    "regression": 15,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "messages": [
+      "--no-gate: verdicts recorded, the gate was not applied"
+    ]
+  },
+  "started_at": "2026-10-13T22:27:08Z",
+  "finished_at": "2026-10-13T22:27:18Z"
+}

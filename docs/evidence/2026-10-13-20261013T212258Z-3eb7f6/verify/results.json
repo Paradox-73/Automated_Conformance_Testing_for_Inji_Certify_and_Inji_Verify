@@ -1,0 +1,476 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T212258Z-3eb7f6",
+  "component": "verify",
+  "track": "gate",
+  "gating": true,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://verify.inji.test:18451/v1/verify"
+  },
+  "plan": {
+    "name": "oid4vp-1final-verifier-test-plan",
+    "variant": {
+      "vp_profile": "plain_vp",
+      "credential_format": "sd_jwt_vc",
+      "client_id_prefix": "redirect_uri",
+      "request_method": "url_query",
+      "response_mode": "direct_post"
+    },
+    "id": "40ysCscYz1QA5",
+    "config_file": "verify/config/verify.oid4vp-1final-verifier.json",
+    "export": "verify/exports/oid4vp-1final-verifier-test-plan-sd_jwt_vc-redirect_uri-url_query-plain_vp-direct_post-40ysCscYz1QA5-13-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vp-1final-verifier-happy-flow",
+      "test_id": "V26UBjZNAhhPykb",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-happy-flow-V26UBjZNAhhPykb.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 11378.4,
+          "at": "2026-10-13T21:25:43Z",
+          "detail": "Inji Verify request req_01a715af-71e2-4be0-a4f9-8014a55e5b9f (by value) delivered to authorization_endpoint; suite answered in 3300 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 14049.3,
+          "at": "2026-10-13T21:25:56Z",
+          "detail": "Inji Verify's verdict SUCCESS for txn_b7db7110-b93a-4b16-9d4b-7461238c5a6a uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-happy-flow-V26UBjZNAhhPykb.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=V26UBjZNAhhPykb",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-happy-flow-V26UBjZNAhhPykb.html"
+      },
+      "duration_s": 43.0
+    },
+    {
+      "name": "oid4vp-1final-verifier-minimal-cnf-jwk",
+      "test_id": "0UBUaH6kBTyGIiC",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-minimal-cnf-jwk-0UBUaH6kBTyGIiC.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 595.7,
+          "at": "2026-10-13T21:26:25Z",
+          "detail": "Inji Verify request req_11da786f-94cd-4ae2-a788-5100f8940795 (by value) delivered to authorization_endpoint; suite answered in 312 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 778.5,
+          "at": "2026-10-13T21:26:27Z",
+          "detail": "Inji Verify's verdict SUCCESS for txn_380a3a4c-3c7d-4204-a9b2-6ff97319d8d6 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-minimal-cnf-jwk-0UBUaH6kBTyGIiC.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=0UBUaH6kBTyGIiC",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-minimal-cnf-jwk-0UBUaH6kBTyGIiC.html"
+      },
+      "duration_s": 3.9
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-method-post",
+      "test_id": "e18poHbkkK6cLBw",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-request-uri-method-post-e18poHbkkK6cLBw.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 629.3,
+          "at": "2026-10-13T21:26:30Z",
+          "detail": "Inji Verify request req_0a359dbb-d80b-4d80-a89e-0d2a14a9b6f3 (by value) delivered to authorization_endpoint; suite answered in 462 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 351.0,
+          "at": "2026-10-13T21:26:32Z",
+          "detail": "Inji Verify's verdict SUCCESS for txn_a53371df-716f-4c04-af32-b7f6b051a130 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-request-uri-method-post-e18poHbkkK6cLBw.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=e18poHbkkK6cLBw",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-method-post-e18poHbkkK6cLBw.html"
+      },
+      "duration_s": 4.8
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-fetched-twice",
+      "test_id": "LgShVvX9jvEPp7Q",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "valid",
+        "observed": "valid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-request-uri-fetched-twice-LgShVvX9jvEPp7Q.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 706.0,
+          "at": "2026-10-13T21:26:35Z",
+          "detail": "Inji Verify request req_63a160f9-11f8-4250-9e4d-729e111192a6 (by value) delivered to authorization_endpoint; suite answered in 627 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 441.7,
+          "at": "2026-10-13T21:26:36Z",
+          "detail": "Inji Verify's verdict SUCCESS for txn_2d6894f3-e294-4a37-87db-92bbab642ff6 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-request-uri-fetched-twice-LgShVvX9jvEPp7Q.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=LgShVvX9jvEPp7Q",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-fetched-twice-LgShVvX9jvEPp7Q.html"
+      },
+      "duration_s": 4.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "test_id": "6s2XR4O6UyPaO4G",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-invalid-kb-jwt-signature-6s2XR4O6UyPaO4G.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 1457.2,
+          "at": "2026-10-13T21:26:39Z",
+          "detail": "Inji Verify request req_1686419d-7632-4302-965a-d486105d481d (by value) delivered to authorization_endpoint; suite answered in 1056 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 3092.2,
+          "at": "2026-10-13T21:26:43Z",
+          "detail": "Inji Verify's verdict FAILED for txn_e8342908-f863-429d-b38f-b5968e71eec5 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-kb-jwt-signature-6s2XR4O6UyPaO4G.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=6s2XR4O6UyPaO4G",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-signature-6s2XR4O6UyPaO4G.html"
+      },
+      "duration_s": 10.1
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-credential-signature",
+      "test_id": "bv1LpL3B5ecpX8R",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-invalid-credential-signature-bv1LpL3B5ecpX8R.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 1723.7,
+          "at": "2026-10-13T21:26:50Z",
+          "detail": "Inji Verify request req_86060e3a-1280-44c1-bb77-40fb157cd8b7 (by value) delivered to authorization_endpoint; suite answered in 1210 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 1529.9,
+          "at": "2026-10-13T21:26:53Z",
+          "detail": "Inji Verify's verdict FAILED for txn_add4ef8d-9fa5-487a-b689-07666100c3d6 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-credential-signature-bv1LpL3B5ecpX8R.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=bv1LpL3B5ecpX8R",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-credential-signature-bv1LpL3B5ecpX8R.html"
+      },
+      "duration_s": 10.2
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-sd-hash",
+      "test_id": "404XQioLVC1bO9O",
+      "status": "FINISHED",
+      "result": "REVIEW",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "review": {
+        "expected": "invalid",
+        "observed": "invalid",
+        "evidence": "verify/evidence/oid4vp-1final-verifier-invalid-sd-hash-404XQioLVC1bO9O.png"
+      },
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 2775.1,
+          "at": "2026-10-13T21:27:00Z",
+          "detail": "Inji Verify request req_13fe8c27-d312-4039-a382-2c1a9cac2caf (by value) delivered to authorization_endpoint; suite answered in 1503 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 938.9,
+          "at": "2026-10-13T21:27:05Z",
+          "detail": "Inji Verify's verdict FAILED for txn_d2d6b984-f93f-4e2a-8a34-f60090198176 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-sd-hash-404XQioLVC1bO9O.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=404XQioLVC1bO9O",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-sd-hash-404XQioLVC1bO9O.html"
+      },
+      "duration_s": 11.2
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "test_id": "3awyw0Hi3Zh49PP",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 5849.5,
+          "at": "2026-10-13T21:27:10Z",
+          "detail": "Inji Verify request req_7b12f2cf-1cb8-478f-895a-b0a3ab1959f0 (by value) delivered to authorization_endpoint; suite answered in 4639 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=3awyw0Hi3Zh49PP",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-nonce-3awyw0Hi3Zh49PP.html"
+      },
+      "duration_s": 6.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "test_id": "TCeuHtmNraVnAtC",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 721.8,
+          "at": "2026-10-13T21:27:18Z",
+          "detail": "Inji Verify request req_39b39ac2-86ba-4827-9039-970c63e34b7a (by value) delivered to authorization_endpoint; suite answered in 557 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=TCeuHtmNraVnAtC",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-aud-TCeuHtmNraVnAtC.html"
+      },
+      "duration_s": 2.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "test_id": "xQW3IToiwAQ7eiW",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 692.7,
+          "at": "2026-10-13T21:27:20Z",
+          "detail": "Inji Verify request req_41b81fb5-74fd-4ea9-b622-c5b069f75bf4 (by value) delivered to authorization_endpoint; suite answered in 404 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=xQW3IToiwAQ7eiW",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-past-xQW3IToiwAQ7eiW.html"
+      },
+      "duration_s": 1.9
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",
+      "test_id": "YGF445HWX0rIM1E",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T212258Z-3eb7f6",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "redirect_uri",
+        "request_method": "url_query",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 919.8,
+          "at": "2026-10-13T21:27:22Z",
+          "detail": "Inji Verify request req_14c057ea-b42e-4313-b98f-d03c02ff03e9 (by value) delivered to authorization_endpoint; suite answered in 650 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=YGF445HWX0rIM1E",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-future-YGF445HWX0rIM1E.html"
+      },
+      "duration_s": 2.2
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "conforms": 11,
+    "known_gap": 0,
+    "regression": 0,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "conformance/benchmark/verify.expected-failures.json",
+      "conformance/benchmark/verify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 0 regressions, 0 known gaps, 0 stale"
+    ]
+  },
+  "started_at": "2026-10-13T21:25:23Z",
+  "finished_at": "2026-10-13T21:27:33Z"
+}

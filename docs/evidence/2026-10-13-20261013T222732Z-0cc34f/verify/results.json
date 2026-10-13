@@ -1,0 +1,883 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T222732Z-0cc34f",
+  "component": "verify",
+  "track": "gate",
+  "gating": true,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://verify.inji.test:18451/v1/verify"
+  },
+  "plan": {
+    "name": "oid4vp-1final-verifier-test-plan",
+    "variant": {
+      "vp_profile": "plain_vp",
+      "credential_format": "sd_jwt_vc",
+      "client_id_prefix": "x509_san_dns",
+      "request_method": "request_uri_signed",
+      "response_mode": "direct_post"
+    },
+    "id": "XYYDvg5brVSwr",
+    "config_file": "verify/config/verify.oid4vp-1final-verifier-x509-san-dns.json",
+    "export": "verify/exports/oid4vp-1final-verifier-test-plan-sd_jwt_vc-x509_san_dns-request_uri_signed-plain_vp-direct_post-XYYDvg5brVSwr-13-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vp-1final-verifier-happy-flow",
+      "test_id": "Ts1bKiaLRLrYo6H",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 3510.4,
+          "at": "2026-10-13T22:28:19Z",
+          "detail": "Inji Verify request req_f2f66ee6-3b5d-4e86-b051-582dac35ebc2 (by request_uri) delivered to authorization_endpoint; suite answered in 2498 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 1512.8,
+          "at": "2026-10-13T22:28:24Z",
+          "detail": "Inji Verify's verdict FAILED for txn_37921c9b-2f51-4bb5-ad0b-b481b5328178 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-happy-flow-Ts1bKiaLRLrYo6H.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Ts1bKiaLRLrYo6H",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-happy-flow-Ts1bKiaLRLrYo6H.html"
+      },
+      "duration_s": 7.2
+    },
+    {
+      "name": "oid4vp-1final-verifier-minimal-cnf-jwk",
+      "test_id": "poVrYEnZTnBUhkj",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 393.5,
+          "at": "2026-10-13T22:28:26Z",
+          "detail": "Inji Verify request req_0779546a-621e-4290-b825-8a14c8f6928d (by request_uri) delivered to authorization_endpoint; suite answered in 293 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 187.2,
+          "at": "2026-10-13T22:28:28Z",
+          "detail": "Inji Verify's verdict FAILED for txn_5b8ce1aa-e369-4f07-9b38-6d11e6e7f2da uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-minimal-cnf-jwk-poVrYEnZTnBUhkj.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=poVrYEnZTnBUhkj",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-minimal-cnf-jwk-poVrYEnZTnBUhkj.html"
+      },
+      "duration_s": 4.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-method-post",
+      "test_id": "KnxPI6i5NitGBsz",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "The module needs request_uri_method=post in the authorization request; Inji Verify never sends it, so the suite skips the module.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5.10",
+          "issue": "docs/findings/verify-request-uri-method-post.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 94.0,
+          "at": "2026-10-13T22:28:30Z",
+          "detail": "Inji Verify request req_b02a6de9-cf31-4e63-b879-f34c57cb0099 (by request_uri) delivered to authorization_endpoint; suite answered in 35 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=KnxPI6i5NitGBsz",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-method-post-KnxPI6i5NitGBsz.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-fetched-twice",
+      "test_id": "DzkasMzQQFLctqp",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 338.6,
+          "at": "2026-10-13T22:28:31Z",
+          "detail": "Inji Verify request req_cc51e48b-a2b7-4ac8-9055-c491e8bb6496 (by request_uri) delivered to authorization_endpoint; suite answered in 298 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 174.5,
+          "at": "2026-10-13T22:28:33Z",
+          "detail": "Inji Verify's verdict FAILED for txn_adcb6ccf-9eed-4f64-a1de-69ed3936f848 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-request-uri-fetched-twice-DzkasMzQQFLctqp.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=DzkasMzQQFLctqp",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-fetched-twice-DzkasMzQQFLctqp.html"
+      },
+      "duration_s": 4.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "test_id": "an4pIAgPG5EwabV",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 225.7,
+          "at": "2026-10-13T22:28:35Z",
+          "detail": "Inji Verify request req_76fff360-b7f2-4f92-b759-765217155409 (by request_uri) delivered to authorization_endpoint; suite answered in 176 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 161.8,
+          "at": "2026-10-13T22:28:36Z",
+          "detail": "Inji Verify's verdict FAILED for txn_2f4b4112-79ff-43e1-b7f2-db8105bc4fe7 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-kb-jwt-signature-an4pIAgPG5EwabV.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=an4pIAgPG5EwabV",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-signature-an4pIAgPG5EwabV.html"
+      },
+      "duration_s": 3.7
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-credential-signature",
+      "test_id": "KsbNqrTbVLjPnxG",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 381.2,
+          "at": "2026-10-13T22:28:39Z",
+          "detail": "Inji Verify request req_1b9db284-359d-4215-ad57-2d984e03e6e3 (by request_uri) delivered to authorization_endpoint; suite answered in 294 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 175.6,
+          "at": "2026-10-13T22:28:40Z",
+          "detail": "Inji Verify's verdict FAILED for txn_eeb779c7-f160-4227-a860-1633715fb7b1 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-credential-signature-KsbNqrTbVLjPnxG.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=KsbNqrTbVLjPnxG",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-credential-signature-KsbNqrTbVLjPnxG.html"
+      },
+      "duration_s": 3.8
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-sd-hash",
+      "test_id": "93qQ5KppsQyfk0y",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 344.0,
+          "at": "2026-10-13T22:28:43Z",
+          "detail": "Inji Verify request req_37074cc8-53fc-44b2-a480-38698d33a983 (by request_uri) delivered to authorization_endpoint; suite answered in 278 ms"
+        },
+        {
+          "kind": "verification_evidence",
+          "http_status": 200,
+          "duration_ms": 282.3,
+          "at": "2026-10-13T22:28:44Z",
+          "detail": "Inji Verify's verdict FAILED for txn_f118c081-08d5-4b0e-b68f-3b3244a09241 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-sd-hash-93qQ5KppsQyfk0y.png"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=93qQ5KppsQyfk0y",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-sd-hash-93qQ5KppsQyfk0y.html"
+      },
+      "duration_s": 3.7
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "test_id": "Y5wgYxu5E9pVIU8",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 333.3,
+          "at": "2026-10-13T22:28:47Z",
+          "detail": "Inji Verify request req_c44e4203-b8a0-4d9e-8245-9f574ea4a0b7 (by request_uri) delivered to authorization_endpoint; suite answered in 255 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Y5wgYxu5E9pVIU8",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-nonce-Y5wgYxu5E9pVIU8.html"
+      },
+      "duration_s": 1.1
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "test_id": "UBz5UpDhmzPtTun",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 306.9,
+          "at": "2026-10-13T22:28:48Z",
+          "detail": "Inji Verify request req_30a59d45-b32b-4dca-b148-3ae79a385f97 (by request_uri) delivered to authorization_endpoint; suite answered in 201 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=UBz5UpDhmzPtTun",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-aud-UBz5UpDhmzPtTun.html"
+      },
+      "duration_s": 1.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "test_id": "b1Umh3k0Cnt3avq",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 572.4,
+          "at": "2026-10-13T22:28:50Z",
+          "detail": "Inji Verify request req_9d55d800-516d-4d3e-b32d-484e1edee9bd (by request_uri) delivered to authorization_endpoint; suite answered in 511 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=b1Umh3k0Cnt3avq",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-past-b1Umh3k0Cnt3avq.html"
+      },
+      "duration_s": 1.7
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",
+      "test_id": "ten1awdVZQQCff0",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222732Z-0cc34f",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_san_dns",
+        "request_method": "request_uri_signed",
+        "vp_profile": "plain_vp",
+        "response_mode": "direct_post"
+      },
+      "failures": [
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify signs request objects only with Ed25519 (EdDSA). The signature verifies with OpenSSL against the x5c certificate (measured 2026-10-14), but suite release-v5.3.1 reports \"Error verifying JWT signature using x5c leaf certificate\".",
+          "owner": "suite",
+          "spec": "OID4VP-1FINAL-5.9.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "current_block": "Authorization endpoint",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Verify's request object carries iss \"verify.inji.test\" (the bare SAN), while its client_id is \"x509_san_dns:verify.inji.test\"; the suite warns that iss differs from the client id.",
+          "owner": "inji",
+          "spec": "OID4VP-1FINAL-5",
+          "issue": "docs/findings/verify-request-object-iss.md",
+          "matched": true,
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "current_block": "Authorization endpoint",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 200,
+          "duration_ms": 254.3,
+          "at": "2026-10-13T22:28:51Z",
+          "detail": "Inji Verify request req_7ca4b0e1-2bc5-4b3b-8f64-b5afd03a2515 (by request_uri) delivered to authorization_endpoint; suite answered in 178 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ten1awdVZQQCff0",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-future-ten1awdVZQQCff0.html"
+      },
+      "duration_s": 1.4
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "conforms": 0,
+    "known_gap": 10,
+    "regression": 0,
+    "not_applicable": 1,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "conformance/benchmark/verify.expected-failures.json",
+      "conformance/benchmark/verify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 0 regressions, 10 known gaps, 0 stale, 1 not applicable"
+    ]
+  },
+  "started_at": "2026-10-13T22:28:16Z",
+  "finished_at": "2026-10-13T22:28:55Z"
+}

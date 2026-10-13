@@ -1,0 +1,1252 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T222452Z-1865df",
+  "component": "verify",
+  "track": "haip",
+  "gating": false,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://verify.inji.test:18451/v1/verify"
+  },
+  "plan": {
+    "name": "oid4vp-1final-verifier-haip-test-plan",
+    "variant": {
+      "credential_format": "sd_jwt_vc",
+      "response_mode": "direct_post.jwt"
+    },
+    "id": "0LTMfTgxGy5OA",
+    "config_file": "verify/config/verify.oid4vp-1final-verifier-haip.json",
+    "export": "verify/exports/oid4vp-1final-verifier-haip-test-plan-sd_jwt_vc-direct_post.jwt-0LTMfTgxGy5OA-13-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vp-1final-verifier-happy-flow",
+      "test_id": "fTYJaQeET5TOpql",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 3488.3,
+          "at": "2026-10-13T22:25:51Z",
+          "detail": "Inji Verify request req_11bd8b22-95a4-4484-87d1-fd16e3c1d90d (by request_uri) delivered to authorization_endpoint; suite answered in 1817 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=fTYJaQeET5TOpql",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-happy-flow-fTYJaQeET5TOpql.html"
+      },
+      "duration_s": 3.9
+    },
+    {
+      "name": "oid4vp-1final-verifier-minimal-cnf-jwk",
+      "test_id": "flHp45mQsv6coxk",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 957.6,
+          "at": "2026-10-13T22:25:56Z",
+          "detail": "Inji Verify request req_6341cb8a-51a7-4ce9-8bab-6b59cb1082e4 (by request_uri) delivered to authorization_endpoint; suite answered in 507 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=flHp45mQsv6coxk",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-minimal-cnf-jwk-flHp45mQsv6coxk.html"
+      },
+      "duration_s": 2.2
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-method-post",
+      "test_id": "ckFIh3eUNnt9y8j",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "regression",
+      "verdict_reason": "the suite skipped the module and no expected skip lists it",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 201.7,
+          "at": "2026-10-13T22:25:58Z",
+          "detail": "Inji Verify request req_e3b478b1-26d2-405a-835a-75be1dabc0e8 (by request_uri) delivered to authorization_endpoint; suite answered in 30 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ckFIh3eUNnt9y8j",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-method-post-ckFIh3eUNnt9y8j.html"
+      },
+      "duration_s": 1.3
+    },
+    {
+      "name": "oid4vp-1final-verifier-request-uri-fetched-twice",
+      "test_id": "8gUM3ELxJ1zorua",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 760.9,
+          "at": "2026-10-13T22:25:59Z",
+          "detail": "Inji Verify request req_6678b021-f876-43e3-9a11-6fd270037c27 (by request_uri) delivered to authorization_endpoint; suite answered in 657 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=8gUM3ELxJ1zorua",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-fetched-twice-8gUM3ELxJ1zorua.html"
+      },
+      "duration_s": 2.0
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "test_id": "QzA5HkYadIPx9q7",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 324.8,
+          "at": "2026-10-13T22:26:01Z",
+          "detail": "Inji Verify request req_e309994d-0117-4a37-8195-a8df06eddcc2 (by request_uri) delivered to authorization_endpoint; suite answered in 233 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=QzA5HkYadIPx9q7",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-signature-QzA5HkYadIPx9q7.html"
+      },
+      "duration_s": 1.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-credential-signature",
+      "test_id": "2yRbFYFdhdgRljS",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 262.3,
+          "at": "2026-10-13T22:26:03Z",
+          "detail": "Inji Verify request req_8bff908b-a1fb-4f47-8adf-a377379e6dc6 (by request_uri) delivered to authorization_endpoint; suite answered in 171 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=2yRbFYFdhdgRljS",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-credential-signature-2yRbFYFdhdgRljS.html"
+      },
+      "duration_s": 1.4
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-sd-hash",
+      "test_id": "I6xxKb8rQvCCKeM",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 274.1,
+          "at": "2026-10-13T22:26:04Z",
+          "detail": "Inji Verify request req_2235acd2-a715-4ccb-b19e-b64865ef235e (by request_uri) delivered to authorization_endpoint; suite answered in 151 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=I6xxKb8rQvCCKeM",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-sd-hash-I6xxKb8rQvCCKeM.html"
+      },
+      "duration_s": 1.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "test_id": "oFyHVMXVNfR2xuz",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 372.2,
+          "at": "2026-10-13T22:26:06Z",
+          "detail": "Inji Verify request req_7b7be968-4424-415e-bdc2-dadb4be35051 (by request_uri) delivered to authorization_endpoint; suite answered in 218 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=oFyHVMXVNfR2xuz",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-nonce-oFyHVMXVNfR2xuz.html"
+      },
+      "duration_s": 1.6
+    },
+    {
+      "name": "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "test_id": "qf6CAQ7yTntrU3d",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 320.4,
+          "at": "2026-10-13T22:26:07Z",
+          "detail": "Inji Verify request req_570782e7-ef11-468e-a25e-44fc0d4f5432 (by request_uri) delivered to authorization_endpoint; suite answered in 193 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=qf6CAQ7yTntrU3d",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-aud-qf6CAQ7yTntrU3d.html"
+      },
+      "duration_s": 1.5
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "test_id": "uGywa0zLF4qsc0W",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 286.4,
+          "at": "2026-10-13T22:26:09Z",
+          "detail": "Inji Verify request req_a120b007-6544-428d-b4cc-a05129367ba7 (by request_uri) delivered to authorization_endpoint; suite answered in 161 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=uGywa0zLF4qsc0W",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-past-uGywa0zLF4qsc0W.html"
+      },
+      "duration_s": 1.4
+    },
+    {
+      "name": "oid4vp-1final-verifier-kb-jwt-iat-in-future",
+      "test_id": "w20bxImeaBNVZUu",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "description": "Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "credential_format": "sd_jwt_vc",
+        "client_id_prefix": "x509_hash",
+        "request_method": "request_uri_signed",
+        "vp_profile": "haip",
+        "response_mode": "direct_post.jwt"
+      },
+      "failures": [
+        {
+          "condition": "ExtractAndValidateX509HashClientId",
+          "severity": "FAILURE",
+          "message": "Mismatch between Client ID in authorization request and the calculated x509 hash",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectIssIfPresent",
+          "severity": "WARNING",
+          "message": "iss claim is present but does not match the client id",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateRequestObjectSignatureAgainstX5cHeader",
+          "severity": "FAILURE",
+          "message": "Error verifying JWT signature using x5c leaf certificate",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.9.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateResponseMode",
+          "severity": "FAILURE",
+          "message": "response_mode must be 'direct_post.jwt'",
+          "block": "Authorization endpoint",
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckForKeyIdInClientMetadataJWKs",
+          "severity": "FAILURE",
+          "message": "jwks not found in client_metadata",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-5.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalValidateClientMetadataJwksForEncryptedResponse",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing but is required when using encrypted response mode",
+          "block": "Authorization endpoint",
+          "requirements": [
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "ValidateVpClientMetadataEncryptionForHaip",
+          "severity": "FAILURE",
+          "message": "HAIP section 5 requires encrypted_response_enc_values_supported in client_metadata",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalCheckEncryptionKeyNotReused",
+          "severity": "FAILURE",
+          "message": "client_metadata.jwks is missing or not a JSON object",
+          "block": "",
+          "requirements": [
+            "HAIP-5-5",
+            "OID4VP-1FINAL-8.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VP1FinalEncryptVPResponse",
+          "severity": "FAILURE",
+          "message": "An encrypted response was requested but client_metadata.jwks is not present in the received request.",
+          "block": "",
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "authorization_request",
+          "http_status": 302,
+          "duration_ms": 569.4,
+          "at": "2026-10-13T22:26:10Z",
+          "detail": "Inji Verify request req_3c6e5004-a943-4ac1-b5b0-72c2fb325bbb (by request_uri) delivered to authorization_endpoint; suite answered in 494 ms"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=w20bxImeaBNVZUu",
+        "export": "verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-future-w20bxImeaBNVZUu.html"
+      },
+      "duration_s": 1.7
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "conforms": 0,
+    "known_gap": 0,
+    "regression": 11,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "conformance/benchmark/verify.expected-failures.json",
+      "conformance/benchmark/verify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 11 regressions, 0 known gaps, 0 stale",
+      "regression: oid4vp-1final-verifier-happy-flow: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-minimal-cnf-jwk: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-request-uri-method-post: the suite skipped the module and no expected skip lists it",
+      "regression: oid4vp-1final-verifier-request-uri-fetched-twice: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-invalid-kb-jwt-signature: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-invalid-credential-signature: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-invalid-sd-hash: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-invalid-kb-jwt-nonce: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-invalid-kb-jwt-aud: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-kb-jwt-iat-in-past: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "regression: oid4vp-1final-verifier-kb-jwt-iat-in-future: result FAILED: not in the benchmark: ExtractAndValidateX509HashClientId, VP1FinalCheckEncryptionKeyNotReused, VP1FinalCheckForKeyIdInClientMetadataJWKs, VP1FinalEncryptVPResponse, VP1FinalValidateClientMetadataJwksForEncryptedResponse, ValidateRequestObjectIssIfPresent, ValidateRequestObjectSignatureAgainstX5cHeader, ValidateResponseMode, ValidateVpClientMetadataEncryptionForHaip",
+      "this track never gates: the exit code ignores the verdicts"
+    ]
+  },
+  "started_at": "2026-10-13T22:25:47Z",
+  "finished_at": "2026-10-13T22:26:13Z"
+}

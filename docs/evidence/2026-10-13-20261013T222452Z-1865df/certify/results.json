@@ -1,0 +1,3362 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T222452Z-1865df",
+  "component": "certify",
+  "track": "haip",
+  "gating": false,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://certify.inji.test:18450"
+  },
+  "plan": {
+    "name": "oid4vci-1_0-issuer-haip-test-plan",
+    "variant": {
+      "credential_format": "sd_jwt_vc",
+      "grant_management": "disabled",
+      "vci_authorization_code_flow_variant": "issuer_initiated"
+    },
+    "id": "rW0bEBYaE0hsu",
+    "config_file": "certify/config/certify.oid4vci-1_0-issuer-haip.json",
+    "export": "certify/exports/oid4vci-1_0-issuer-haip-test-plan-sd_jwt_vc-issuer_initiated-disabled-rW0bEBYaE0hsu-13-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test",
+      "test_id": "I1qx0OxJlExc4zN",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CheckDiscEndpointClientAttestationSigningAlgValuesSupported, CheckForUnexpectedParametersInCredentialIssuerMetadata, CheckForUnexpectedParametersInServerMetadata, EnsureServerConfigurationSupportsAttestJwtClientAuth, VCICredentialIssuerMetadataValidation, VCIValidateFormatOfCredentialConfigurationsInMetadata",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "grant_management": "disabled",
+        "fapi_profile": "vci_haip"
+      },
+      "failures": [
+        {
+          "condition": "VCICredentialIssuerMetadataValidation",
+          "severity": "FAILURE",
+          "message": "Found invalid entries in OID4VCI Credential Issuer metadata input",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInCredentialIssuerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OID4VCI Credential Issuer metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'vci.allow_unexpected_credential_issuer_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VCIValidateFormatOfCredentialConfigurationsInMetadata",
+          "severity": "WARNING",
+          "message": "Found credential configurations with unsupported formats",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINALA-A.2",
+            "HAIP-6",
+            "OID4VCI-1FINALA-A.3.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'server.allow_unexpected_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Verify OAuth Authorization Server Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.3",
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureServerConfigurationSupportsAttestJwtClientAuth",
+          "severity": "WARNING",
+          "message": "token_endpoint_auth_methods_supported: not found",
+          "block": "Verify OAuth Authorization Server Metadata Response",
+          "requirements": [
+            "OAuth2-ATCA07-13.4"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckDiscEndpointClientAttestationSigningAlgValuesSupported",
+          "severity": "FAILURE",
+          "message": "token_endpoint_auth_methods_supported not present or not an array",
+          "block": "Verify OAuth Authorization Server Metadata Response",
+          "requirements": [
+            "OAuth2-ATCA07-10.1"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=I1qx0OxJlExc4zN",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-I1qx0OxJlExc4zN.html"
+      },
+      "duration_s": 3.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test-signed",
+      "test_id": "0x16uH31FCTDmj9",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: EnsureContentTypeApplicationJwt, VCIDecodeSignedCredentialIssuerMetadata",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "grant_management": "disabled",
+        "fapi_profile": "vci_haip"
+      },
+      "failures": [
+        {
+          "condition": "EnsureContentTypeApplicationJwt",
+          "severity": "FAILURE",
+          "message": "Couldn't find content-type header in endpoint_response",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "RFC8414-3.2"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "VCIDecodeSignedCredentialIssuerMetadata",
+          "severity": "FAILURE",
+          "message": "If present, a string is expected for credential_issuer_metadata_endpoint_response body but JsonNull was found",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=0x16uH31FCTDmj9",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-signed-0x16uH31FCTDmj9.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow",
+      "test_id": "riRG2TcRCwWeiu4",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=riRG2TcRCwWeiu4",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-riRG2TcRCwWeiu4.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-additional-requests",
+      "test_id": "qeqA69UPvbRE2Wq",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=qeqA69UPvbRE2Wq",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-additional-requests-qeqA69UPvbRE2Wq.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-multiple-clients",
+      "test_id": "5LHEhlcj7T0pPlX",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=5LHEhlcj7T0pPlX",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-multiple-clients-5LHEhlcj7T0pPlX.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-skip-notification",
+      "test_id": "G8SrYqR0qorAhoF",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=G8SrYqR0qorAhoF",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-skip-notification-G8SrYqR0qorAhoF.html"
+      },
+      "duration_s": 0.9
+    },
+    {
+      "name": "oid4vci-1_0-issuer-batch-issuance",
+      "test_id": "aMkp6VS8oNDLawi",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=aMkp6VS8oNDLawi",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-batch-issuance-aMkp6VS8oNDLawi.html"
+      },
+      "duration_s": 0.5
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-nonce",
+      "test_id": "Oxf1E9yWPXsfepe",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Oxf1E9yWPXsfepe",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-nonce-Oxf1E9yWPXsfepe.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature",
+      "test_id": "IcTJIHgLbxFIken",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=IcTJIHgLbxFIken",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-IcTJIHgLbxFIken.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-key-attestation-signature",
+      "test_id": "KF1mCxVeTKszDG9",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=KF1mCxVeTKszDG9",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-KF1mCxVeTKszDG9.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-client-attestation-signature",
+      "test_id": "ApRvXS4rMhAyZyB",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ApRvXS4rMhAyZyB",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-client-attestation-signature-ApRvXS4rMhAyZyB.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-client-attestation-pop-signature",
+      "test_id": "FmF4Owli3oxAqdl",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=FmF4Owli3oxAqdl",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-client-attestation-pop-signature-FmF4Owli3oxAqdl.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-client-attestation-exp-in-past",
+      "test_id": "STQkbd0qMOgD6kk",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=STQkbd0qMOgD6kk",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-client-attestation-exp-in-past-STQkbd0qMOgD6kk.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-client-attestation-no-sub",
+      "test_id": "dCsDx0wm3MK8JyT",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=dCsDx0wm3MK8JyT",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-client-attestation-no-sub-dCsDx0wm3MK8JyT.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-client-attestation-pop-wrong-aud",
+      "test_id": "AI3k81wayopoSCh",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=AI3k81wayopoSCh",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-client-attestation-pop-wrong-aud-AI3k81wayopoSCh.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-mismatched-client-attestation-pop-key",
+      "test_id": "1C7YYRhJQguUmYF",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=1C7YYRhJQguUmYF",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-mismatched-client-attestation-pop-key-1C7YYRhJQguUmYF.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-missing-proof",
+      "test_id": "ycasPfoDoaxyQvQ",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ycasPfoDoaxyQvQ",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-missing-proof-ycasPfoDoaxyQvQ.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+      "test_id": "5wwIJLDeAzEQcM0",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=5wwIJLDeAzEQcM0",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-configuration-5wwIJLDeAzEQcM0.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-identifier",
+      "test_id": "GauatG2n2ECWUtL",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=GauatG2n2ECWUtL",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-identifier-GauatG2n2ECWUtL.html"
+      },
+      "duration_s": 0.6
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-on-access-token-in-query",
+      "test_id": "ngzUrOn4rFkQYOi",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ngzUrOn4rFkQYOi",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-on-access-token-in-query-ngzUrOn4rFkQYOi.html"
+      },
+      "duration_s": 0.5
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow",
+      "test_id": "8V2IqgN6RA33EmL",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "encrypted",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=8V2IqgN6RA33EmL",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-8V2IqgN6RA33EmL.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+      "test_id": "qSnVRPcU0aV6BYc",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "encrypted",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=qSnVRPcU0aV6BYc",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-configuration-qSnVRPcU0aV6BYc.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm",
+      "test_id": "FfwZzhZ9sNqwZ7m",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "encrypted",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureCredentialTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Credential Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureStatusListTrustAnchorConfigured",
+          "severity": "FAILURE",
+          "message": "'Status List Trust Anchor' field is missing from the 'Credential' section in the test configuration. It is required for HAIP.",
+          "block": "",
+          "requirements": [
+            "HAIP-6.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=FfwZzhZ9sNqwZ7m",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-FfwZzhZ9sNqwZ7m.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-discovery-end-point-verification",
+      "test_id": "JYNMvYg328sVgGV",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CheckDiscEndpointClientAttestationSigningAlgValuesSupported, CheckDiscEndpointPARSupported, CheckDiscEndpointTokenEndpointAuthMethodsSupportedContainsAttestation, CheckForUnexpectedParametersInServerMetadata, EnsureAuthorizationResponseIssParameterSupportedIsTrue, EnsureServerConfigurationSupportsAttestJwtClientAuth, FAPI2CheckDpopSigningAlgValuesSupported",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "EnsureAuthorizationResponseIssParameterSupportedIsTrue",
+          "severity": "FAILURE",
+          "message": "'authorization_response_iss_parameter_supported' should be 'true', but is absent and the default value is 'false'.",
+          "block": "",
+          "requirements": [
+            "FAPI2-SP-FINAL-5.3.2.2-7",
+            "OAuth2-iss-3"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckDiscEndpointPARSupported",
+          "severity": "FAILURE",
+          "message": "pushed_authorization_request_endpoint is missing from discovery endpoint document",
+          "block": "",
+          "requirements": [
+            "PAR-5",
+            "FAPI2-SP-FINAL-5.3.2.2-2"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'server.allow_unexpected_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "",
+          "requirements": [
+            "RFC8414-2"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "FAPI2CheckDpopSigningAlgValuesSupported",
+          "severity": "FAILURE",
+          "message": "dpop_signing_alg_values_supported: not found",
+          "block": "",
+          "requirements": [
+            "FAPI2-SP-FINAL-5.4-1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckDiscEndpointTokenEndpointAuthMethodsSupportedContainsAttestation",
+          "severity": "FAILURE",
+          "message": "token_endpoint_auth_methods_supported: not found",
+          "block": "",
+          "requirements": [
+            "FAPI2-SP-FINAL-5.3.2.1-6"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "EnsureServerConfigurationSupportsAttestJwtClientAuth",
+          "severity": "WARNING",
+          "message": "token_endpoint_auth_methods_supported: not found",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-13.4"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckDiscEndpointClientAttestationSigningAlgValuesSupported",
+          "severity": "FAILURE",
+          "message": "token_endpoint_auth_methods_supported not present or not an array",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-10.1"
+          ],
+          "expected": false
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'server.allow_unexpected_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "",
+          "requirements": [
+            "OID4VCI-1FINAL-12.3",
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=JYNMvYg328sVgGV",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-discovery-end-point-verification-JYNMvYg328sVgGV.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-happy-flow",
+      "test_id": "UXhJt5AiJUiD4Nn",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=UXhJt5AiJUiD4Nn",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-happy-flow-UXhJt5AiJUiD4Nn.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-user-rejects-authentication",
+      "test_id": "tXP9htKxWSRQbLE",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=tXP9htKxWSRQbLE",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-user-rejects-authentication-tXP9htKxWSRQbLE.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-authorization-request-without-state-success",
+      "test_id": "DTdL2saVQW1w0pe",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=DTdL2saVQW1w0pe",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-authorization-request-without-state-success-DTdL2saVQW1w0pe.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-access-token-type-header-case-sensitivity",
+      "test_id": "dj4GckhRc1POrZg",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=dj4GckhRc1POrZg",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-access-token-type-header-case-sensitivity-dj4GckhRc1POrZg.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-check-dpop-proof-nbf-exp",
+      "test_id": "dFgOrOCyOJUAC7E",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=dFgOrOCyOJUAC7E",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-check-dpop-proof-nbf-exp-dFgOrOCyOJUAC7E.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-before-succeeds",
+      "test_id": "npZ3yJAssCPfrXq",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=npZ3yJAssCPfrXq",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-before-succeeds-npZ3yJAssCPfrXq.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-after-succeeds",
+      "test_id": "mpud7iDtCoxtZmK",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=mpud7iDtCoxtZmK",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-after-succeeds-mpud7iDtCoxtZmK.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-mismatched-dpop-jkt-fails",
+      "test_id": "96yuMBSX81Gnh07",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=96yuMBSX81Gnh07",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-mismatched-dpop-jkt-fails-96yuMBSX81Gnh07.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-proof-jkt",
+      "test_id": "wgfWHqhtd1fLYsN",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=wgfWHqhtd1fLYsN",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-proof-jkt-wgfWHqhtd1fLYsN.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-jkt",
+      "test_id": "yTJanV9nzEDQisf",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=yTJanV9nzEDQisf",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-jkt-yTJanV9nzEDQisf.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-dpopproof-at-par-endpoint-binding-success",
+      "test_id": "arMCED6RKMc6HM7",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=arMCED6RKMc6HM7",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-dpopproof-at-par-endpoint-binding-success-arMCED6RKMc6HM7.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-dpop-auth-code-binding-success",
+      "test_id": "T3G1NgObQAE2ZV2",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=T3G1NgObQAE2ZV2",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-dpop-auth-code-binding-success-T3G1NgObQAE2ZV2.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-different-state-inside-and-outside-request-object",
+      "test_id": "tcvWDqXWmGXpAQo",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=tcvWDqXWmGXpAQo",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-different-state-inside-and-outside-request-object-tcvWDqXWmGXpAQo.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-authorization-request-with-long-state",
+      "test_id": "vTTOHLZgtTlgZiU",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=vTTOHLZgtTlgZiU",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-authorization-request-with-long-state-vTTOHLZgtTlgZiU.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-state-only-outside-request-object-not-used",
+      "test_id": "wjYsk9G50lcFYST",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=wjYsk9G50lcFYST",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-state-only-outside-request-object-not-used-wjYsk9G50lcFYST.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-request-object-without-redirect-uri-fails",
+      "test_id": "FXe0goBWOCGPRvr",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=FXe0goBWOCGPRvr",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-request-object-without-redirect-uri-fails-FXe0goBWOCGPRvr.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-plain-fapi-tolerate-unregistered-redirect-uri",
+      "test_id": "GwdsScdXSGgjADZ",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=GwdsScdXSGgjADZ",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-plain-fapi-tolerate-unregistered-redirect-uri-GwdsScdXSGgjADZ.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-unsigned-authorization-request-without-using-par-fails",
+      "test_id": "NqGRbPR1H2sjqoB",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=NqGRbPR1H2sjqoB",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-unsigned-authorization-request-without-using-par-fails-NqGRbPR1H2sjqoB.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-redirect-uri-in-authorization-request",
+      "test_id": "OAGkopI5pR7v2Og",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=OAGkopI5pR7v2Og",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-redirect-uri-in-authorization-request-OAGkopI5pR7v2Og.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-response-type-code-idtoken-fails",
+      "test_id": "NQOmQj5JnPDoakR",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=NQOmQj5JnPDoakR",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-response-type-code-idtoken-fails-NQOmQj5JnPDoakR.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-response-type-token-fails",
+      "test_id": "ovUAF1CsOR97y6Z",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=ovUAF1CsOR97y6Z",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-response-type-token-fails-ovUAF1CsOR97y6Z.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-client-id-in-token-endpoint",
+      "test_id": "QYKMdkscO3n7DVn",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=QYKMdkscO3n7DVn",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-client-id-in-token-endpoint-QYKMdkscO3n7DVn.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-holder-of-key-required",
+      "test_id": "o3T6x9REZqjtGWd",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=o3T6x9REZqjtGWd",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-holder-of-key-required-o3T6x9REZqjtGWd.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-authorization-code-is-bound-to-client",
+      "test_id": "zKLHSVZIZe3UE6X",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=zKLHSVZIZe3UE6X",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-authorization-code-is-bound-to-client-zKLHSVZIZe3UE6X.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-attempt-reuse-authorization-code-after-one-second",
+      "test_id": "EBfqDAB8d2rUazt",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=EBfqDAB8d2rUazt",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-attempt-reuse-authorization-code-after-one-second-EBfqDAB8d2rUazt.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-token-endpoint-fails-with-expired-auth-code",
+      "test_id": "15fNxNbZHfacV8B",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=15fNxNbZHfacV8B",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-token-endpoint-fails-with-expired-auth-code-15fNxNbZHfacV8B.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-dpop-negative-tests",
+      "test_id": "lDFbhM8HtZDCsDP",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=lDFbhM8HtZDCsDP",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-dpop-negative-tests-lDFbhM8HtZDCsDP.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "fapi2-security-profile-final-refresh-token",
+      "test_id": "o9jZaDdESUiJ7IK",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=o9jZaDdESUiJ7IK",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-refresh-token-o9jZaDdESUiJ7IK.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "fapi2-security-profile-final-par-ensure-reused-request-uri-prior-to-auth-completion-succeeds",
+      "test_id": "b9fs1zMKUSntXBt",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=b9fs1zMKUSntXBt",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-ensure-reused-request-uri-prior-to-auth-completion-succeeds-b9fs1zMKUSntXBt.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "fapi2-security-profile-final-par-attempt-reuse-request_uri",
+      "test_id": "WfyrJEVGnWDcFXf",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=WfyrJEVGnWDcFXf",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-attempt-reuse-request_uri-WfyrJEVGnWDcFXf.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-par-attempt-to-use-expired-request_uri",
+      "test_id": "Oz86YLFL4vfB9lb",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Oz86YLFL4vfB9lb",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-attempt-to-use-expired-request_uri-Oz86YLFL4vfB9lb.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-par-attempt-to-use-request_uri-for-different-client",
+      "test_id": "fGzqW7tQNTVUSGu",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=fGzqW7tQNTVUSGu",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-attempt-to-use-request_uri-for-different-client-fGzqW7tQNTVUSGu.html"
+      },
+      "duration_s": 0.5
+    },
+    {
+      "name": "fapi2-security-profile-final-par-authorization-request-containing-request_uri-form-param",
+      "test_id": "YlsC8zcbc1SJfNQ",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=YlsC8zcbc1SJfNQ",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-authorization-request-containing-request_uri-form-param-YlsC8zcbc1SJfNQ.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-par-attempt-invalid-http-method",
+      "test_id": "XeWGcKlzDYT1Ghk",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=XeWGcKlzDYT1Ghk",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-attempt-invalid-http-method-XeWGcKlzDYT1Ghk.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-par-ensure-pkce-required",
+      "test_id": "mg2fjBi6CA2mZdj",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=mg2fjBi6CA2mZdj",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-ensure-pkce-required-mg2fjBi6CA2mZdj.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-ensure-pkce-code-verifier-required",
+      "test_id": "9XOyIiILUC3jUUK",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=9XOyIiILUC3jUUK",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-ensure-pkce-code-verifier-required-9XOyIiILUC3jUUK.html"
+      },
+      "duration_s": 0.1
+    },
+    {
+      "name": "fapi2-security-profile-final-incorrect-pkce-code-verifier-rejected",
+      "test_id": "tp2HXgllTVTOSCh",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=tp2HXgllTVTOSCh",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-incorrect-pkce-code-verifier-rejected-tp2HXgllTVTOSCh.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-par-plain-pkce-rejected",
+      "test_id": "0KUbKwEAQuP9WyQ",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=0KUbKwEAQuP9WyQ",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-plain-pkce-rejected-0KUbKwEAQuP9WyQ.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "fapi2-security-profile-final-par-without-duplicate-parameters",
+      "test_id": "5lCpcWDSblyGysl",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "regression",
+      "verdict_reason": "result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261013T222452Z-1865df",
+      "variant": {
+        "sender_constrain": "dpop",
+        "client_auth_type": "client_attestation",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "openid": "plain_oauth",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci_haip",
+        "fapi_response_mode": "plain_response"
+      },
+      "failures": [
+        {
+          "condition": "CreateClientAttestationJwt",
+          "severity": "FAILURE",
+          "message": "Client attestation issuer must not be null or empty",
+          "block": "",
+          "requirements": [
+            "OAuth2-ATCA07-1",
+            "HAIP-4.3.1-2"
+          ],
+          "expected": false
+        }
+      ],
+      "benchmark": [],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=5lCpcWDSblyGysl",
+        "export": "certify/exports/html/test-log-fapi2-security-profile-final-par-without-duplicate-parameters-5lCpcWDSblyGysl.html"
+      },
+      "duration_s": 0.1
+    }
+  ],
+  "summary": {
+    "total": 63,
+    "conforms": 0,
+    "known_gap": 0,
+    "regression": 63,
+    "not_applicable": 0,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "conformance/benchmark/certify.expected-failures.json",
+      "conformance/benchmark/certify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 63 regressions, 0 known gaps, 0 stale",
+      "regression: oid4vci-1_0-issuer-metadata-test: result FAILED: not in the benchmark: CheckDiscEndpointClientAttestationSigningAlgValuesSupported, CheckForUnexpectedParametersInCredentialIssuerMetadata, CheckForUnexpectedParametersInServerMetadata, EnsureServerConfigurationSupportsAttestJwtClientAuth, VCICredentialIssuerMetadataValidation, VCIValidateFormatOfCredentialConfigurationsInMetadata",
+      "regression: oid4vci-1_0-issuer-metadata-test-signed: result FAILED: not in the benchmark: EnsureContentTypeApplicationJwt, VCIDecodeSignedCredentialIssuerMetadata",
+      "regression: oid4vci-1_0-issuer-happy-flow: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-happy-flow-additional-requests: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-happy-flow-multiple-clients: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-happy-flow-skip-notification: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-batch-issuance: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-invalid-nonce: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-invalid-key-attestation-signature: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-invalid-client-attestation-signature: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-invalid-client-attestation-pop-signature: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-client-attestation-exp-in-past: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-client-attestation-no-sub: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-client-attestation-pop-wrong-aud: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-mismatched-client-attestation-pop-key: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-missing-proof: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-unknown-credential-configuration: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-unknown-credential-identifier: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-on-access-token-in-query: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-happy-flow: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-unknown-credential-configuration: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm: result FAILED: not in the benchmark: CreateClientAttestationJwt, EnsureCredentialTrustAnchorConfigured, EnsureStatusListTrustAnchorConfigured",
+      "regression: fapi2-security-profile-final-discovery-end-point-verification: result FAILED: not in the benchmark: CheckDiscEndpointClientAttestationSigningAlgValuesSupported, CheckDiscEndpointPARSupported, CheckDiscEndpointTokenEndpointAuthMethodsSupportedContainsAttestation, CheckForUnexpectedParametersInServerMetadata, EnsureAuthorizationResponseIssParameterSupportedIsTrue, EnsureServerConfigurationSupportsAttestJwtClientAuth, FAPI2CheckDpopSigningAlgValuesSupported",
+      "regression: fapi2-security-profile-final-happy-flow: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-user-rejects-authentication: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-authorization-request-without-state-success: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-access-token-type-header-case-sensitivity: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-check-dpop-proof-nbf-exp: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-before-succeeds: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-dpopproof-with-iat-10seconds-after-succeeds: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-mismatched-dpop-jkt-fails: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-proof-jkt: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-token-endpoint-fails-with-mismatched-dpop-jkt: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-dpopproof-at-par-endpoint-binding-success: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-dpop-auth-code-binding-success: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-different-state-inside-and-outside-request-object: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-authorization-request-with-long-state: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-state-only-outside-request-object-not-used: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-request-object-without-redirect-uri-fails: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-plain-fapi-tolerate-unregistered-redirect-uri: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-unsigned-authorization-request-without-using-par-fails: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-redirect-uri-in-authorization-request: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-response-type-code-idtoken-fails: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-response-type-token-fails: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-client-id-in-token-endpoint: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-holder-of-key-required: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-authorization-code-is-bound-to-client: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-attempt-reuse-authorization-code-after-one-second: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-token-endpoint-fails-with-expired-auth-code: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-dpop-negative-tests: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-refresh-token: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-ensure-reused-request-uri-prior-to-auth-completion-succeeds: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-attempt-reuse-request_uri: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-attempt-to-use-expired-request_uri: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-attempt-to-use-request_uri-for-different-client: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-authorization-request-containing-request_uri-form-param: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-attempt-invalid-http-method: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-ensure-pkce-required: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-ensure-pkce-code-verifier-required: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-incorrect-pkce-code-verifier-rejected: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-plain-pkce-rejected: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "regression: fapi2-security-profile-final-par-without-duplicate-parameters: result FAILED: not in the benchmark: CreateClientAttestationJwt",
+      "this track never gates: the exit code ignores the verdicts"
+    ]
+  },
+  "started_at": "2026-10-13T22:25:47Z",
+  "finished_at": "2026-10-13T22:26:15Z",
+  "notes": [
+    "Inji Certify's authorization server metadata was changed: authorization_endpoint added by the TLS proxy"
+  ]
+}

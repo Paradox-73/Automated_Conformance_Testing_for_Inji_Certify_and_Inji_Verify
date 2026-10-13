@@ -33,7 +33,7 @@
     "comment": "The credential configuration FarmerCredential uses the ldp_vc format of Appendix A.1; suite release-v5.3.1 validates only SD-JWT VC and mdoc configurations and warns about every other format.",
     "owner": "suite",
     "spec": "OID4VCI-1FINALA-A.1",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test",
@@ -45,7 +45,7 @@
     "comment": "Inji Certify publishes interactive_authorization_endpoint and require_interactive_authorization_request, which come from a later OpenID4VCI draft (interactive authorization); suite release-v5.3.1 does not know them and warns.",
     "owner": "suite",
     "spec": "OID4VCI-1FINAL-12.3",
-    "issue": "docs/findings/suite-limitations.md"
+    "issue": "docs/suite-limitations.md"
   },
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test-signed",

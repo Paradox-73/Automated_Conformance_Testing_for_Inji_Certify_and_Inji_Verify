@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="232" height="20" viewBox="0 0 232 20" role="img" aria-label="OpenID conformance of Inji, run 20261013T221238Z-b9fc52: certify: 1 conform, 8 known gaps, 3 regressions, 0 stale benchmark entries, 3 not applicable; gate failed">
+  <title>OpenID conformance of Inji, run 20261013T221238Z-b9fc52: certify: 1 conform, 8 known gaps, 3 regressions, 0 stale benchmark entries, 3 not applicable; gate failed</title>
+  <clipPath id="r"><rect width="232" height="20" rx="3" fill="#fff"/></clipPath>
+  <g clip-path="url(#r)">
+    <rect width="83" height="20" fill="#555555"/>
+    <rect x="83" width="149" height="20" fill="#c4261d"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">
+    <text x="415" y="140" transform="scale(.1)" textLength="713">conformance</text>
+    <text x="1575" y="140" transform="scale(.1)" textLength="1370">certify 1 ok, 8 gap, 3 fail</text>
+  </g>
+</svg>

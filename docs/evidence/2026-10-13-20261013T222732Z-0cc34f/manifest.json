@@ -1,0 +1,84 @@
+{
+  "schema_version": "1",
+  "run_id": "20261013T222732Z-0cc34f",
+  "mode": "component",
+  "track": "gate",
+  "started_at": "2026-10-13T22:28:16Z",
+  "harness": {
+    "git_commit": "cc5a25ec0dc0",
+    "git_dirty": true,
+    "runner_version": "0.1.0"
+  },
+  "components": [
+    {
+      "component": "verify",
+      "plan": "oid4vp-1final-verifier-test-plan",
+      "results": "verify/results.json",
+      "started_at": "2026-10-13T22:28:16Z",
+      "finished_at": "2026-10-13T22:28:55Z",
+      "wall_time_s": 39.0,
+      "exit_code": 0
+    }
+  ],
+  "gate": {
+    "passed": true,
+    "exit_code": 0
+  },
+  "finished_at": "2026-10-13T22:28:55Z",
+  "wall_time_s": 39.0,
+  "command": [
+    "./run-conformance.sh",
+    "--component",
+    "verify",
+    "--runner-only",
+    "--template",
+    "verify.oid4vp-1final-verifier-x509-san-dns",
+    "--out",
+    "verify-x509"
+  ],
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "images": [
+    {
+      "service": "suite-nginx",
+      "image": "registry.gitlab.com/openid/conformance-suite/nginx:release-v5.3.1@sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105",
+      "digest": "sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105"
+    },
+    {
+      "service": "tls-proxy",
+      "image": "nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94",
+      "digest": "sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94"
+    },
+    {
+      "service": "suite-server",
+      "image": "registry.gitlab.com/openid/conformance-suite:release-v5.3.1@sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70",
+      "digest": "sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70"
+    },
+    {
+      "service": "verify-service",
+      "image": "injistackqa/inji-verify-service:1.0.x@sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef",
+      "digest": "sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef"
+    },
+    {
+      "service": "verify-db",
+      "image": "postgres:13@sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068",
+      "digest": "sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068"
+    },
+    {
+      "service": "pki-init",
+      "image": "python:3.12.15-slim@sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256",
+      "digest": "sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256"
+    },
+    {
+      "service": "suite-mongodb",
+      "image": "mongo:6.0.13@sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070",
+      "digest": "sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070"
+    }
+  ],
+  "host": {
+    "python": "3.12.15",
+    "os": "macOS 15.6.1 (arm64)"
+  }
+}
