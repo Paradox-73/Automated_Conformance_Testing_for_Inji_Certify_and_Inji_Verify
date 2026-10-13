@@ -21,7 +21,7 @@ suite release-v5.3.1); each manifest lists every image and digest.
 | `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 52 | 0 failures, 0 errors |
 | `scripts/tests/test-*.sh` (TAP) | bash | 80 cases in 4 scripts, plus the PKI script | all ok |
 
-`bash scripts/check.sh all` result: see [Repository checks](#repository-checks).
+`bash scripts/check.sh all` result: see [Repository checks and local CI](#repository-checks-and-local-ci).
 
 ## End-to-end runs
 
