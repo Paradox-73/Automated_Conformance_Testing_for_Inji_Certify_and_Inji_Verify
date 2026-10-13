@@ -44,7 +44,8 @@ log_info "step 4/4: artifact"
 rm -rf -- "$artifact"
 mkdir -p "$artifact"
 cp -R "$reports/$out_name/." "$artifact/"
-rm -rf "$artifact"/*/suite-scripts "$artifact"/*/exports/*.zip
+# The suite's exports, the extracted HTML pages too, contain the configuration with the run's private keys.
+rm -rf "$artifact"/*/suite-scripts "$artifact"/*/exports
 if [[ -f $artifact/report/summary.md ]]; then
   cp "$artifact/report/summary.md" "$artifact/../summary-$component.md"
 fi

@@ -153,7 +153,7 @@ jobs:
           if [ -f "$summary" ]; then cat "$summary" >>"$GITHUB_STEP_SUMMARY"; else echo "No report for ${{ matrix.component }}." >>"$GITHUB_STEP_SUMMARY"; fi
       - name: Remove key material from the artifact
         if: always()
-        run: rm -rf "$HARNESS_RUN_DIR"/reports/*/*/suite-scripts "$HARNESS_RUN_DIR"/reports/*/*/exports/*.zip
+        run: rm -rf "$HARNESS_RUN_DIR"/reports/*/*/suite-scripts "$HARNESS_RUN_DIR"/reports/*/*/exports
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -237,7 +237,7 @@ jobs:
         if: always()
         run: |
           cat "$HARNESS_RUN_DIR/reports/ci-full-stack/report/summary.md" >>"$GITHUB_STEP_SUMMARY" 2>/dev/null || true
-          rm -rf "$HARNESS_RUN_DIR"/reports/*/*/suite-scripts "$HARNESS_RUN_DIR"/reports/*/*/exports/*.zip
+          rm -rf "$HARNESS_RUN_DIR"/reports/*/*/suite-scripts "$HARNESS_RUN_DIR"/reports/*/*/exports
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

@@ -71,9 +71,24 @@ Not run: a run against `injistack/inji-certify-with-plugins:1.0.0-alpha.1` was p
 dropped for time. `CERTIFY_IMAGE=<image> ./run-conformance.sh --component certify --runner-only` followed by
 `inji-conformance diff` against TC-02 does it.
 
-## Repository checks
+## Repository checks and local CI
 
-`bash scripts/check.sh all` on the final commit: recorded in the pull request with its output.
+`bash scripts/ci-local.sh verify` (2026-10-14), whose first step is `bash scripts/check.sh all` in strict mode:
+
+```text
+PASS  eol        1147 text files use LF (7 byte-identical upstream CRLF files exempted)
+PASS  secrets    1147 text files scanned, no findings (11 files skipped as fixtures listed in .gitguardian.yaml)
+PASS  shell      20 scripts clean under shellcheck 0.11.0, 5 shell test scripts passed
+PASS  runner     ruff clean, pytest passed, 9 examples valid, 3 invalid examples rejected
+PASS  testrigs   Maven verify passed (bridge module, JDK 21)
+PASS  workflows  2 workflow files clean under actionlint 1.7.12
+PASS  docs       docs/tools/check_docs.py and its tests passed
+```
+
+Then the prepare step and `./run-conformance.sh --component verify` with the testrig and MinIO (run
+`20261013T225035Z-c26c8f`, 183 s, exit 0, rig report `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded); exit code 0, artifact in
+`$HARNESS_RUN_DIR/ci-local/conformance-verify/`. That check found that the extracted HTML export holds the suite
+configuration's private keys; the workflow and `ci-local.sh` now drop the whole `exports/` folder from artifacts.
 
 ## GitHub Actions
 

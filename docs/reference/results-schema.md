@@ -21,7 +21,7 @@ run/reports/<run id>/
   logs/                               compose-up, runner, testrig, report and compose logs
 ```
 
-The export zips hold the suite configuration with its private keys: never commit them. The committed evidence in
+The exports (the zips and the extracted HTML pages) hold the suite configuration with its private keys: never commit or upload them. The committed evidence in
 `docs/evidence/` keeps only `results.json`, the manifest, the report and badge.
 
 ## results.json (version 1)

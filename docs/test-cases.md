@@ -9,7 +9,7 @@ with ids and evidence are in [test-report.md](test-report.md). All dates 2026-10
 | TC-02 | Inji Certify, one command | `./run-conformance.sh --component certify --runner-only` | exit 0, gate with the benchmark | exit 0, 0 regressions, 9 known gaps, 3 not applicable, 89 s |
 | TC-03 | Both components in parallel | `./run-full-stack-conformance.sh --no-prepare --runner-only` | exit 0, both results, manifest with wall time per plan | exit 0 twice (285 s, 443 s); plans 114 s and 130 s side by side |
 | TC-04 | Same verdicts on a rerun (R1) | `inji-conformance diff <TC-03 run 1> <TC-03 run 2>` | exit 0 | exit 0, 26 unchanged |
-| TC-05 | Serial and parallel agree (R5) | `./run-conformance.sh --combined --runner-only --serial`, then `diff` against TC-03 | exit 0, diff exit 0 | see [test-report.md](test-report.md) |
+| TC-05 | Serial and parallel agree (R5) | `./run-conformance.sh --combined --runner-only --serial`, then `diff` against TC-19 | exit 0, diff exit 0 | exit 0 (166 s), diff exit 0, 26 unchanged |
 | TC-06 | Inji Verify stopped mid-run (R2) | stop `verify-service` after the first handoff | the remaining modules are regressions ("handoff not delivered", "never started"), time limit exit 4, stack removed | exit 4 after 341 s with `--timeout-minutes 5`, 11 regressions, no container left |
 | TC-07 | Suite restarted mid-run (R3) | `docker restart ps01-harness-suite-server-1` during the issuer plan | the run recovers or fails clearly | recovered: exit 0, same verdicts as TC-02, 13 failed responder polls (HTTP 502) recorded in `notes` |
 | TC-08 | Configuration regression (R4) | `HARNESS_COMPOSE_FILES=demo/regression.compose.yml ./run-conformance.sh --component certify --runner-only` | exit 1, the gate names the module | exit 1, 3 regressions named with their conditions |
@@ -23,6 +23,6 @@ with ids and evidence are in [test-report.md](test-report.md). All dates 2026-10
 | TC-16 | Testrig rows and MinIO upload, Certify | `bash testrigs/run-testrig.sh certify --invoke` with the certify and reports profiles | exit 0, report in `automationtests/injicertify/` | exit 0, `T-15_P-3_S-0_F-0_I-3_KI-9`, listed in MinIO |
 | TC-17 | Testrig rows and MinIO upload, Verify | `bash testrigs/run-testrig.sh verify --invoke` | exit 0, report in `automationtests/injiverify/` | exit 0, `T-11_P-11_S-0_F-0_I-0_KI-0`, listed in MinIO |
 | TC-18 | Upstream patches apply | `git apply --check --directory=api-test` on clean upstream checkouts | succeeds | succeeds for all three patches |
-| TC-19 | Full stack with testrigs | `./run-full-stack-conformance.sh --no-prepare` | exit 0, both rig reports, MinIO keys | see [test-report.md](test-report.md) |
-| TC-20 | Demo with regression | `bash demo/demo.sh --regression --runner-only` | gate 0, then 1, diff 16, "demo ok" | see [test-report.md](test-report.md) |
-| TC-21 | Unit tests | `bash scripts/check.sh all` | no FAIL | see [test-report.md](test-report.md) |
+| TC-19 | Full stack with testrigs | `./run-full-stack-conformance.sh --no-prepare` | exit 0, both rig reports, MinIO keys | exit 0 (250 s), both reports in MinIO |
+| TC-20 | Demo with regression | `bash demo/demo.sh --regression --runner-only` | gate 0, then 1, diff 16, "demo ok" | as expected, exit 0 |
+| TC-21 | Repository checks and local CI | `bash scripts/ci-local.sh verify` | every check PASS, run exit 0 | 7 PASS, run exit 0 (183 s) |

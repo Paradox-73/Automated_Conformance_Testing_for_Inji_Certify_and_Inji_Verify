@@ -5,8 +5,9 @@ left: [docs/STATUS.md](docs/STATUS.md).
 
 ## Tools and versions
 
-Versions in the second column are the ones the team ran on 2026-10-04 (Windows 11 with Git Bash). Newer minor
-versions are expected to work but have not been tried.
+Versions in the second column are the ones the team ran on 2026-10-04 (Windows 11 with Git Bash). On 2026-10-14
+everything also ran on macOS 15 (Apple silicon) with Docker Desktop (Compose 2.38.1, 4 GiB VM), Homebrew bash 5.3,
+Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12.
 
 | Tool | Known to work | Needed for | Download |
 |---|---|---|---|
@@ -90,7 +91,7 @@ versions are expected to work but have not been tried.
 | `HARNESS_SUITE_URL`, `HARNESS_VERIFY_URL`, `HARNESS_CERTIFY_URL`, `HARNESS_PKI_DIR`, `HARNESS_REPORTS_DIR` | set by the `runner` service | Where the runner finds the suite, Inji and the keys; only needed when running the runner outside Compose. |
 
 `scripts/dc.sh` writes `$HARNESS_RUN_DIR/env.local` on first use with random passwords (`VERIFY_DB_PASSWORD`,
-`CERTIFY_DB_PASSWORD`, `CERTIFY_KEYSTORE_PASSWORD`, `MINIO_ROOT_PASSWORD`). It is never committed. Delete it only
+`CERTIFY_DB_PASSWORD`, `CERTIFY_KEYSTORE_PASSWORD`, `MINIO_ROOT_PASSWORD`, `VERIFY_KEYSTORE_PASSWORD`). It is never committed. Delete it only
 together with the volumes (`bash scripts/dc.sh --profile '*' down -v`).
 
 ## Build and test
@@ -152,50 +153,29 @@ testrigs, `probe`) runs in a container. Example:
 `bash scripts/dc.sh run --rm probe --cacert /pki/ca.crt https://verify.inji.test:18451/v1/verify/actuator/health`.
 More detail: [compose/README.md](compose/README.md).
 
-## Running the end-to-end path as far as it works today
+## Running the harness
 
-What runs on `main` (2026-10-04): the verifier plan against Inji Verify through the runner, the report and diff on
-recorded fixtures, and the Inji Verify rig on a results file. The issuer path is on the branch
-`wip/2026-10-04-stop` and has not run against a live stack yet.
+The one-command scripts are the normal way to run everything; [docs/README.md](docs/README.md) is the step-by-step
+guide with expected output, and [docs/reference/cli.md](docs/reference/cli.md) lists every option.
 
-1. One verifier module, end to end with no person in the loop (measured: exit 0, 23 s once the stack was up):
+```bash
+./run-full-stack-conformance.sh --prepare-only          # pull images, build the runner and testrig images
+./run-conformance.sh --component verify --runner-only    # one component, runner only (80 s on 2026-10-14)
+./run-full-stack-conformance.sh --no-prepare            # both components, testrigs, MinIO, report (250 s)
+```
 
-   ```bash
-   bash scripts/dc.sh --profile tools build runner
-   bash scripts/dc.sh --profile verify up -d --wait
-   bash scripts/dc.sh run --rm runner inji-conformance run --component verify \
-     --modules oid4vp-1final-verifier-happy-flow --no-gate --out /reports/try1
-   bash scripts/dc.sh --profile '*' down -v
-   ```
+Pieces on their own, for development:
 
-   Output lands in `$HARNESS_RUN_DIR/reports/try1/verify/` (`results.json`, `logs/`, `exports/`). The module
-   currently ends FINISHED with result FAILED, for reasons listed under "Open problems" in
-   [docs/STATUS.md](docs/STATUS.md). Leave out `--modules` for the whole plan (it can take over 20 minutes on a
-   busy machine; `--timeout-minutes` sets the limit, default 30).
-
-2. Report and diff, on the recorded fixtures:
-
-   ```bash
-   inji-conformance report --run runner/tests/report/fixtures/run-a --compare runner/tests/report/fixtures/run-b --out "$HARNESS_RUN_DIR/report-try"
-   inji-conformance diff runner/tests/report/fixtures/run-a runner/tests/report/fixtures/run-b; echo "exit $?"   # 16: the runs differ
-   ```
-
-   Use the venv's `inji-conformance` (see [Build and test](#build-and-test)). Writes `summary.html`, `badge.svg`,
-   `summary.md` and `diff.html`.
-
-3. Inji Verify rig on a results file, after the Maven build above, from `testrigs/inji-verify-api-test`:
-
-   ```bash
-   java -Dmodules=injiverify -Denv.user=ps01 -Denv.endpoint=https://verify.inji.test:18451 \
-        -Denv.testLevel=smokeAndRegression \
-        -Dconformance.results.file=../../conformance/schema/examples/results-verify.example.json \
-        -Dconformance.report.dir="$HARNESS_RUN_DIR/rig-try" \
-        -cp target/apitest-injiverify-1.0.0-alpha.2-SNAPSHOT-jar-with-dependencies.jar \
-        io.inji.testrig.apirig.injiverify.testrunner.ConformanceRigRunner
-   echo "exit $?"    # 0; the report has rows TC_OIDF_VERIFY_01 to _11
-   ```
-
-   It takes 5-7 minutes, almost all of it the stock resource extraction from the jar.
+- The runner alone against a running stack:
+  `bash scripts/dc.sh --profile verify up -d --wait`, then
+  `bash scripts/dc.sh run --rm runner inji-conformance run --component verify --modules oid4vp-1final-verifier-happy-flow --out /reports/try1`,
+  then `bash scripts/dc.sh --profile '*' down -v`. Rebuild the runner image after changing `runner/` or
+  `conformance/`: `bash scripts/dc.sh --profile tools build runner`.
+- Re-gate a recorded run without a stack: `"$HARNESS_RUN_DIR/venv/bin/inji-conformance" gate --run <run>/<component>`.
+- Report and diff on the recorded fixtures: `inji-conformance report --run runner/tests/report/fixtures/run-a --out "$HARNESS_RUN_DIR/report-try"`
+  and `inji-conformance diff runner/tests/report/fixtures/run-a runner/tests/report/fixtures/run-b` (exit 16: they differ).
+- A testrig on a results file: `bash testrigs/run-testrig.sh verify --results <run>/verify/results.json` (needs
+  `bash testrigs/build.sh --image` once and a running stack network).
 
 ## Conventions
 
@@ -233,7 +213,6 @@ recorded fixtures, and the Inji Verify rig on a results file. The issuer path is
    git switch -c feat/<short-task-name>
    ```
 
-   For WP-08, take the unfinished files from `wip/2026-10-04-stop` as the card describes.
 3. Read the card's goal, owned folders, acceptance check and notes, and the README of each folder you will touch.
 4. Work in small commits (`git commit -s`), with unit tests next to the code. Run `bash scripts/check.sh all`
    before every push.

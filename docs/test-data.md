@@ -35,8 +35,9 @@ committed; `bash scripts/check.sh secrets` scans the repository for them.
 | Wallet client key sets `client`, `client2` (P-256 private JWK sets) | the runner (`keys.py`) | `<run>/<component>/suite-scripts/certs-keys/`, deleted after the plan | one run |
 | Inji Certify's signing keys | Inji Certify | its keystore volume and database | until `down -v` |
 
-The suite's exports (`<run>/<component>/exports/*.zip`) contain the suite configuration with the run's private keys
-filled in: they stay in the run folder and are never committed; the CI artifacts remove them.
+The suite's exports (`<run>/<component>/exports/`, the zips and the extracted HTML pages) contain the suite
+configuration with the run's private keys filled in: they stay in the run folder and are never committed; the CI
+artifacts remove them.
 
 ## Suite configuration fields
 

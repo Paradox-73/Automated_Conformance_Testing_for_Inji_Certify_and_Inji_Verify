@@ -20,7 +20,7 @@ example a new digest). Runs of one ref cancel each other (`concurrency`).
 | Job | Does | Fails when |
 |---|---|---|
 | `checks` | `bash scripts/check.sh all` with `CI=true` (a missing tool fails) | any check fails |
-| `conformance` (matrix certify, verify) | image cache (`docker save`/`load`, keyed on the image list), `./run-full-stack-conformance.sh --prepare-only`, `./run-conformance.sh --component <c>` (runner, testrig, MinIO upload, report), `summary.md` into the job summary, artifact `conformance-<c>` (`suite-scripts/` and raw export zips removed first: they hold key material) | the component's gate fails |
+| `conformance` (matrix certify, verify) | image cache (`docker save`/`load`, keyed on the image list), `./run-full-stack-conformance.sh --prepare-only`, `./run-conformance.sh --component <c>` (runner, testrig, MinIO upload, report), `summary.md` into the job summary, artifact `conformance-<c>` (`suite-scripts/` and `exports/` removed first: the suite's exports, the extracted HTML pages included, hold the run's private keys) | the component's gate fails |
 | `combined` | consolidated report and badge of both artifacts (`inji-conformance report --combined`), diff against the artifacts of the last successful run on `main` | no component results |
 | `full-stack` | `./run-full-stack-conformance.sh` from scratch | the gate fails |
 
