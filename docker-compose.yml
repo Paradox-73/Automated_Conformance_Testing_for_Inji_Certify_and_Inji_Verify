@@ -268,6 +268,8 @@ services:
     volumes:
       - ./compose/tls-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./compose/tls-proxy/sites:/etc/nginx/harness/sites:ro
+      # as-is or add-authorization-endpoint (the default); see the file itself.
+      - ./compose/tls-proxy/certify-as-metadata/${CERTIFY_AS_METADATA:-add-authorization-endpoint}.conf:/etc/nginx/harness/certify-as-metadata.conf:ro
       - type: bind
         source: ${HARNESS_RUN_DIR:-./run}/pki
         target: /pki
