@@ -116,7 +116,6 @@ OUT_NAME=${OUT_NAME:-$RUN_ID}
 REPORTS=$(harness_run_dir reports)
 OUT=$REPORTS/$OUT_NAME
 [[ ! -e $OUT ]] || die "run folder $OUT exists already; choose another --out" 2
-mkdir -p "$OUT/logs"
 CONTAINER_OUT=/reports/$OUT_NAME
 STARTED=$(date -u +%s)
 
@@ -134,6 +133,7 @@ teardown() {
 }
 
 stack_preflight "${PROFILES[@]}"
+mkdir -p "$OUT/logs"
 trap teardown EXIT
 trap 'exit 130' INT TERM
 
