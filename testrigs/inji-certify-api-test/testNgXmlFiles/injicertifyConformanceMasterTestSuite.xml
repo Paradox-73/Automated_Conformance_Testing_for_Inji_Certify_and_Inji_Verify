@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--
+  SPDX-License-Identifier: MIT
+  OpenID Foundation conformance results for Inji Certify, in the stock master/child shape of this rig:
+  EmailableReport leaves out every suite whose name contains "Master Suite" and reports the child suites, so the
+  rows live in injicertifyConformanceSuite.xml. The stock InjiTestRunner also runs this file (its name contains
+  "mastertestsuite"); without conformance.results.file or conformance.runner.command it reports one Ignored row.
+-->
+<suite name="Inji-Certify OpenID Conformance Master Suite">
+	<listeners>
+		<listener class-name="io.mosip.testrig.apirig.report.EmailableReport" />
+	</listeners>
+	<suite-files>
+		<suite-file path="injicertifyConformanceSuite.xml" />
+	</suite-files>
+</suite>

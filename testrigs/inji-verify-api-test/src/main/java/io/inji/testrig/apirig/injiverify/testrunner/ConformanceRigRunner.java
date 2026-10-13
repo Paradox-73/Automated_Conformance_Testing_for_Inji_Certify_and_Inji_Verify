@@ -70,6 +70,7 @@ public final class ConformanceRigRunner {
 		AdminTestUtil.init();
 		InjiVerifyConfigManager.init();
 		RigRun.keepReportCopyIn(reportDir);
+		LOGGER.info("report upload settings: " + RigRun.applyUploadSettings());
 		InjiTestRunner.suiteSetup(runType);
 		SkipTestCaseHandler.loadTestcaseToBeSkippedList("testCaseSkippedList.txt");
 		BaseTestCase.setReportName(OpenIDConformanceTest.REPORT_MODULE);

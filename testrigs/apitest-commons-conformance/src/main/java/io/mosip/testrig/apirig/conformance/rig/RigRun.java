@@ -36,6 +36,9 @@ public final class RigRun {
     static final String TESTNG_OUTPUT_PROPERTY = "testng.outpur.dir";
     /** apitest-commons key for the folder {@code EmailableReport} copies the report to when S3 upload is off. */
     static final String MOUNT_PATH_KEY = "mountPathForReport";
+    /** apitest-commons keys of the S3/MinIO report upload that {@code EmailableReport} reads. */
+    static final List<String> UPLOAD_KEYS = List.of("push-reports-to-s3", "s3-host", "s3-account", "s3-region",
+            "s3-user-key", "s3-user-secret");
 
     private RigRun() {
     }
@@ -87,6 +90,33 @@ public final class RigRun {
     public static void keepReportCopyIn(Path reportDir) {
         ConfigManager.getValueForKeyAddToPropertiesMap(
                 Map.of(MOUNT_PATH_KEY, reportDir.toAbsolutePath().toString()), MOUNT_PATH_KEY);
+    }
+
+    /**
+     * Puts the report upload settings into apitest-commons' configuration, so {@code EmailableReport} uploads the
+     * report to S3/MinIO: for each of {@link #UPLOAD_KEYS} the system property of that name, else the environment
+     * variable of that name, else the upper-case one with underscores ({@code S3_USER_SECRET}).
+     *
+     * <p>apitest-commons lets an environment variable replace only keys its property files already have, and the
+     * rigs' files have none of these; and a POSIX shell drops environment variables whose names contain a hyphen
+     * before it starts Java. Returns the keys that were set.
+     */
+    public static List<String> applyUploadSettings(UnaryOperator<String> properties, UnaryOperator<String> environment) {
+        List<String> applied = new java.util.ArrayList<>();
+        for (String key : UPLOAD_KEYS) {
+            String value = firstNonBlank(properties.apply(key), environment.apply(key),
+                    environment.apply(key.toUpperCase(Locale.ROOT).replace('-', '_')));
+            if (value != null) {
+                ConfigManager.getValueForKeyAddToPropertiesMap(Map.of(key, value), key);
+                applied.add(key);
+            }
+        }
+        return applied;
+    }
+
+    /** {@link #applyUploadSettings(UnaryOperator, UnaryOperator)} from this JVM's properties and environment. */
+    public static List<String> applyUploadSettings() {
+        return applyUploadSettings(System::getProperty, System::getenv);
     }
 
     /**

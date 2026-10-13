@@ -52,6 +52,17 @@ class RigRunTest {
     }
 
     @Test
+    void uploadSettingsComeFromPropertiesThenEitherEnvironmentSpelling() {
+        java.util.List<String> applied = RigRun.applyUploadSettings(
+                Map.of("push-reports-to-s3", "yes")::get,
+                Map.of("S3_HOST", "http://minio:9000", "s3-account", "automationtests", "S3_ACCOUNT", "ignored")::get);
+        assertEquals(java.util.List.of("push-reports-to-s3", "s3-host", "s3-account"), applied);
+        assertEquals("yes", io.mosip.testrig.apirig.utils.ConfigManager.getPushReportsToS3());
+        assertEquals("http://minio:9000", io.mosip.testrig.apirig.utils.ConfigManager.getS3Host());
+        assertEquals("automationtests", io.mosip.testrig.apirig.utils.ConfigManager.getS3Account());
+    }
+
+    @Test
     void exitCodeFollowsTestNgResults() throws IOException {
         TestNgResults pass = TestNgResults.read(Fixtures.OWN.resolve("testng-results-pass.xml"));
         assertEquals(11, pass.total());

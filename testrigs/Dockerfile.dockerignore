@@ -1,0 +1,14 @@
+# Build context of testrigs/Dockerfile (the repository root): only what the image copies. The rest of the checkout,
+# the run folder and the rigs' build output other than the shaded jars stay out.
+*
+!runner/pyproject.toml
+!runner/README.md
+!runner/src
+!third_party/oidf-conformance-suite
+!conformance
+!testrigs/inji-certify-api-test/target/apitest-injicertify-*-jar-with-dependencies.jar
+!testrigs/inji-certify-api-test/testNgXmlFiles
+!testrigs/inji-verify-api-test/target/apitest-injiverify-*-jar-with-dependencies.jar
+!testrigs/inji-verify-api-test/testNgXmlFiles
+**/__pycache__
+**/*.pyc
