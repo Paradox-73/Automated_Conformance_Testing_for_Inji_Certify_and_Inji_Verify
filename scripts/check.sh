@@ -459,8 +459,11 @@ check_docs() {
   # Prefer the runner's venv, which has the project's Python packages; fall back to the system interpreter.
   python=$(harness_venv_python "$HARNESS_RUN_DIR/venv" || harness_find_python) ||
     skip_tool "Python 3.$HARNESS_PYTHON_MIN_MINOR or newer not found"
+  # The checker's own tests first (a broken rule must not pass every document), from docs/tools without bytecode.
+  (cd docs/tools && PYTHONDONTWRITEBYTECODE=1 run_indented "$python" -m unittest -q test_check_docs) ||
+    fail "the tests of docs/tools/check_docs.py failed"
   run_indented "$python" docs/tools/check_docs.py || fail "docs/tools/check_docs.py reported problems"
-  pass "docs/tools/check_docs.py passed"
+  pass "docs/tools/check_docs.py and its tests passed"
 }
 
 # ---------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,14 @@
+# A configuration-only regression for the demo and the robustness case R4 (docs/test-report.md):
+#
+#   HARNESS_COMPOSE_FILES=demo/regression.compose.yml ./run-conformance.sh --component certify --runner-only
+#
+# Inji Certify gets an issuer identifier that is not its URL, a mistake an operator can make in
+# mosip.certify.identifier. Certify then mints access tokens for an audience its credential endpoint does not
+# accept, and its credential requests answer HTTP 401 invalid_token. Measured 2026-10-14: the gate fails with 3
+# regressions, the negative modules fail-invalid-nonce, fail-invalid-jwt-proof-signature and
+# fail-unknown-credential-configuration, which expect HTTP 400 with their own error code. Nothing in Inji's code
+# changes; without this file the gate passes again.
+services:
+  certify:
+    environment:
+      MOSIP_CERTIFY_IDENTIFIER: https://wrong-issuer.inji.test
