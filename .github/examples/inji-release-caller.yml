@@ -1,0 +1,27 @@
+# Example for an Inji repository (inji-certify or inji-verify): after its release build pushed a new image, run the
+# OpenID conformance harness against that exact image digest. Copy this file to .github/workflows/ in the Inji
+# repository and set the image name. The harness repository must be readable by the calling repository.
+name: openid-conformance
+
+on:
+  workflow_run:
+    workflows: [release]   # the Inji workflow that builds and pushes the image
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "Image digest to test (sha256:...)"
+        type: string
+        required: true
+
+jobs:
+  conformance:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@main
+    with:
+      component: certify   # verify in inji-verify
+      track: gate
+      strict: true
+      # A manual run tests the digest it is given; after a release build, the image tag that build pushed (Inji's
+      # release workflows tag images with the branch name). In inji-verify set verify_image instead.
+      certify_image: ${{ inputs.digest && format('injistackqa/inji-certify-with-plugins@{0}', inputs.digest) || format('injistackqa/inji-certify-with-plugins:{0}', github.event.workflow_run.head_branch) }}
