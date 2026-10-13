@@ -49,11 +49,33 @@ class GeneratedSetTest(unittest.TestCase):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.out = Path(cls.tmp.name) / "pki"
         cls.hosts = ["certify.inji.test", "verify.inji.test"]
-        cls.manifest = generate.generate(cls.out, cls.hosts)
+        with mock.patch.dict("os.environ", {"VERIFY_KEYSTORE_PASSWORD": "test-only-password"}):
+            cls.manifest = generate.generate(cls.out, cls.hosts)
 
     @classmethod
     def tearDownClass(cls) -> None:
         cls.tmp.cleanup()
+
+    def test_verify_keystore_holds_an_ed25519_key_with_a_ca_issued_chain(self) -> None:
+        pem = run_openssl(
+            "pkcs12", "-in", str(self.out / generate.VERIFY_KEYSTORE), "-passin", "pass:test-only-password", "-nodes"
+        )
+        self.assertIn("BEGIN PRIVATE KEY", pem)
+        certs = ["-----BEGIN CERTIFICATE-----" + part.split("-----END CERTIFICATE-----")[0] + "-----END CERTIFICATE-----\n"
+                 for part in pem.split("-----BEGIN CERTIFICATE-----")[1:]]
+        self.assertEqual(1, len(certs), "the leaf only: the suite rejects an x5c that includes the trust anchor")
+        leaf = run_openssl("x509", "-noout", "-subject", "-issuer", "-ext", "subjectAltName", stdin=certs[0].encode("ascii"))
+        self.assertIn("DNS:verify.inji.test", leaf)
+        self.assertIn("inji-conformance-harness test CA", leaf.split("issuer=", 1)[1])
+        block = "-----BEGIN PRIVATE KEY-----" + pem.split("-----BEGIN PRIVATE KEY-----", 1)[1].split(
+            "-----END PRIVATE KEY-----", 1)[0] + "-----END PRIVATE KEY-----\n"
+        key = run_openssl("pkey", "-noout", "-text", stdin=block.encode("ascii"))
+        self.assertIn("ED25519", key)
+
+    def test_missing_keystore_password_is_an_error(self) -> None:
+        with tempfile.TemporaryDirectory() as folder, mock.patch.dict("os.environ", {"VERIFY_KEYSTORE_PASSWORD": ""}):
+            with self.assertRaisesRegex(generate.PkiError, "VERIFY_KEYSTORE_PASSWORD"):
+                generate.generate(Path(folder) / "pki", self.hosts)
 
     def test_every_file_is_written_and_no_temporary_folder_is_left(self) -> None:
         for name in generate.expected_files(self.hosts):
@@ -113,7 +135,7 @@ class ReuseTest(unittest.TestCase):
         self.tmp.cleanup()
 
     def run_main(self, *args: str) -> str:
-        with mock.patch("sys.stdout") as stdout:
+        with mock.patch("sys.stdout") as stdout, mock.patch.dict("os.environ", {"VERIFY_KEYSTORE_PASSWORD": "pw"}):
             self.assertEqual(0, generate.main(["--out", str(self.out), *args]))
         return "".join(call.args[0] for call in stdout.write.call_args_list)
 

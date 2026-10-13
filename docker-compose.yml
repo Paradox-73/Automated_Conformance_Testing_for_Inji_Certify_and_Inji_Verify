@@ -42,6 +42,9 @@ services:
     command: ["python", "/opt/pki/generate.py", "--out", "/pki"]
     environment:
       PKI_TLS_HOSTS: verify.inji.test certify.inji.test
+      # SAN of Inji Verify's request signing certificate; the x509_san_dns client id is x509_san_dns:<this>.
+      PKI_VERIFY_HOST: verify.inji.test
+      VERIFY_KEYSTORE_PASSWORD: ${VERIFY_KEYSTORE_PASSWORD?generated into env.local by scripts/dc.sh}
       PKI_FORCE: ${PKI_FORCE:-0}
       PYTHONDONTWRITEBYTECODE: "1"
     volumes:
@@ -171,12 +174,25 @@ services:
       INJI_VP_REQUEST_LONG_POLLING_TIMEOUT: "55000"
       INJI_VERIFY_RESPONSE_CODE_EXPIRY_TIME_IN_MINS: "5"
       INJI_VERIFY_CLAIMS_WITH_META_DATA: _sd,_sd_alg,iss,cnf,sub,aud,exp,nbf,iat,cti
-      # Request objects are signed with the image's bundled test keystore (SAN test.example.com, the image's
-      # default INJI_X509_SAN_DNS_HOST), so client_id x509_san_dns:test.example.com works without key changes.
+      # Request objects are signed with an Ed25519 key whose certificate (SAN verify.inji.test) the run's test CA
+      # issued (pki-init, compose/pki/generate.py). The image's bundled sample keystore has a self-signed
+      # certificate, which the suite rejects in every module (ValidateRequestObjectSignatureAgainstX5cHeader,
+      # measured 2026-10-14); set VERIFY_KEYSTORE_PATH=classpath:sample-keystore/test.p12 and
+      # VERIFY_X509_SAN_DNS_HOST=test.example.com (with VERIFY_KEYSTORE_PASSWORD=mosip) to use it again.
+      INJI_KEYSTORE_FILE_PATH: ${VERIFY_KEYSTORE_PATH:-file:/pki/verify-request-signing.p12}
+      INJI_KEYSTORE_FILE_PASS: ${VERIFY_KEYSTORE_PASSWORD?generated into env.local by scripts/dc.sh}
+      INJI_X509_SAN_DNS_HOST: ${VERIFY_X509_SAN_DNS_HOST:-verify.inji.test}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=60
+    volumes:
+      - type: bind
+        source: ${HARNESS_RUN_DIR:-./run}/pki
+        target: /pki
+        read_only: true
     depends_on:
       verify-db:
         condition: service_healthy
+      pki-init:
+        condition: service_completed_successfully
     ports:
       # Direct HTTP access for debugging only; the suite and the runner use https://verify.inji.test:18451.
       - "127.0.0.1:18461:8080"

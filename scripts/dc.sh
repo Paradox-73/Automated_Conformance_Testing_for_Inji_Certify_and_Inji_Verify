@@ -33,7 +33,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 # Passwords generated into env.local. Every name is a compose variable in docker-compose.yml (now or in a planned
 # version), so a later compose version finds its password already present.
 readonly HARNESS_ENV_GENERATED=(VERIFY_DB_PASSWORD CERTIFY_DB_PASSWORD CERTIFY_KEYSTORE_PASSWORD
-  MINIO_ROOT_PASSWORD)
+  MINIO_ROOT_PASSWORD VERIFY_KEYSTORE_PASSWORD)
 
 # random_secret: 32 lower-case hex characters (128 bits) from the kernel's random source.
 random_secret() {

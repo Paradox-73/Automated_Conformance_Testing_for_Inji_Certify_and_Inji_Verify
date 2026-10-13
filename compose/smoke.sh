@@ -46,7 +46,7 @@ readonly PROJECT_LABEL=com.docker.compose.project=$HARNESS_COMPOSE_PROJECT
 # What the Inji Verify check asks for: the client id whose certificate is bundled in the Verify image, and a DCQL
 # query for the credential type the suite issues when it plays the wallet (urn:eudi:pid:1).
 readonly VERIFY_URL=https://verify.inji.test:18451/v1/verify
-readonly VERIFY_CLIENT_ID=x509_san_dns:test.example.com
+readonly VERIFY_CLIENT_ID=x509_san_dns:verify.inji.test
 readonly VERIFY_DCQL='{"credentials":[{"id":"pid","format":"dc+sd-jwt","meta":{"vct_values":["urn:eudi:pid:1"]},"claims":[{"path":["given_name"]}]}]}'
 
 # What the Inji Certify checks use: the issuer identifier (mosip.certify.domain.url, served by tls-proxy) and a

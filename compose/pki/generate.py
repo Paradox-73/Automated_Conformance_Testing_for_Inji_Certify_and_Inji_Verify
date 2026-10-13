@@ -15,6 +15,8 @@ Output layout (paths relative to ``--out``)::
     suite-mtls-client.crt, .key           client certificate for the suite's mTLS client authentication variants
     suite-signing.crt, .key               the suite's credential signing key and its certificate, issued by the CA
     suite-signing.jwk.json                that key as a private JWK (ES256) with x5c, for credential.signing_jwk
+    verify-request-signing.p12            Inji Verify's request object signing key (Ed25519) with a certificate the
+                                          CA issued for $PKI_VERIFY_HOST (leaf only), as PKCS#12 protected by $VERIFY_KEYSTORE_PASSWORD
     manifest.json                         written last: settings, fingerprints and creation time
 
 A run reuses the existing files when manifest.json matches the requested settings, every file is present and the
@@ -38,12 +40,18 @@ import tempfile
 from pathlib import Path
 
 # Bump when the layout or the content of the generated files changes, so older sets are regenerated.
-LAYOUT_VERSION = 1
+LAYOUT_VERSION = 2
 
 DEFAULT_TLS_HOSTS = ("verify.inji.test", "certify.inji.test")
 CA_SUBJECT = "/O=inji-conformance-harness/CN=inji-conformance-harness test CA"
 MTLS_SUBJECT = "/O=inji-conformance-harness/CN=conformance suite test client"
 SIGNING_SUBJECT = "/O=inji-conformance-harness/CN=conformance suite test credential issuer"
+DEFAULT_VERIFY_HOST = "verify.inji.test"
+# Inji Verify signs request objects with the first EdDSA key of its PKCS#12 file (P12KeyExtractor in verify-core) and
+# sends that entry's chain as x5c. Its bundled sample keystore holds a self-signed certificate, which the suite
+# rejects (ValidateRequestObjectSignatureAgainstX5cHeader: "Leaf certificate in x5c chain must not be self-signed").
+VERIFY_KEYSTORE = "verify-request-signing.p12"
+VERIFY_KEY_ALIAS = "verify-request-signing"
 
 # Validity in days. Leaf certificates stay under 398 days, the limit browsers and most TLS clients enforce.
 CA_DAYS = 825
@@ -154,17 +162,17 @@ def cert_not_after(cert: Path, workdir: Path) -> dt.datetime:
 
 def expected_files(hosts: list[str]) -> list[str]:
     files = ["ca.crt", "ca.key", "suite-mtls-client.crt", "suite-mtls-client.key", "suite-signing.crt",
-             "suite-signing.key", "suite-signing.jwk.json"]
+             "suite-signing.key", "suite-signing.jwk.json", VERIFY_KEYSTORE]
     for host in hosts:
         files += [f"tls/{host}.crt", f"tls/{host}.key"]
     return files
 
 
-def settings_for(hosts: list[str]) -> dict[str, object]:
-    return {"layout_version": LAYOUT_VERSION, "tls_hosts": hosts}
+def settings_for(hosts: list[str], verify_host: str = DEFAULT_VERIFY_HOST) -> dict[str, object]:
+    return {"layout_version": LAYOUT_VERSION, "tls_hosts": hosts, "verify_host": verify_host}
 
 
-def reusable(out: Path, hosts: list[str], min_valid_days: int) -> str | None:
+def reusable(out: Path, hosts: list[str], min_valid_days: int, verify_host: str = DEFAULT_VERIFY_HOST) -> str | None:
     """Return why the existing set cannot be reused, or None when it can."""
     manifest_path = out / "manifest.json"
     if not manifest_path.is_file():
@@ -173,7 +181,7 @@ def reusable(out: Path, hosts: list[str], min_valid_days: int) -> str | None:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         return f"unreadable manifest.json ({exc})"
-    if manifest.get("settings") != settings_for(hosts):
+    if manifest.get("settings") != settings_for(hosts, verify_host):
         return "settings changed"
     missing = [name for name in expected_files(hosts) if not (out / name).is_file()]
     if missing:
@@ -187,7 +195,14 @@ def reusable(out: Path, hosts: list[str], min_valid_days: int) -> str | None:
     return None
 
 
-def generate(out: Path, hosts: list[str]) -> dict[str, object]:
+def verify_keystore_password() -> str:
+    password = os.environ.get("VERIFY_KEYSTORE_PASSWORD", "")
+    if not password:
+        raise PkiError("VERIFY_KEYSTORE_PASSWORD is not set (scripts/dc.sh generates it into env.local)")
+    return password
+
+
+def generate(out: Path, hosts: list[str], verify_host: str = DEFAULT_VERIFY_HOST) -> dict[str, object]:
     """Create a complete set in a temporary folder next to ``out``, then move it into place. Returns the manifest."""
     out.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix=".pki-", dir=out))
@@ -229,13 +244,31 @@ def generate(out: Path, hosts: list[str]) -> dict[str, object]:
                     "x5c": [base64.b64encode(cert_der(cert, work)).decode("ascii")]})
         (work / "suite-signing.jwk.json").write_text(json.dumps(jwk, indent=2) + "\n", encoding="ascii")
 
+        key, cert = work / "verify-request-signing.key", work / "verify-request-signing.crt"
+        openssl("genpkey", "-algorithm", "ED25519", "-out", str(key), cwd=work)
+        issue(work, key, cert, f"/O=inji-conformance-harness/CN={verify_host}",
+              [leaf_constraints, "keyUsage=critical,digitalSignature", f"subjectAltName=DNS:{verify_host}"], ca,
+              LEAF_DAYS)
+        fingerprints["verify-request-signing.crt"] = sha256_fingerprint(cert, work)
+        env = {**os.environ, "VERIFY_KEYSTORE_PASSWORD": verify_keystore_password()}
+        result = subprocess.run(
+            # The leaf only: Inji Verify sends the entry's chain as x5c, and the suite rejects an x5c that includes
+            # the trust anchor ("Trust anchor (self-signed root CA) must not be included in x5c chain").
+            ["openssl", "pkcs12", "-export", "-inkey", str(key), "-in", str(cert),
+             "-name", VERIFY_KEY_ALIAS, "-passout", "env:VERIFY_KEYSTORE_PASSWORD", "-out", str(work / VERIFY_KEYSTORE)],
+            cwd=work, env=env, capture_output=True, text=True, check=False,
+        )
+        if result.returncode != 0:
+            raise PkiError(f"openssl pkcs12 -export failed: {result.stderr.strip()}")
+
         for name in expected_files(hosts):
-            # Private keys are for the harness containers only; certificates are public.
+            # Private keys are for the harness containers only; certificates are public. The Verify keystore is
+            # password protected and must be readable by the Inji Verify container's own user.
             os.chmod(work / name, 0o600 if name.endswith((".key", ".jwk.json")) else 0o644)
 
         manifest = {
             "created": dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "settings": settings_for(hosts),
+            "settings": settings_for(hosts, verify_host),
             "ca_not_after": cert_not_after(ca[0], work).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "suite_signing_kid": jwk["kid"],
             "sha256_fingerprints": fingerprints,
@@ -270,18 +303,23 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         if not HOST_PATTERN.match(host):
             parser.error(f"not a lower-case DNS name: {host!r}")
     args.tls_hosts = sorted(set(hosts))
+    args.verify_host = os.environ.get("PKI_VERIFY_HOST", DEFAULT_VERIFY_HOST)
+    if not HOST_PATTERN.match(args.verify_host):
+        parser.error(f"PKI_VERIFY_HOST is not a lower-case DNS name: {args.verify_host!r}")
     return args
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        reason = "--force" if args.force else reusable(args.out, args.tls_hosts, args.min_valid_days)
+        reason = (
+            "--force" if args.force else reusable(args.out, args.tls_hosts, args.min_valid_days, args.verify_host)
+        )
         if reason is None:
             manifest = json.loads((args.out / "manifest.json").read_text(encoding="utf-8"))
             print(f"pki: reusing the set created {manifest['created']} in {args.out}")
             return 0
-        manifest = generate(args.out, args.tls_hosts)
+        manifest = generate(args.out, args.tls_hosts, args.verify_host)
     except PkiError as exc:
         print(f"pki: error: {exc}", file=sys.stderr)
         return 1

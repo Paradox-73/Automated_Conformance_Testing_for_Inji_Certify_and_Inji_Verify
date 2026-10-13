@@ -53,7 +53,8 @@ value() {
   sed -n "s/^$1=//p" "$2"
 }
 
-generated_names=(VERIFY_DB_PASSWORD CERTIFY_DB_PASSWORD CERTIFY_KEYSTORE_PASSWORD MINIO_ROOT_PASSWORD)
+generated_names=(VERIFY_DB_PASSWORD CERTIFY_DB_PASSWORD CERTIFY_KEYSTORE_PASSWORD MINIO_ROOT_PASSWORD
+  VERIFY_KEYSTORE_PASSWORD)
 
 # --- first call creates env.local and the mounted folders ----------------------------------------------------------
 run_dir=$WORK/run1
