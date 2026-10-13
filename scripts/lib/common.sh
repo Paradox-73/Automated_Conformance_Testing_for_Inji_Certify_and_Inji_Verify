@@ -121,7 +121,8 @@ harness_find_tool() {
 # it works. Returns 1 when none qualifies.
 harness_find_python() {
   local candidate path
-  for candidate in python3 python; do
+  # Versioned names last: macOS and some Linux distributions install a newer Python only as python3.1x.
+  for candidate in python3 python python3.14 python3.13 python3.12; do
     path=$(command -v "$candidate" 2>/dev/null) || continue
     if "$path" -c "import sys; sys.exit(0 if sys.version_info >= (3, $HARNESS_PYTHON_MIN_MINOR) else 1)" \
       >/dev/null 2>&1; then

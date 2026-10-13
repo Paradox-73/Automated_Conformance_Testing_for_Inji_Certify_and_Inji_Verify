@@ -75,7 +75,7 @@ ensure_env_file() {
         printf '%s=%s\n' "$name" "$(random_secret)"
       done
     } >"$tmp"
-    chmod 600 -- "$tmp"
+    chmod 600 "$tmp"
     mv -f -- "$tmp" "$file"
     log_info "env.local: generated ${missing[*]} in $file"
   fi

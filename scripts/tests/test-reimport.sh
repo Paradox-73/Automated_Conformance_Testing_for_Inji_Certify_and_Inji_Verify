@@ -108,7 +108,7 @@ expect "repository import matches the manifest" 0 "6 files identical"
 # 2. Local damage is reported, file by file.
 dir=$(copy_repo damaged)
 printf '#' >>"$dir/third_party/oidf-conformance-suite/scripts/conformance.py"
-sed -i 's/$/\r/' "$dir/third_party/oidf-conformance-suite/LICENSE.txt"
+perl -pi -e 's/\n/\r\n/' "$dir/third_party/oidf-conformance-suite/LICENSE.txt"
 rm "$dir/third_party/oidf-conformance-suite/scripts/requirements.txt"
 mkdir -p "$dir/third_party/oidf-conformance-suite/scripts/certs-keys"
 printf 'x\n' >"$dir/third_party/oidf-conformance-suite/scripts/certs-keys/client.key"

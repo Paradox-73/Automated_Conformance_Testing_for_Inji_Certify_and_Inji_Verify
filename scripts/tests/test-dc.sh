@@ -146,7 +146,10 @@ if [[ -z $(find "$run_dir" -maxdepth 1 -name 'env.local.*') ]]; then ok "$name";
 # --- down stops every profile ---------------------------------------------------------------------------------------
 # caller_args: the arguments compose got after the four harness options (8 lines), without the stub's 3 env lines.
 caller_args() {
-  tail -n +10 <<<"$LOG" | head -n -3
+  local lines
+  mapfile -t lines < <(tail -n +10 <<<"$LOG")
+  ((${#lines[@]} > 3)) || return 0
+  printf '%s\n' "${lines[@]:0:${#lines[@]}-3}" # not "head -n -3": BSD head on macOS has no negative counts
 }
 
 TESTS=$((TESTS + 1))
