@@ -3,20 +3,21 @@
 The Inji api-testrigs (MOSIP's TestNG API test projects for Inji Certify and Inji Verify) and a bridge library
 that turns conformance results into TestNG results inside them.
 
-Lane: testrig. Status on 2026-10-04: both api-testrigs imported; the bridge library, the aggregator `pom.xml` and the
-Inji Verify rig integration are in place (see [apitest-commons-conformance/README.md](apitest-commons-conformance/README.md));
-the Inji Certify rig integration, the testrig image and the S3 upload check come next.
+Lane: testrig. Status on 2026-10-14: both api-testrigs imported and integrated (bridge library, both rigs'
+`OpenIDConformanceTest` and `ConformanceRigRunner`), the testrig image, `build.sh`, `run-testrig.sh` and the MinIO
+upload work end to end ([docs/testrig-integration.md](../docs/testrig-integration.md)); the team's rig changes are
+in `upstream-patches/` as patch series.
 
 ## Contents
 
 | Path | Purpose | Licence | Status |
 |---|---|---|---|
-| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0 | imported, unchanged |
+| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs and one `pom.xml` line |
 | `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs and one `pom.xml` line |
 | `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MIT | done |
 | `pom.xml` | Maven aggregator for the three projects | MIT | done |
-| `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MIT | planned |
-| `upstream-patches/` | The few changes made to upstream files, as patches | MIT | planned |
+| `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MIT | done (2026-10-14) |
+| `upstream-patches/` | The team's changes to the imported rigs, as `git format-patch` series | MIT | done; they apply to both upstream commits |
 
 ## Provenance of the imported testrigs
 
@@ -77,8 +78,8 @@ the team's changes.
 - Result on 2026-10-04 after the import: `bash scripts/check.sh eol secrets` printed PASS for both checks
   (7 upstream CRLF files exempted, 10 listed fixtures skipped).
 - Build: the Inji Verify rig (with the bridge) builds through the aggregator `pom.xml` (BUILD SUCCESS on
-  2026-10-04, 8 min 23 s under a shared Maven cache, shaded jar 404,728,104 bytes). The Inji Certify rig has not
-  been built through the aggregator yet.
+  2026-10-04, 8 min 23 s under a shared Maven cache, shaded jar 404,728,104 bytes). Both rigs built through the
+  aggregator on 2026-10-14 (`bash testrigs/build.sh`, 95 s with a warm cache).
 
 ## Conformance rows in the rigs
 

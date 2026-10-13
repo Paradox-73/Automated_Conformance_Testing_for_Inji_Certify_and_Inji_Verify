@@ -1,121 +1,85 @@
 # Inji conformance harness
 
+![conformance badge of the run of 2026-10-14](docs/evidence/2026-10-13-20261013T222910Z-f08c5b/report/badge.svg)
+
 Automated OpenID conformance testing of [Inji Certify](https://github.com/inji/inji-certify) (credential issuer)
 and [Inji Verify](https://github.com/inji/inji-verify) (verifier) against the
-[OpenID Foundation conformance suite](https://gitlab.com/openid/conformance-suite).
-
+[OpenID Foundation conformance suite](https://gitlab.com/openid/conformance-suite), with no person in the loop.
 MOSIP Decode 2026, problem statement 01, team Badmosip.
 
-## Status
-
-| Date | What works |
-|---|---|
-| 2026-10-04 | Repository layout and the repository checks (`scripts/check.sh`). Nothing else runs yet. |
-| 2026-10-04 | Compose v1: the conformance suite (release-v5.3.1) and Inji Verify 1.0.x behind a TLS proxy, with keys made at run time. `bash compose/smoke.sh verify` passes; see [`compose/README.md`](compose/README.md). |
-| 2026-10-04 | Compose v2: Inji Certify (commit `d6635da`) as its own authorization server behind the TLS proxy, issuing from pre-authorized offers, and MinIO with the `automationtests` bucket. `bash compose/smoke.sh certify reports` passes (metadata, offer, token, path-style S3 upload). |
-
-This table lists only what has been run. The next section is the plan, not a result.
-
-## Status and contributing
-
-- [docs/STATUS.md](docs/STATUS.md): every task with its status and commits, a card for each remaining task
-  (goal, owned folders, acceptance check, notes), how to split the work, and the definition of done.
-- [CONTRIBUTING.md](CONTRIBUTING.md): tools, one-time setup, build and test commands, the local stack and its
-  ports, what runs end to end today, conventions, and troubleshooting.
-
-## What the harness will do
-
-- Start one Docker Compose project with Inji Certify, Inji Verify, the conformance suite (server, MongoDB, nginx)
-  and MinIO, with every host port in the range 18000-18999.
-- Run the suite's OpenID4VCI 1.0 issuer test plan against Inji Certify and its OpenID4VP 1.0 verifier test plan
-  against Inji Verify, through a Python runner built on the suite's own `run-test-plan.py`.
-  - The runner creates, configures, starts, polls and exports each plan.
-  - It also performs every step that normally needs a person in the suite's web page, for example asking Inji
-    Verify for an authorization request and handing it to the suite's wallet.
-- Add an `OpenIDConformanceTest` TestNG class to the Inji Certify and Inji Verify api-testrigs: one TestNG result
-  per conformance test module in the testrig report, the report uploaded to S3 (MinIO locally), and a gate that
-  fails on any result not listed in a benchmark of expected failures with written reasons.
-- Provide `run-conformance.sh --component certify|verify|--combined` and `run-full-stack-conformance.sh`, an HTML
-  summary with links to the suite logs, a badge, a diff between two runs, and a GitHub Actions workflow.
+The badge is from the full-stack run of 2026-10-14 (run `20261013T222910Z-f08c5b`, both components with the
+api-testrigs; [evidence](docs/evidence/2026-10-13-20261013T222910Z-f08c5b/)).
 
 ## Quick start
 
-Not available yet. The goal is one command from a clean clone to a report: `./run-full-stack-conformance.sh`.
+Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. From a clean clone:
+
+<!-- run 2026-10-14 -->
+```bash
+./run-full-stack-conformance.sh --prepare-only
+./run-full-stack-conformance.sh --no-prepare
+```
+
+The second command starts the stack, runs the OpenID4VCI 1.0 issuer plan against Inji Certify and the OpenID4VP 1.0
+verifier plan against Inji Verify in parallel, adds the results to both Inji api-testrigs and uploads their reports to
+MinIO, writes the HTML report, stops the stack, and exits with the gate's code (0 on 2026-10-14, in 250 s). One
+component: `./run-conformance.sh --component certify|verify`; `--help` lists every option. Full guide:
+[docs/README.md](docs/README.md).
+
+## What you get
+
+| Output | Where |
+|---|---|
+| One verdict per suite module: conforms, known gap (listed in the benchmark with reason and finding), regression, not applicable, stale benchmark | `run/reports/<run id>/<component>/results.json` |
+| Consolidated HTML report with the suite's logs and HTML export linked, badge, Markdown summary | `run/reports/<run id>/report/` |
+| Run manifest: git commit, image digests, wall time per plan | `run/reports/<run id>/manifest.json` |
+| TestNG rows `TC_OIDF_CERTIFY_nn` and `TC_OIDF_VERIFY_nn` in the api-testrigs' `EmailableReport`, uploaded to S3 (MinIO bucket `automationtests`) | `run/reports/<run id>/testrig/` |
+| Exit code for CI: 0 passed, 1 regression or stale benchmark entry, 2 configuration, 3 environment, 4 timeout | |
+| Run diff: which modules changed | `inji-conformance diff` |
+| GitHub Actions workflow for pushes, releases, a weekly run and Inji release pipelines | `.github/workflows/full-stack-conformance.yml` |
+
+Results on 2026-10-14 ([test report](docs/test-report.md)): Inji Verify 11 of 11 modules conform; Inji Certify all
+15 modules complete with 3 passed, 9 known gaps and 3 not applicable; ten Inji gaps written up as
+[issue drafts](docs/findings/README.md); HAIP readiness in [docs/certification-readiness.md](docs/certification-readiness.md).
+
+## Documentation
+
+| Document | For |
+|---|---|
+| [docs/README.md](docs/README.md) | install and run, step by step |
+| [docs/architecture.md](docs/architecture.md) | components, network, sequence diagrams, design decisions |
+| [docs/handoffs.md](docs/handoffs.md), [docs/api-automation.md](docs/api-automation.md) | how the suite's waiting steps are answered; every API call |
+| [docs/benchmark.md](docs/benchmark.md) | expected failures, verdicts and the gate |
+| [docs/testrig-integration.md](docs/testrig-integration.md) | the TestNG rows in the Inji api-testrigs and the S3 upload |
+| [docs/ci.md](docs/ci.md) | the GitHub Actions workflow and the local CI script |
+| [docs/configuration.md](docs/configuration.md), [docs/troubleshooting.md](docs/troubleshooting.md) | settings, images, ports; symptom, cause, fix |
+| [docs/self-certification.md](docs/self-certification.md), [docs/certification-readiness.md](docs/certification-readiness.md) | the path to OpenID certification |
+| [docs/test-report.md](docs/test-report.md), [docs/test-cases.md](docs/test-cases.md), [docs/test-data.md](docs/test-data.md) | what was run and measured |
+| [docs/findings/](docs/findings/README.md), [docs/suite-limitations.md](docs/suite-limitations.md) | Inji gaps found; suite-side limitations |
+| [docs/reference/cli.md](docs/reference/cli.md), [docs/reference/results-schema.md](docs/reference/results-schema.md) | commands; results and manifest files |
+| [demo/](demo/README.md), [docs/demo/](docs/demo/video-storyboard.md) | demo script, video storyboard, deck outline |
+| [docs/STATUS.md](docs/STATUS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/submission-checklist.md](docs/submission-checklist.md) | tasks and their status, how to contribute, the submission |
 
 ## Repository checks
 
+<!-- run 2026-10-14 -->
 ```bash
-bash scripts/check.sh all          # or one or more of: eol secrets shell runner testrigs workflows docs
+bash scripts/check.sh all
 ```
 
-Each check prints one line: `PASS`, `FAIL` or `SKIP`, its name and a reason. The exit status is 1 when any check
-failed. Output on 2026-10-04 (Windows 11, Git Bash, shellcheck 0.11.0):
+Line endings, secrets, shellcheck and shell tests, runner (ruff, pytest), testrigs (Maven), workflows (actionlint)
+and documentation; one `PASS`, `FAIL` or `SKIP` line each, exit 1 on any failure.
 
-```text
-PASS  eol        17 text files use LF (0 byte-identical upstream CRLF files exempted)
-PASS  secrets    17 text files scanned, no findings (0 files skipped as fixtures listed in .gitguardian.yaml)
-PASS  shell      3 scripts clean under shellcheck 0.11.0, 1 shell test scripts passed
-SKIP  runner     no runner/pyproject.toml
-SKIP  testrigs   no testrigs/pom.xml
-SKIP  workflows  no workflow files
-SKIP  docs       no docs/tools/check_docs.py
-checks: 3 passed, 0 failed, 4 skipped
-```
+## Licences and imported code
 
-| Check | What it does | Needs |
+Team code is MIT ([LICENSE](LICENSE)). Imported code keeps its licence and is imported unchanged in its own commit:
+
+| Folder | Source | Licence |
 |---|---|---|
-| `eol` | Team files use LF line endings. Upstream files stored with CRLF upstream pass only while byte-identical to the blob listed in `scripts/eol-exempt.txt`. | git |
-| `secrets` | No private keys, access tokens or credential assignments in files git would commit. Upstream test fixtures listed in `.gitguardian.yaml` are skipped. Findings name the file and line, never the value. | git |
-| `shell` | shellcheck on every `*.sh` file, then the tests in `scripts/tests/`. | shellcheck |
-| `runner` | ruff, pytest and schema-example validation of the Python runner, in a virtual environment under `$HARNESS_RUN_DIR/venv`. | Python 3.12+ |
-| `testrigs` | Maven `verify` of the testrig bridge library. | Maven 3.9, JDK 21 |
-| `workflows` | actionlint on the GitHub Actions workflows. | actionlint |
-| `docs` | Runs `docs/tools/check_docs.py`. | Python 3.12+ |
+| `third_party/oidf-conformance-suite/` | the suite's `run-test-plan.py`, `conformance.py`, `test_plan_parser.py`, release-v5.3.1 | MIT ([third_party/README.md](third_party/README.md)) |
+| `testrigs/inji-certify-api-test/`, `testrigs/inji-verify-api-test/` | Inji api-testrigs, `inji-certify@203b143`, `inji-verify@6a6ab3b` | Apache-2.0 ([testrigs/README.md](testrigs/README.md)) |
+| `compose/certify/`, `compose/verify/` | Inji compose configuration and database scripts | Apache-2.0 |
+| `compose/suite/` | the suite's nginx configuration | MIT |
 
-- A check whose files do not exist yet prints `SKIP`.
-- A check whose tool is missing prints `SKIP` with the reason; with `--strict`, `CI=true` (set by GitHub Actions)
-  or `HARNESS_CHECK_STRICT=1` it prints `FAIL` instead, so CI never passes by skipping.
-- Scripts need bash 4.4 or newer (Linux, Git Bash on Windows, or bash from Homebrew on macOS).
-
-## Configuration
-
-| Variable | Default | Meaning |
-|---|---|---|
-| `HARNESS_RUN_DIR` | `<repo>/run` (ignored by git) | Runtime state: downloads, logs, generated keys, the Python virtual environment. |
-| `HARNESS_COMPOSE_PROJECT` | `ps01-harness` | Docker Compose project name. |
-| `HARNESS_TOOLS_DIR` | `$HARNESS_RUN_DIR/tools` | Extra tool folder: `<dir>/bin` is searched after `PATH` for shellcheck, actionlint and Maven. |
-| `HARNESS_CHECK_STRICT` | `0` | `1` makes a missing tool a check failure. |
-
-## Repository layout
-
-| Path | Contents | Lane |
-|---|---|---|
-| [`compose/`](compose/README.md) | Docker Compose assets: suite, Inji Certify, Inji Verify, TLS proxy, run-time key generation, MinIO | platform |
-| [`runner/`](runner/README.md) | Python package `inji_conformance` and its command `inji-conformance` | runner |
-| [`conformance/`](conformance/README.md) | Test plan templates, benchmark of expected failures, JSON Schemas | runner |
-| [`third_party/`](third_party/README.md) | Upstream code imported unchanged: the conformance suite's Python scripts | runner |
-| [`testrigs/`](testrigs/README.md) | Inji api-testrigs and the TestNG bridge library | testrig |
-| [`docs/`](docs/README.md) | Documentation | delivery |
-| [`demo/`](demo/README.md) | Demo script and demo-only configuration | delivery |
-| `scripts/` | `check.sh`, shared shell library `lib/common.sh`, tests in `tests/` | platform |
-| `.gitguardian.yaml` | Upstream test fixtures with key or credential material, skipped by secret scanners | platform |
-
-A lane is one of the team's four work streams; each path has one owning lane, so parallel work does not collide.
-platform: Compose, scripts, CI, root configuration. runner: the Python runner, plans, benchmark, vendored suite
-scripts. testrig: the Java testrigs. delivery: documentation, report, demo.
-
-## Rules for contributors
-
-- Upstream code is imported unchanged in its own commit, `import: upstream <repo>@<commit> (<licence>)`, before
-  any team change to it, so the team's changes stay visible as their own diff.
-- Files use LF line endings (`.editorconfig`); `bash scripts/check.sh eol` enforces it.
-- No keys or passwords in git. The harness generates its keys and passwords at run time in `$HARNESS_RUN_DIR`.
-  Upstream test fixtures that carry such material are listed in `.gitguardian.yaml` with the reason.
-- Runtime output never goes into the repository; `/run/` is ignored.
-- Docs state only what was run, with the date.
-
-## Licence
-
-Team code is under the MIT licence ([LICENSE](LICENSE)). Imported upstream code keeps its own licence and licence
-files: the conformance suite's scripts (MIT) in `third_party/`, the Inji api-testrigs and Inji Certify
-configuration (Apache-2.0) in `testrigs/` and `compose/`.
+Images run unmodified: the conformance suite (MIT), Inji Certify and Inji Verify (Apache-2.0, as their repositories'
+LICENSE files state), PostgreSQL, MongoDB, nginx, MinIO (AGPL-3.0, run as a separate program), Temurin, Python.

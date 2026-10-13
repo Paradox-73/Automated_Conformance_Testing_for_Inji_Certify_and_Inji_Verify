@@ -1,0 +1,11 @@
+flowchart TD
+  start(["./run-full-stack-conformance.sh"]) --> prep["--prepare-only: pull images,<br/>build runner and testrig"]
+  prep --> pre["preflight: Docker, Compose v2,<br/>free ports, memory"]
+  pre --> up["compose up --wait<br/>(certify, verify, reports profiles)"]
+  up --> plans["both plans in parallel<br/>(--serial: one after the other)"]
+  plans --> gate{"gate: regressions<br/>or stale entries?"}
+  plans --> rigs["api-testrig rows per module<br/>EmailableReport to MinIO"]
+  gate -- "none" --> ok(["exit 0"])
+  gate -- "some" --> fail(["exit 1, names module and condition"])
+  rigs --> report["summary.html, badge.svg,<br/>manifest.json"]
+  report --> down["teardown in a trap<br/>(down -v)"]

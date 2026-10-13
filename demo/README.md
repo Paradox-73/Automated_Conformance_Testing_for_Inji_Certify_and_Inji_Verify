@@ -1,12 +1,19 @@
 # demo
 
-Material for the live demo and the demo video. Status on 2026-10-04: empty.
-
-Lane: delivery.
-
-## Planned contents
+The live demo and the material for the demo video.
 
 | Path | Purpose |
 |---|---|
-| `regression.compose.yml` | Compose override that injects a known regression, to show the gate failing and the run diff naming the changed test |
-| `demo-script.md` | Step-by-step script with the commands shown and the expected output |
+| `demo.sh` | The demo: a full run of both components; with `--regression`, a passing Inji Certify run, the same with an injected regression (the gate fails and names the modules), and the diff |
+| `regression.compose.yml` | Compose override that gives Inji Certify a wrong issuer identifier: a configuration-only regression, nothing in Inji's code changes |
+| [../docs/demo/video-storyboard.md](../docs/demo/video-storyboard.md) | Shots, timings and narration of the video (under 5 minutes) |
+| [../docs/demo/deck-outline.md](../docs/demo/deck-outline.md) | The slides |
+
+```text
+bash demo/demo.sh                              both components, runner, testrig, MinIO; prints the report path
+bash demo/demo.sh --regression --runner-only   gate passes, then fails on the injected regression, diff names it
+```
+
+Measured 2026-10-14 (`bash demo/demo.sh --regression --runner-only`): the run before exits 0 (99 s), the run with
+the override exits 1 with 3 regressions named (97 s), the diff exits 16 with 3 changed modules, and the script ends
+with "demo ok: the gate caught the regression and the diff names the modules".

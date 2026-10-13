@@ -3,12 +3,26 @@
 Data that defines a conformance run: which suite test plans run with which options, which results are expected,
 and the JSON Schemas of the files the runner reads and writes.
 
-Lane: runner. Status on 2026-10-04: `schema/` holds the results and benchmark contract
-([`schema/README.md`](schema/README.md)); `plans/` holds the Inji Verify plan template and the Inji Certify
-plan template, the second not yet run against a live stack ([`plans/README.md`](plans/README.md)); `benchmark/`
-is still empty.
+Lane: runner. Status on 2026-10-14: `schema/` holds the results and benchmark contract
+([`schema/README.md`](schema/README.md)); `plans/` holds the plan templates of both components and the HAIP
+readiness track ([`plans/README.md`](plans/README.md)); `benchmark/` holds the expected failures and skips measured
+on 2026-10-14 ([docs/benchmark.md](../docs/benchmark.md)).
 
-## Planned contents
+## Gate variant of the issuer plan
+
+Decision (2026-10-14): the gate runs the issuer plan with `sender_constrain=dpop`.
+
+| Variant | Command | Conditions reached |
+|---|---|---|
+| `dpop` | `inji-conformance run --component certify --no-gate` | 15 of 15 modules complete; flows stop at the credential endpoint (unknown parameter, proof `iss`, error codes); 3 negative modules pass |
+| `mtls` | the same with `--variant sender_constrain=mtls` | the same 15 outcomes and conditions |
+
+Neither variant reaches credential issuance, and the credential requests fail before Inji Certify checks the
+sender constraint, so the variants cannot be told apart yet. `dpop` stays, because Inji Certify has no mTLS
+support and its access tokens carry no `cnf` (measured with a probe on 2026-10-04): once issuance works, the DPoP
+variant is the one that shows the binding gap. Evidence: [docs/test-report.md](../docs/test-report.md) (TC-12).
+
+## Contents
 
 | Path | Purpose |
 |---|---|

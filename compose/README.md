@@ -78,9 +78,14 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
   `request_uri` and `response_uri` that Verify puts into its request objects are reachable by the suite, which
   plays the wallet. `.test` names exist only inside the compose network (`.test` is reserved for testing), so
   everything that calls them runs in a container on that network (`runner`, `probe`, the testrigs).
-- Verify signs request objects with the test keystore bundled in its image (certificate SAN `test.example.com`),
-  so the client id is `x509_san_dns:test.example.com`. For `x509_san_dns` the suite checks the client id against
-  that certificate, not against the `response_uri` host.
+- Verify signs request objects with an Ed25519 key whose certificate the run's test CA issued for
+  `verify.inji.test` (`pki-init`, `verify-request-signing.p12`, password `VERIFY_KEYSTORE_PASSWORD` in `env.local`),
+  so the `x509_san_dns` client id is `x509_san_dns:verify.inji.test`. Until 2026-10-14 it used the keystore bundled
+  in its image (SAN `test.example.com`), whose self-signed certificate the suite rejects. For `x509_san_dns` the
+  suite checks the client id against that certificate, not against the `response_uri` host.
+- `tls-proxy` serves only the RFC 9325 TLS 1.2 cipher suites, and by default adds a placeholder
+  `authorization_endpoint` to Inji Certify's OAuth metadata (`CERTIFY_AS_METADATA`, see
+  [docs/findings/certify-as-metadata-authorization-endpoint.md](../docs/findings/certify-as-metadata-authorization-endpoint.md)).
 - Inji Certify sits behind `tls-proxy` as `https://certify.inji.test:18450`, which is also its
   `mosip.certify.domain.url`. The domain has no path, so the issuer identifier is the origin and OpenID4VCI 1.0
   puts the metadata at `/.well-known/openid-credential-issuer` on the root; `tls-proxy` maps the root well-known
@@ -123,7 +128,7 @@ every 3 seconds, and always ends with `down --volumes`. It exits 0 only when eve
 | `pki` | The four certificates verify against the test CA; the signing JWK has `x5c`. |
 | `suite` | `GET /api/server` answers through nginx from inside the network (`probe`) and from the host, and the version matches the image tag. |
 | `suite-mtls` | The mTLS listener on 18444 answers. |
-| `verify` | Over TLS with the test CA: `POST /v1/verify/v2/vp-request` with client id `x509_san_dns:test.example.com` and a DCQL query for `dc+sd-jwt` returns 201 with a `requestUri` under `https://verify.inji.test:18451/v1/verify`; that URI returns a request object (`application/oauth-authz-req+jwt`) whose header has `x5c` and whose claims carry the client id and a `response_uri` under the same base URL. |
+| `verify` | Over TLS with the test CA: `POST /v1/verify/v2/vp-request` with client id `x509_san_dns:verify.inji.test` and a DCQL query for `dc+sd-jwt` returns 201 with a `requestUri` under `https://verify.inji.test:18451/v1/verify`; that URI returns a request object (`application/oauth-authz-req+jwt`) whose header has `x5c` and whose claims carry the client id and a `response_uri` under the same base URL. |
 | `certify` | Over TLS: `GET /.well-known/openid-credential-issuer` at the root returns `credential_issuer` `https://certify.inji.test:18450`, the credential endpoint under `/v1/certify`, and Certify itself as first authorization server. Prints the image's `commit_id` label. |
 | `certify-as` | `GET /.well-known/oauth-authorization-server` names the same issuer, `token_endpoint` `https://certify.inji.test:18450/v1/certify/oauth/token` and the pre-authorized code grant. |
 | `certify-preauth` | `POST /v1/certify/pre-authorized-data` for the seeded `FarmerCredential` returns an `openid-credential-offer://` link; the offer it points to has the issuer and a pre-authorized code. |

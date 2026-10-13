@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  participant R as runner (inji-conformance)
+  participant S as conformance suite (wallet)
+  participant V as Inji Verify
+  R->>S: run-test-plan.py creates the verifier plan and each module
+  S-->>R: module WAITING, exposes authorization_endpoint
+  R->>V: POST /v2/vp-request (client_id, DCQL query)
+  V-->>R: transactionId, request by value or request_uri
+  R->>S: GET authorization_endpoint?<query the Inji Verify SDK would build>
+  S->>V: (request_uri) GET request object
+  S->>V: POST response_uri (vp_token, possibly tampered)
+  S-->>R: module WAITING, uploadsRequired 1 (screenshot)
+  R->>V: GET /vp-result/{transactionId}
+  V-->>R: vpResultStatus SUCCESS or FAILED
+  R->>R: draw the verdict as a PNG
+  R->>S: POST /api/log/{id}/images/{placeholder}
+  S-->>R: module FINISHED, result REVIEW or PASSED
+  R->>R: compare Inji Verify's verdict with the module's expectation, classify, write results.json

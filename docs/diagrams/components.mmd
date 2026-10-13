@@ -1,0 +1,28 @@
+flowchart LR
+  subgraph host["Developer machine or CI runner"]
+    rc["run-conformance.sh<br/>run-full-stack-conformance.sh"]
+    dc["scripts/dc.sh<br/>(docker compose)"]
+    rep["$HARNESS_RUN_DIR/reports/&lt;run id&gt;<br/>results.json, manifest.json,<br/>summary.html, badge.svg"]
+  end
+  subgraph net["Compose network ps01-harness_default"]
+    runner["runner<br/>inji-conformance<br/>+ run-test-plan.py"]
+    suite["conformance suite<br/>suite-nginx :18443<br/>suite-server, MongoDB"]
+    proxy["tls-proxy<br/>certify.inji.test:18450<br/>verify.inji.test:18451"]
+    certify["Inji Certify<br/>+ PostgreSQL"]
+    verify["Inji Verify service<br/>+ PostgreSQL"]
+    rig["testrig image<br/>Certify and Verify api-testrigs<br/>ConformanceRigRunner"]
+    minio["MinIO<br/>bucket automationtests"]
+    pki["pki-init<br/>test CA, TLS and signing keys"]
+  end
+  rc --> dc --> runner
+  runner -- "REST API: plans, logs, images" --> suite
+  runner -- "seed, offers, VP requests, verdicts" --> proxy
+  suite -- "plays the wallet" --> proxy
+  proxy --> certify
+  proxy --> verify
+  rc --> rig
+  rig -- "results.json" --> rep
+  rig -- "EmailableReport" --> minio
+  pki -. "keys in $HARNESS_RUN_DIR/pki" .-> proxy
+  pki -.-> verify
+  runner --> rep

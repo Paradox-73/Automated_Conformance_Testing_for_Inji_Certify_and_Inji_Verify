@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  participant R as runner (inji-conformance)
+  participant S as conformance suite (wallet)
+  participant C as Inji Certify
+  R->>C: seed: POST /credential-configurations (once, idempotent)
+  R->>S: run-test-plan.py creates the issuer plan and each module
+  S-->>R: module WAITING, exposes credential_offer_endpoint
+  R->>C: POST /pre-authorized-data (claims, tx_code)
+  C-->>R: openid-credential-offer://?credential_offer_uri=...
+  R->>S: GET credential_offer_endpoint?credential_offer_uri=...
+  S->>C: GET credential offer
+  S-->>R: module WAITING, exposes tx_code_endpoint
+  R->>S: GET tx_code_endpoint?code=<tx_code>
+  S->>C: POST /oauth/token (pre-authorized_code, tx_code)
+  S->>C: POST /nonce, POST /issuance/credential (proof)
+  C-->>S: credential or error
+  S-->>R: module FINISHED or INTERRUPTED, result and log
+  R->>R: classify against the benchmark, write results.json

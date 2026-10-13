@@ -7,8 +7,13 @@ handoff responder needs to play the person who normally clicks through the test.
 
 | File | Plan | Variant | Status |
 |---|---|---|---|
-| `verify.oid4vp-1final-verifier.json` | `oid4vp-1final-verifier-test-plan` (OpenID4VP 1.0 Final, suite plays the wallet) | `plain_vp`, `sd_jwt_vc`, `x509_san_dns`, `request_uri_signed`, `direct_post` | In use since 2026-10-04 |
-| `certify.oid4vci-1_0-issuer.json` | `oid4vci-1_0-issuer-test-plan` (OpenID4VCI 1.0 Final, suite plays the wallet) | `vci`, `sd_jwt_vc`, `pre_authorization_code`, `issuer_initiated`, `private_key_jwt`, `dpop`, `simple`, `unsigned`, `plain` | Added 2026-10-04; loads and renders in the unit tests, not yet run against a live stack |
+| `verify.oid4vp-1final-verifier.json` | `oid4vp-1final-verifier-test-plan` (OpenID4VP 1.0 Final, suite plays the wallet) | `plain_vp`, `sd_jwt_vc`, `redirect_uri`, `url_query`, `direct_post` | Default since 2026-10-14: 11 of 11 modules conform |
+| `verify.oid4vp-1final-verifier-x509-san-dns.json` | the same plan | `plain_vp`, `sd_jwt_vc`, `x509_san_dns`, `request_uri_signed`, `direct_post` | Alternative (`--template`); in use 2026-10-04 to 2026-10-14; stops at the request object signature ([finding](../../docs/findings/verify-request-signing-eddsa-only.md)) |
+| `certify.oid4vci-1_0-issuer.json` | `oid4vci-1_0-issuer-test-plan` (OpenID4VCI 1.0 Final, suite plays the wallet) | `vci`, `sd_jwt_vc`, `pre_authorization_code`, `issuer_initiated`, `private_key_jwt`, `dpop`, `simple`, `unsigned`, `plain` | First live run 2026-10-14: all 15 modules complete |
+| `certify.oid4vci-1_0-issuer-haip.json`, `verify.oid4vp-1final-verifier-haip.json` | the HAIP plans | see the files | Readiness track (`--track haip`), never gating; first run 2026-10-14 |
+
+A template with `"alternative": true` runs only when named with `--template`; each component and track has exactly
+one default.
 
 ## Format
 
@@ -55,9 +60,9 @@ Inside `config`, `handoff` and `seed`:
   with (the test keystore bundled in the `1.0.x` image).
 - `credential.signing_jwk`: the run's private key with an `x5c` chain, made by `pki-init`. The suite signs the SD-JWT
   credential it presents with it; Inji Verify reads the issuer key from `x5c`.
-- `browser`: temporary. Positive tests end with a screenshot placeholder for the verifier's result screen. This
-  block lets the suite's built-in browser fill it from the suite's own evidence page, as the suite's
-  `vp-verifier-test-config.json` does. A later version uploads an image of Inji Verify's own verdict instead.
+- No `browser` block (removed 2026-10-14): positive and tampered tests end with a screenshot placeholder for the
+  verifier's result screen, and the runner uploads an image of Inji Verify's own verdict into it
+  ([docs/handoffs.md](../../docs/handoffs.md)).
 - `handoff.authorization_request`: the body of `POST /v1/verify/v2/vp-request`. The DCQL query asks for one
   `dc+sd-jwt` credential with `vct` `urn:eudi:pid:1`, the type the suite issues.
 
@@ -66,7 +71,9 @@ Inside `config`, `handoff` and `seed`:
 - `variant`: the pre-authorized code flow, started by the issuer's offer (`vci_grant_type`
   `pre_authorization_code`, `vci_authorization_code_flow_variant` `issuer_initiated`), so no login page is needed;
   an SD-JWT VC (`credential_format` `sd_jwt_vc`); `sender_constrain` `dpop`. `run --variant sender_constrain=mtls`
-  runs the mTLS flavour. Which of the two the gate uses is decided by the first live runs (task WP-08).
+  runs the mTLS flavour. Measured 2026-10-14: both reach the same conditions and neither reaches credential
+  issuance (the requests fail before any sender-constraint check), so the gate keeps `dpop`
+  ([conformance/README.md](../README.md)).
 - `parameters.credential_configuration_id` `InjiConformanceSdJwtVc`: used by `config.vci`, the `seed` block and
   the `handoff` block, so all three name the same configuration.
 - `config.vci.credential_issuer_url`: Inji Certify's issuer identifier, an origin without a path, so the suite

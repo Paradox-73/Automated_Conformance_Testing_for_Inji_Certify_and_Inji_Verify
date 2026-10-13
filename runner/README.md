@@ -6,18 +6,21 @@ under test, and turns the suite's exports into one results file, a benchmark ver
 
 Lane: runner, except `src/inji_conformance/report/` and `tests/report/`, which belong to the delivery lane.
 
-## Status on 2026-10-04
+## Status on 2026-10-14
 
 | Part | State |
 |---|---|
 | `inji_conformance.model` | Done: typed model of `results.json` v1, the run manifest and the benchmark files, with loaders and validation |
 | `inji-conformance validate` | Done |
-| `run --component verify` | Done: plan template, staged suite scripts, handoff responder, `results.json` without a benchmark |
-| `seed certify` | Written and unit-tested (`bash scripts/check.sh runner` PASS, 395 tests, 2026-10-04): idempotent seeding of the `dc+sd-jwt` credential configuration. Not yet run against a live stack |
-| `run --component certify` | Written and unit-tested (same check): seeding, issuer plan template, run-time wallet keys, credential offer and transaction code handoffs, `--variant`, `--no-seed`. Not yet run against a live stack; the first live run is the open step of task WP-08 in [`docs/STATUS.md`](../docs/STATUS.md) |
-| `run --combined` | Registered; prints "--combined is not available in this version; use --component" and exits 2 |
-| `gate` | Registered with its options; prints "not available in this version" and exits 2 |
+| `run --component verify` | Done, live: 11 of 11 modules conform with the default template; REVIEW modules get an image of Inji Verify's verdict uploaded into the suite's placeholder |
+| `seed certify` | Done, live: `created`, then `already present` (2026-10-14) |
+| `run --component certify` | Done, live: all 15 modules of the issuer plan complete; gate 0 regressions, 9 known gaps, 3 not applicable |
+| `run --combined` | Done: both plans at the same time (`--serial`: one after the other); writes `manifest.json` |
+| `gate` | Done: benchmark gate, JUnit XML, cross-check with `run-test-plan.py` ([inji_conformance.benchmark](src/inji_conformance/benchmark.py), [docs/benchmark.md](../docs/benchmark.md)) |
 | `report`, `diff` | Done (delivery lane): consolidated HTML report, badge, run diff; see [`src/inji_conformance/report/README.md`](src/inji_conformance/report/README.md) |
+
+`bash scripts/check.sh runner` on 2026-10-14: ruff clean, 450 tests passed. Every live result is in
+[docs/test-report.md](../docs/test-report.md).
 
 The data contract itself (schemas, rules, examples) is described in
 [`conformance/schema/README.md`](../conformance/schema/README.md).
@@ -97,10 +100,11 @@ bash scripts/dc.sh down -v
 
 `--component certify` follows the same steps with the differences in [The issuer path](#the-issuer-path).
 
-There is no benchmark yet (it comes in a later version), so every problem is a `regression`. A REVIEW result
-counts as `conforms` only with an evidence image of Inji Verify's verdict, which a later version uploads; until
-then a REVIEW module is recorded as `regression` with the reason "no evidence image". `--no-gate` writes
-`gating: false` and exits 0 whatever the verdicts; without it the run exits 1 when any module is a regression.
+Without `--no-gate` the run applies the benchmark in `conformance/benchmark/` ([docs/benchmark.md](../docs/benchmark.md))
+and gives `run-test-plan.py` the same entries; the run exits 1 on a regression or a stale entry, and 2 when its gate
+and the script's exit code disagree. A REVIEW result counts as `conforms` only when Inji Verify showed the verdict
+the module expects and the image of it was uploaded ([docs/handoffs.md](../docs/handoffs.md)). `--no-gate` writes
+`gating: false` and exits 0 whatever the verdicts.
 
 Measured on 2026-10-04 (this laptop, compose profile `verify`, module `oid4vp-1final-verifier-happy-flow`,
 `--no-gate`): exit code 0, run time 23 s after the stack was up; the module reached FINISHED with result FAILED;
@@ -123,8 +127,9 @@ and the findings write-up, not runner errors.
 
 `inji-conformance run --component certify` runs the suite plan `oid4vci-1_0-issuer-test-plan` (OpenID4VCI 1.0
 Final; the suite plays the wallet) against Inji Certify, from the template
-`conformance/plans/certify.oid4vci-1_0-issuer.json`. The planned first live run is the acceptance check of task
-WP-08 in [`docs/STATUS.md`](../docs/STATUS.md); nothing in this section has run against a live stack yet.
+`conformance/plans/certify.oid4vci-1_0-issuer.json`. First run against a live stack on 2026-10-14; the results and
+the Inji findings it produced are in [docs/test-report.md](../docs/test-report.md) and
+[docs/findings/](../docs/findings/README.md).
 
 Differences from the verifier run:
 
