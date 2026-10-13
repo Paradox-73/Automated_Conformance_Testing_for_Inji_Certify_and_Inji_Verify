@@ -411,6 +411,23 @@ class ModuleResult(Document):
     duration_s: float | None = None
 
     @property
+    def completed(self) -> bool:
+        """True when the suite judged the module: FINISHED, or INTERRUPTED by a failing condition.
+
+        The suite interrupts a module when a condition fails inside a request the module answers (for example the
+        token request it makes while handling the transaction code). Such a module has the result FAILED and a
+        FAILURE log entry, and ``run-test-plan.py`` analyses it like a finished one. An INTERRUPTED module without
+        a logged failure (stopped by a person, or by the suite's time limit) did not complete.
+        """
+        if self.status is ModuleStatus.FINISHED:
+            return True
+        return (
+            self.status is ModuleStatus.INTERRUPTED
+            and self.result is SuiteResult.FAILED
+            and any(failure.severity is Severity.FAILURE for failure in self.failures)
+        )
+
+    @property
     def fails_gate(self) -> bool:
         """True for a verdict that fails the gate when stale entries are not allowed."""
         return self.verdict in (Verdict.REGRESSION, Verdict.STALE_BENCHMARK)
@@ -661,8 +678,12 @@ def _check_module(module: ModuleResult, path: str) -> Iterator[Issue]:
 
     if verdict in (Verdict.REGRESSION, Verdict.STALE_BENCHMARK) and not module.verdict_reason:
         yield Issue(f"{path}.verdict_reason", f"required when the verdict is {verdict.value}")
-    if verdict is not Verdict.REGRESSION and module.status is not ModuleStatus.FINISHED:
-        yield Issue(f"{path}.verdict", f"status {module.status.value} (not FINISHED) must give the verdict regression")
+    if verdict is not Verdict.REGRESSION and not module.completed:
+        yield Issue(
+            f"{path}.verdict",
+            f"status {module.status.value} (not FINISHED, nor INTERRUPTED by a logged failure) must give the verdict "
+            "regression",
+        )
     if verdict in (Verdict.CONFORMS, Verdict.KNOWN_GAP, Verdict.STALE_BENCHMARK) and unexpected:
         names = ", ".join(sorted({f.condition for f in unexpected}))
         yield Issue(f"{path}.verdict", f"{verdict.value} with unexpected {names} (must be regression)")

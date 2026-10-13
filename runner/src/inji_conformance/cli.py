@@ -41,19 +41,17 @@ REPORT_MODULE = "inji_conformance.report"
 Handler = Callable[[argparse.Namespace], int]
 
 
-def _not_available(command: str) -> Handler:
-    def handler(_args: argparse.Namespace) -> int:
-        print(f"inji-conformance {command}: not available in this version ({__version__})", file=sys.stderr)
-        return ExitCode.USAGE
-
-    return handler
-
-
 def _run_handler(args: argparse.Namespace) -> int:
     # Imported here so that "validate" and "--help" work without the run's dependencies being importable.
     from inji_conformance.run import cmd_run
 
     return cmd_run(args)
+
+
+def _gate_handler(args: argparse.Namespace) -> int:
+    from inji_conformance.run import cmd_gate
+
+    return cmd_gate(args)
 
 
 def _seed_handler(args: argparse.Namespace) -> int:
@@ -207,6 +205,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--allow-stale", action="store_true", help="stale benchmark entries warn instead of failing")
     run.add_argument("--serial", action="store_true", help="with --combined: one plan after the other")
     run.add_argument("--no-seed", action="store_true", help="do not seed Inji Certify before the issuer plan")
+    run.add_argument("--benchmark-dir", type=Path, metavar="DIR", help="default: conformance/benchmark")
     run.add_argument(
         "--variant",
         action="append",
@@ -230,7 +229,7 @@ def build_parser() -> argparse.ArgumentParser:
     gate.add_argument("--benchmark-dir", type=Path, metavar="DIR", help="default: conformance/benchmark")
     gate.add_argument("--allow-stale", action="store_true", help="stale benchmark entries warn instead of failing")
     gate.add_argument("--junit", type=Path, metavar="FILE", help="also write JUnit XML for CI")
-    gate.set_defaults(handler=_not_available("gate"))
+    gate.set_defaults(handler=_gate_handler)
 
     report_module, reason = _load_report_module()
     for name, help_text, function, defaults in (

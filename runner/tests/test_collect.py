@@ -89,7 +89,13 @@ def test_confirmed_review_conforms():
     ("info", "reason"),
     [
         (None, "never started"),
-        ({"status": "INTERRUPTED", "result": "FAILED"}, "status INTERRUPTED"),
+        ({"status": "INTERRUPTED", "result": None}, "status INTERRUPTED"),
+        ({"status": "WAITING", "result": None}, "status WAITING"),
+        # Interrupted by a failing condition: judged on its conditions, as run-test-plan.py does.
+        (
+            {"status": "INTERRUPTED", "result": "FAILED"},
+            "result FAILED: VP1FinalValidateVpFormatsSupportedInClientMetadata",
+        ),
         (
             {"status": "FINISHED", "result": "FAILED"},
             "result FAILED: VP1FinalValidateVpFormatsSupportedInClientMetadata",

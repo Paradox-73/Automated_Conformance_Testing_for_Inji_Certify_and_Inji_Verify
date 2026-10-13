@@ -14,11 +14,14 @@ Endpoints (suite source ``TestRunner.java``, ``TestInfoApi.java``, ``LogApi.java
 - ``POST /api/runner/browser/{id}/visit?url=``: mark a front-channel URL as visited;
 - ``GET /api/info/{id}``: name, alias, plan id, status, result;
 - ``GET /api/log/{id}``: log entries;
-- ``GET /api/plan/{id}``: plan with its modules and their test ids.
+- ``GET /api/plan/{id}``: plan with its modules and their test ids;
+- ``GET /api/plan/exporthtml/{id}``: the plan's results as a zip of HTML pages (what ``conformance.py exporthtml``
+  downloads; ``run-test-plan.py --export-dir`` saves only the JSON export).
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -67,6 +70,15 @@ class SuiteClient:
 
     def plan(self, plan_id: str) -> dict[str, Any] | None:
         return self._get_json(f"api/plan/{plan_id}", missing_ok=True)
+
+    def export_html(self, plan_id: str) -> tuple[str, bytes]:
+        """The plan's HTML export: (file name the suite gives it, zip bytes)."""
+        response = self._http.get(self._url(f"api/plan/exporthtml/{plan_id}"), timeout=300.0)
+        if response.status_code != 200:
+            raise SuiteError(f"GET api/plan/exporthtml/{plan_id} returned HTTP {response.status_code}")
+        disposition = response.headers.get("content-disposition", "")
+        name = disposition.split('filename="', 1)[1].split('"', 1)[0] if 'filename="' in disposition else ""
+        return (Path(name).name or f"{plan_id}-html.zip"), response.content
 
     def log_url(self, test_id: str) -> str:
         """Link to the live log page of a test."""

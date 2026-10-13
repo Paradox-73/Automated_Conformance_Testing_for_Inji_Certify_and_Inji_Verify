@@ -120,6 +120,17 @@ class CertifyClient:
             raise CertifyError(f"issuer metadata: not a JSON object: {response.text[:200]}", response.status_code)
         return body
 
+    def as_metadata_shim(self) -> str | None:
+        """The harness proxy's note when it changed the authorization server metadata (``X-Harness-Shim``), else None.
+
+        See ``compose/tls-proxy/certify-as-metadata/``. A failed request counts as no change.
+        """
+        try:
+            response = self._http.get(f"{self.base_url}/.well-known/oauth-authorization-server")
+        except httpx.HTTPError:
+            return None
+        return response.headers.get("x-harness-shim") or None
+
     def get_configuration(self, config_id: str) -> dict[str, Any] | None:
         """The active configuration ``config_id``, or None when Certify has none with that id."""
         response = self._http.get(f"{self.api}/credential-configurations/{urllib.parse.quote(config_id, safe='')}")

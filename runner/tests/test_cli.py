@@ -174,10 +174,10 @@ def test_usage_errors_exit_2(capsys, argv):
     capsys.readouterr()
 
 
-def test_gate_is_not_in_this_version(capsys):
+def test_gate_reports_a_missing_run_folder(capsys):
     code, _, err = run(capsys, "gate", "--run", "x", "--allow-stale", "--junit", "j.xml")
     assert code == ExitCode.USAGE
-    assert "inji-conformance gate: not available in this version" in err
+    assert "inji-conformance gate: no results file at" in err
 
 
 def test_combined_run_is_not_in_this_version(capsys):

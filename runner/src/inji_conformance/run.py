@@ -13,14 +13,18 @@ Steps for ``--component verify`` and ``--component certify``:
 5. start ``run-test-plan.py`` (dev mode, ``--export-dir``) and the handoff responder side by side; the script's
    output goes to the console and to ``logs/run-test-plan.log``. The responder answers Inji Verify's tests with
    authorization requests and Inji Certify's tests with credential offers and transaction codes;
-6. read each module's outcome from the suite and write ``results.json``;
-7. remove the staged ``certs-keys`` folder, so no private key stays in the report folder.
+6. download the plan's HTML export and extract it into ``exports/html/``;
+7. read each module's outcome from the suite, classify it against the benchmark (``inji_conformance.benchmark``)
+   unless ``--no-gate``, cross-check the gate with ``run-test-plan.py``'s exit code, and write ``results.json``;
+8. remove the staged ``certs-keys`` folder, so no private key stays in the report folder.
 
 Run folder layout (``--out``)::
 
     <out>/<component>/results.json
     <out>/<component>/config/<template>.json      rendered suite configuration (placeholders, no keys)
-    <out>/<component>/exports/*.zip               the suite's plan export
+    <out>/<component>/exports/*.zip               the suite's plan exports (JSON and HTML)
+    <out>/<component>/exports/html/               the HTML export, extracted (one page per module)
+    <out>/<component>/benchmark/                  the benchmark files run-test-plan.py was given
     <out>/<component>/logs/run-test-plan.log      the script's output
     <out>/<component>/logs/handoffs.jsonl         one line per handoff
 """
@@ -37,13 +41,14 @@ import subprocess
 import sys
 import threading
 import time
+import zipfile
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
-from inji_conformance import keys, model, plans
+from inji_conformance import benchmark, keys, model, plans
 from inji_conformance.collect import module_result, plan_modules, review_from_vp_result, transaction_id
 from inji_conformance.handoff import (
     AuthorizationRequestHandoff,
@@ -247,6 +252,41 @@ def cmd_run(args: argparse.Namespace) -> int:
         return code
 
 
+def cmd_gate(args: argparse.Namespace) -> int:
+    """``inji-conformance gate --run DIR``: classify a recorded run against the benchmark and exit with the gate.
+
+    ``DIR`` is a component run folder (``<out>/<component>``) or its ``results.json``. The file itself is not
+    changed; the verdicts are printed, and written as JUnit XML with ``--junit``.
+    """
+    path = Path(args.run)
+    results_file = path / "results.json" if path.is_dir() else path
+    try:
+        results = model.load_results(results_file)
+    except FileNotFoundError:
+        print(f"inji-conformance gate: no results file at {results_file}", file=sys.stderr)
+        return ExitCode.USAGE
+    except (model.ContractError, OSError, ValueError) as error:
+        print(f"inji-conformance gate: {error}", file=sys.stderr)
+        return ExitCode.USAGE
+    try:
+        home = harness_home() if not args.benchmark_dir else None
+        folder = Path(args.benchmark_dir) if args.benchmark_dir else benchmark.default_dir(home)
+        bench = benchmark.load(folder, results.component)
+    except (RunError, benchmark.BenchmarkError) as error:
+        print(f"inji-conformance gate: {error}", file=sys.stderr)
+        return ExitCode.USAGE
+    classified = benchmark.classify(results, bench, allow_stale=bool(args.allow_stale), home=home)
+    for entry in benchmark.unused_entries(classified, bench):
+        print(f"warning: benchmark entry matches no module of this run: {benchmark.entry_label(entry)}")
+    for line in classified.gate.messages:
+        print(line)
+    if args.junit:
+        Path(args.junit).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.junit).write_text(benchmark.junit_xml(classified), encoding="utf-8", newline="\n")
+        print(f"junit: {args.junit}")
+    return int(classified.gate.exit_code)
+
+
 def cmd_seed(args: argparse.Namespace) -> int:
     """``inji-conformance seed certify``: add the credential configuration the issuer plan requests (idempotent)."""
     try:
@@ -351,6 +391,23 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
         config_path = folder / "config" / f"{template.name}.json"
         config_path.write_text(plans.render_config(template, run_values), encoding="utf-8", newline="\n")
         handoff_settings = plans.render_handoff(template, run_values)
+        bench = None
+        expected_args: list[str] = []
+        if not args.no_gate:
+            bench = load_benchmark(args, home, component)
+            if args.modules:
+                # run-test-plan.py fails on an entry that matches no module of the run, so a run of selected
+                # modules uses only the entries for those modules, for the script and for the gate alike.
+                bench = bench.restricted_to(
+                    [(name, template.variant) for name in args.modules], relative(config_path, folder)
+                )
+            failures_file, skips_file = bench.write(folder / "benchmark", component)
+            expected_args = [
+                "--expected-failures-file",
+                relative(failures_file, folder),
+                "--expected-skips-file",
+                relative(skips_file, folder),
+            ]
 
         stage = folder / "suite-scripts"
         script = stage_scripts(home, stage, pki_dir, dict(template.certs_keys))
@@ -360,6 +417,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             str(script.resolve()),
             "--export-dir",
             "exports",
+            *expected_args,
             *plans.plan_spec(template, relative(config_path, folder), args.modules),
         ]
         env = {
@@ -367,6 +425,10 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             "CONFORMANCE_SERVER": suite_url + "/",
             "CONFORMANCE_SERVER_MTLS": os.environ.get(ENV_SUITE_MTLS_URL, suite_url.replace(":18443", ":18444")) + "/",
             "CONFORMANCE_DEV_MODE": "1",
+            # The script stops the whole plan after three modules in a row that did not reach FINISHED. Against
+            # Inji, a module is INTERRUPTED by every failing condition inside a request it answers, so that would
+            # end a plan after three Inji findings. The run's own time limit still bounds an unhealthy suite.
+            "CONFORMANCE_MAX_CONSECUTIVE_FAILURES": os.environ.get("CONFORMANCE_MAX_CONSECUTIVE_FAILURES", "1000"),
             "PYTHONUNBUFFERED": "1",
         }
 
@@ -388,6 +450,7 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             print("the run reached its time limit (--timeout-minutes); run-test-plan.py was stopped", file=sys.stderr)
         else:
             print(f"run-test-plan.py exited with {script_code}; plan {plan_id or 'not created'}")
+        html_pages = export_html(suite, plan_id, folder / "exports") if plan_id else {}
 
         context = RunContext(
             run_id=run_id,
@@ -405,7 +468,14 @@ def run_component(args: argparse.Namespace, component: Component) -> int:
             no_gate=bool(args.no_gate),
             timed_out=script_code is None,
         )
-        results = build_results(context, suite, verify, plan_id, responder)
+        results = build_results(context, suite, verify, plan_id, responder, html_pages)
+        if bench is not None and not context.timed_out:
+            results = apply_benchmark(results, bench, home, script_code, allow_stale=bool(args.allow_stale))
+        shim = certify.as_metadata_shim() if certify is not None else None
+        if shim:
+            results = dataclasses.replace(
+                results, notes=(*results.notes, f"Inji Certify's authorization server metadata was changed: {shim}")
+            )
     finally:
         suite.close()
         for client in (verify, certify):
@@ -475,7 +545,12 @@ class RunContext:
 
 
 def build_results(
-    ctx: RunContext, suite: SuiteClient, verify: VerifyClient | None, plan_id: str | None, responder: Responder
+    ctx: RunContext,
+    suite: SuiteClient,
+    verify: VerifyClient | None,
+    plan_id: str | None,
+    responder: Responder,
+    html_pages: Mapping[str, str] | None = None,
 ) -> model.Results:
     """Read every module of the plan from the suite and assemble results.json."""
     template = ctx.template
@@ -491,20 +566,25 @@ def build_results(
         if info and info.get("result") == "REVIEW" and verify is not None:
             tx = transaction_id(handoffs)
             review = review_from_vp_result(template.expected_review(name), verify.vp_result(tx) if tx else None)
-        modules.append(
-            module_result(
-                name,
-                test_id,
-                info,
-                log,
-                handoffs,
-                suite_log_url=suite.log_url(test_id) if test_id else None,
-                review=review,
-                duration_s=_duration(log),
-            )
+        result = module_result(
+            name,
+            test_id,
+            info,
+            log,
+            handoffs,
+            suite_log_url=suite.log_url(test_id) if test_id else None,
+            review=review,
+            duration_s=_duration(log),
         )
+        page = (html_pages or {}).get(test_id or "")
+        if page and result.links is not None:
+            result = dataclasses.replace(result, links=dataclasses.replace(result.links, export=page))
+        modules.append(result)
 
-    exports = sorted((ctx.folder / "exports").glob("*.zip"), key=lambda p: p.stat().st_mtime)
+    exports = sorted(
+        (p for p in (ctx.folder / "exports").glob("*.zip") if not p.name.endswith("-html.zip")),
+        key=lambda p: p.stat().st_mtime,
+    )
     summary = model.Summary.of(modules)
     failing = summary.regression + summary.stale_benchmark
     notes = []
@@ -555,6 +635,83 @@ def build_results(
     )
 
 
+def load_benchmark(args: argparse.Namespace, home: Path, component: Component) -> benchmark.Benchmark:
+    folder = Path(args.benchmark_dir) if getattr(args, "benchmark_dir", None) else benchmark.default_dir(home)
+    try:
+        return benchmark.load(folder, component)
+    except benchmark.BenchmarkError as error:
+        raise RunError(f"benchmark: {error}", ExitCode.USAGE) from error
+
+
+def export_html(suite: SuiteClient, plan_id: str, exports: Path) -> dict[str, str]:
+    """Download the plan's HTML export into ``exports/`` and extract it into ``exports/html/``.
+
+    Returns the page of each test id, relative to the run folder's parent (as results.json paths are). A failed
+    download is reported and leaves the map empty: the live suite log links still work while the stack is up.
+    """
+    try:
+        name, data = suite.export_html(plan_id)
+    except (SuiteError, httpx.HTTPError) as error:
+        print(f"HTML export of plan {plan_id} failed: {error}", file=sys.stderr)
+        return {}
+    stem = name[: -len(".zip")] if name.endswith(".zip") else name
+    archive = exports / f"{stem}-html.zip"
+    archive.write_bytes(data)
+    target = exports / "html"
+    shutil.rmtree(target, ignore_errors=True)
+    target.mkdir(parents=True)
+    pages: dict[str, str] = {}
+    try:
+        with zipfile.ZipFile(archive) as bundle:
+            for member in bundle.namelist():
+                # Only plain file names: an export never has folders, and this keeps "../" out of the run folder.
+                if "/" in member or "\\" in member or member.startswith("."):
+                    continue
+                (target / member).write_bytes(bundle.read(member))
+                if member.startswith("test-log-") and member.endswith(".html"):
+                    test_id = member[: -len(".html")].rsplit("-", 1)[-1]
+                    pages[test_id] = exports.parent.name + "/exports/html/" + member
+    except zipfile.BadZipFile as error:
+        print(f"HTML export of plan {plan_id} is not a zip: {error}", file=sys.stderr)
+        return {}
+    return pages
+
+
+def apply_benchmark(
+    results: model.Results,
+    bench: benchmark.Benchmark,
+    home: Path,
+    script_code: int | None,
+    *,
+    allow_stale: bool,
+) -> model.Results:
+    """Classify against the benchmark, then cross-check the gate with ``run-test-plan.py``'s exit code.
+
+    Two outcomes stop the run with exit 2, because the benchmark or the harness is wrong rather than Inji: an entry
+    that matches no module of a whole-plan run, and a gate that disagrees with ``run-test-plan.py`` on the same
+    benchmark files.
+    """
+    classified = benchmark.classify(results, bench, allow_stale=allow_stale, home=home)
+    problems = []
+    unused = benchmark.unused_entries(classified, bench)
+    if unused:
+        problems.append(
+            "benchmark entries that match no module of this plan: "
+            + "; ".join(benchmark.entry_label(entry) for entry in unused)
+        )
+    disagreement = benchmark.cross_check(classified, script_code)
+    if disagreement:
+        problems.append(disagreement)
+    if not problems:
+        return classified
+    for problem in problems:
+        print(f"inji-conformance run: {problem}", file=sys.stderr)
+    gate = dataclasses.replace(
+        classified.gate, passed=False, exit_code=ExitCode.USAGE, messages=(*classified.gate.messages, *problems)
+    )
+    return dataclasses.replace(classified, gate=gate)
+
+
 def _duration(log: list[dict]) -> float | None:
     """Seconds between the first and the last log entry of a module (entries carry ``time`` in epoch ms)."""
     times = [entry["time"] for entry in log if isinstance(entry.get("time"), int | float)]
@@ -577,5 +734,7 @@ def print_summary(results: model.Results, path: Path) -> None:
         if module.verdict_reason:
             print(f"    {module.verdict_reason}")
     gate = results.gate
+    for line in gate.messages if gate else ():
+        print(line)
     state = "not applied" if not results.gating else ("passed" if gate and gate.passed else "failed")
     print(f"results: {path} ({results.summary.total if results.summary else 0} modules, gate {state})")

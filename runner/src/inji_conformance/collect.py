@@ -81,7 +81,12 @@ def verdict_without_benchmark(
     status: ModuleStatus, result: SuiteResult | None, failures: Sequence[Failure], review: Review | None
 ) -> tuple[Verdict, str | None]:
     """Verdict and reason when no benchmark entry applies."""
-    if status is not ModuleStatus.FINISHED:
+    interrupted_by_failure = (
+        status is ModuleStatus.INTERRUPTED
+        and result is SuiteResult.FAILED
+        and any(f.severity is Severity.FAILURE for f in failures)
+    )
+    if status is not ModuleStatus.FINISHED and not interrupted_by_failure:
         if status is ModuleStatus.NOT_STARTED:
             return Verdict.REGRESSION, "the module never started"
         return Verdict.REGRESSION, f"the module ended in status {status.value}: handoff not delivered or timeout"
