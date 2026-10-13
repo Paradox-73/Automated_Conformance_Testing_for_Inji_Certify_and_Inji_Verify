@@ -19,7 +19,9 @@
 # - HARNESS_RUN_DIR as a native path and Git Bash path rewriting turned off, so bind mounts work on Windows;
 # - HARNESS_UID and HARNESS_GID, the user the pki-init and runner containers run as (files they write stay
 #   owned by the calling user on Linux);
-# - "--profile *" for "down" when no profile is named, so "bash scripts/dc.sh down -v" stops every service.
+# - "--profile *" for "down" when no profile is named, so "bash scripts/dc.sh down -v" stops every service;
+# - each file of HARNESS_COMPOSE_FILES (comma-separated, relative to the repository root or absolute) as a further
+#   --file after docker-compose.yml, for overrides such as demo/regression.compose.yml.
 #
 # Settings: HARNESS_RUN_DIR, HARNESS_COMPOSE_PROJECT (see scripts/lib/common.sh). Image overrides such as
 # VERIFY_IMAGE are read from the environment or from env.local.
@@ -133,13 +135,22 @@ main() {
   HARNESS_RUN_DIR=$(harness_native_path "$run_dir")
   export HARNESS_UID HARNESS_GID HARNESS_RUN_DIR
 
-  local root args=()
+  local root args=() files=() extra
   root=$(harness_native_path "$HARNESS_ROOT")
+  files=(--file "$root/docker-compose.yml")
+  local -a extras=()
+  IFS=, read -r -a extras <<<"${HARNESS_COMPOSE_FILES:-}"
+  for extra in "${extras[@]}"; do
+    [[ -n $extra ]] || continue
+    [[ $extra == /* || $extra =~ ^[A-Za-z]: ]] || extra=$HARNESS_ROOT/$extra
+    [[ -f $extra ]] || die "HARNESS_COMPOSE_FILES: no such file: $extra" 2
+    files+=(--file "$(harness_native_path "$extra")")
+  done
   mapfile -d '' -t args < <(with_down_profiles "$@")
   MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' exec docker compose \
     --project-name "$HARNESS_COMPOSE_PROJECT" \
     --project-directory "$root" \
-    --file "$root/docker-compose.yml" \
+    "${files[@]}" \
     --env-file "$HARNESS_RUN_DIR/env.local" \
     "${args[@]}"
 }

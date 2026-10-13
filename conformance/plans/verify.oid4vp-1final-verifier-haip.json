@@ -1,0 +1,71 @@
+{
+  "$comment": "HAIP readiness track (inji-conformance run --track haip): the OpenID4VP 1.0 HAIP verifier plan against Inji Verify. HAIP asks for direct_post.jwt and an x509_hash client id; Inji Verify offers direct_post and x509_san_dns, so the request below is the closest it can make and the plan is expected to fail. Results carry gating: false and never change the exit code.",
+  "component": "verify",
+  "track": "haip",
+  "plan": "oid4vp-1final-verifier-haip-test-plan",
+  "variant": {
+    "credential_format": "sd_jwt_vc",
+    "response_mode": "direct_post.jwt"
+  },
+  "modules": [],
+  "parameters": {
+    "verify_x509_san_dns_host": "verify.inji.test"
+  },
+  "certs_keys": {
+    "suite-signing.jwk.json": "suite-signing.jwk.json",
+    "request-object-trust-anchor.json": {
+      "from": "ca.crt",
+      "as": "json_string"
+    }
+  },
+  "config": {
+    "alias": "inji-verify-haip-${run_id}",
+    "description": "Inji Verify at ${target_url}, harness run ${run_id}",
+    "client": {
+      "$comment": "The test CA that issued Inji Verify's request signing certificate (pki-init), as the HAIP plan's trust anchor.",
+      "client_id": "${verify_x509_san_dns_host}",
+      "request_object_trust_anchor_pem": {
+        "$certs_keys": "request-object-trust-anchor.json"
+      }
+    },
+    "credential": {
+      "$comment": "Private JWK with x5c the suite signs the presented SD-JWT VC with. Inji Verify takes the issuer key from x5c, so no trust setup is needed.",
+      "signing_jwk": {
+        "$certs_keys": "suite-signing.jwk.json"
+      }
+    }
+  },
+  "handoff": {
+    "authorization_request": {
+      "client_id": "x509_san_dns:${verify_x509_san_dns_host}",
+      "response_mode": "direct_post",
+      "dcql_query": {
+        "credentials": [
+          {
+            "id": "pid",
+            "format": "dc+sd-jwt",
+            "meta": {
+              "vct_values": [
+                "urn:eudi:pid:1"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "review": {
+    "$comment": "Verdict Inji Verify must show for a module the suite ends in REVIEW: the presented credential is valid unless the module tampers with it.",
+    "default": "valid",
+    "invalid": [
+      "oid4vp-1final-verifier-invalid-session-transcript",
+      "oid4vp-1final-verifier-invalid-kb-jwt-signature",
+      "oid4vp-1final-verifier-invalid-credential-signature",
+      "oid4vp-1final-verifier-invalid-sd-hash",
+      "oid4vp-1final-verifier-invalid-kb-jwt-nonce",
+      "oid4vp-1final-verifier-invalid-kb-jwt-aud",
+      "oid4vp-1final-verifier-kb-jwt-iat-in-past",
+      "oid4vp-1final-verifier-kb-jwt-iat-in-future"
+    ]
+  }
+}

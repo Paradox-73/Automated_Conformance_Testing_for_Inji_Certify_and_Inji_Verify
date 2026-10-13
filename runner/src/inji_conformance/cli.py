@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import re
 import sys
 from collections.abc import Callable, Sequence
 from pathlib import Path
@@ -177,6 +178,12 @@ def _modules_list(value: str) -> list[str]:
     return modules
 
 
+def _run_id(value: str) -> str:
+    if not re.match(r"^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{6,8}$", value):
+        raise argparse.ArgumentTypeError("expected <UTC time>-<hex>, for example 20261014T193000Z-1a2b3c")
+    return value
+
+
 def build_parser() -> argparse.ArgumentParser:
     # argparse exits with 2 on a usage error, which is ExitCode.USAGE already.
     parser = argparse.ArgumentParser(
@@ -220,6 +227,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run.add_argument("--timeout-minutes", type=float, metavar="N", help="time limit for the whole run")
     run.add_argument("--out", type=Path, metavar="DIR", help="run folder to write into")
+    run.add_argument(
+        "--run-id",
+        type=_run_id,
+        metavar="ID",
+        help="run id to use (default: a new one); run-conformance.sh passes the id of its run folder",
+    )
     run.set_defaults(handler=_run_handler)
 
     seed = commands.add_parser("seed", help="prepare a component for the suite (idempotent)")

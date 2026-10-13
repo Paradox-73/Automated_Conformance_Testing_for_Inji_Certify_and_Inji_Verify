@@ -163,6 +163,7 @@ def test_version(capsys):
         ["run", "--component", "wallet"],
         ["run", "--component", "verify", "--modules", ","],
         ["seed", "verify"],
+        ["run", "--component", "verify", "--run-id", "not-a-run-id"],
         ["gate"],
         ["validate"],
     ],
@@ -180,11 +181,19 @@ def test_gate_reports_a_missing_run_folder(capsys):
     assert "inji-conformance gate: no results file at" in err
 
 
-def test_combined_haip_run_without_templates_names_each_component(capsys):
-    code, _, err = run(capsys, "run", "--combined", "--track", "haip", "--serial", "--allow-stale")
-    assert code == ExitCode.USAGE
-    assert "inji-conformance run (certify): expected one haip plan template for certify" in err
-    assert "inji-conformance run (verify): expected one haip plan template for verify" in err
+@respx.mock
+def test_combined_haip_run_without_a_stack_names_each_component(capsys, monkeypatch, tmp_path):
+    monkeypatch.setattr(run_module, "READY_TIMEOUT_S", 0)
+    respx.get(f"{SUITE}/api/server").mock(side_effect=httpx.ConnectError("refused"))
+    argv = ["run", "--combined", "--track", "haip", "--serial", "--allow-stale", "--out", str(tmp_path / "out")]
+    code, out, err = run(capsys, *argv)
+    assert code == ExitCode.ENVIRONMENT_NOT_READY
+    assert "inji-conformance run (certify): the conformance suite" in err
+    assert "inji-conformance run (verify): the conformance suite" in err
+    assert (
+        "certify plan oid4vci-1_0-issuer-haip-test-plan" in out
+        and "verify plan oid4vp-1final-verifier-haip-test-plan" in out
+    )
 
 
 @respx.mock

@@ -189,6 +189,23 @@ else
   not_ok "$name" "got: $(caller_args)"
 fi
 
+# --- extra compose files ------------------------------------------------------------------------------------------
+TESTS=$((TESTS + 1))
+name="HARNESS_COMPOSE_FILES adds each override file after docker-compose.yml"
+printf 'services: {}\n' >"$WORK/override.yml"
+HARNESS_COMPOSE_FILES="$WORK/override.yml,docker-compose.yml" run_dc "$WORK/run1" config -q
+if ((RC == 0)) && [[ $(grep -c -x -- --file <<<"$LOG") == 3 ]] &&
+  grep -qx -- "$(harness_native_path "$WORK/override.yml")" <<<"$LOG"; then
+  ok "$name"
+else
+  not_ok "$name" "exit $RC, got: $LOG"
+fi
+
+TESTS=$((TESTS + 1))
+name="a missing override file stops with exit status 2 before compose runs"
+HARNESS_COMPOSE_FILES="$WORK/missing.yml" run_dc "$WORK/run1" config -q
+if ((RC == 2)) && [[ -z $LOG && $OUT == *"no such file"* ]]; then ok "$name"; else not_ok "$name" "exit $RC"; fi
+
 # --- refusals -----------------------------------------------------------------------------------------------------
 TESTS=$((TESTS + 1))
 name="a project name outside ps01-* is refused with exit status 2"

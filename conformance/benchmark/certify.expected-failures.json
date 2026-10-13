@@ -2,7 +2,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Process Credential Issuer Metadata Response",
     "condition": "VCICredentialIssuerMetadataValidation",
     "expected-result": "failure",
@@ -14,7 +14,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Process Credential Issuer Metadata Response",
     "condition": "CheckForUnexpectedParametersInCredentialIssuerMetadata",
     "expected-result": "warning",
@@ -26,7 +26,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Process Credential Issuer Metadata Response",
     "condition": "VCIValidateFormatOfCredentialConfigurationsInMetadata",
     "expected-result": "warning",
@@ -38,7 +38,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Verify OAuth Authorization Server Metadata Response",
     "condition": "CheckForUnexpectedParametersInServerMetadata",
     "expected-result": "warning",
@@ -50,7 +50,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test-signed",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Process Credential Issuer Metadata Response",
     "condition": "EnsureContentTypeApplicationJwt",
     "expected-result": "failure",
@@ -62,7 +62,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-metadata-test-signed",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": "Process Credential Issuer Metadata Response",
     "condition": "VCIDecodeSignedCredentialIssuerMetadata",
     "expected-result": "failure",
@@ -74,7 +74,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-happy-flow",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "EnsureHttpStatusCodeIsAnyOf",
     "expected-result": "failure",
@@ -86,7 +86,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-happy-flow-additional-requests",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "EnsureHttpStatusCodeIsAnyOf",
     "expected-result": "failure",
@@ -98,7 +98,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-happy-flow-multiple-clients",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "EnsureHttpStatusCodeIsAnyOf",
     "expected-result": "failure",
@@ -110,7 +110,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-happy-flow-skip-notification",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "EnsureHttpStatusCodeIsAnyOf",
     "expected-result": "failure",
@@ -122,7 +122,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-fail-on-access-token-in-query",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "EnsureHttpStatusCodeIsAnyOf",
     "expected-result": "failure",
@@ -134,7 +134,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "VCIValidateCredentialErrorResponse",
     "expected-result": "failure",
@@ -146,7 +146,7 @@
   {
     "test-name": "oid4vci-1_0-issuer-fail-unknown-credential-identifier",
     "variant": "*",
-    "configuration-filename": "*certify.oid4vci-1_0-issuer*.json",
+    "configuration-filename": "*certify.oid4vci-1_0-issuer.json",
     "current-block": " Verify Credential Endpoint Response",
     "condition": "VCIValidateCredentialErrorResponse",
     "expected-result": "failure",

@@ -255,7 +255,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     The exit code is the highest of the components' codes. ``manifest.json`` records the wall time of each plan.
     """
     started_at = utc_now()
-    run_id = new_run_id()
+    run_id = getattr(args, "run_id", None) or new_run_id()
     out = Path(args.out) if args.out else default_out_dir(run_id)
     components = [Component.CERTIFY, Component.VERIFY] if args.combined else [Component(args.component)]
     parallel = bool(args.combined and not args.serial)
