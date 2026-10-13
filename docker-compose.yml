@@ -178,7 +178,8 @@ services:
       # issued (pki-init, compose/pki/generate.py). The image's bundled sample keystore has a self-signed
       # certificate, which the suite rejects in every module (ValidateRequestObjectSignatureAgainstX5cHeader,
       # measured 2026-10-14); set VERIFY_KEYSTORE_PATH=classpath:sample-keystore/test.p12 and
-      # VERIFY_X509_SAN_DNS_HOST=test.example.com (with VERIFY_KEYSTORE_PASSWORD=mosip) to use it again.
+      # VERIFY_X509_SAN_DNS_HOST=test.example.com (and VERIFY_KEYSTORE_PASSWORD set to that keystore's password,
+      # see the image's application.properties) to use it again.
       INJI_KEYSTORE_FILE_PATH: ${VERIFY_KEYSTORE_PATH:-file:/pki/verify-request-signing.p12}
       INJI_KEYSTORE_FILE_PASS: ${VERIFY_KEYSTORE_PASSWORD?generated into env.local by scripts/dc.sh}
       INJI_X509_SAN_DNS_HOST: ${VERIFY_X509_SAN_DNS_HOST:-verify.inji.test}

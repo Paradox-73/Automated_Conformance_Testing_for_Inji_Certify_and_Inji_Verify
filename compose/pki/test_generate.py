@@ -57,19 +57,15 @@ class GeneratedSetTest(unittest.TestCase):
         cls.tmp.cleanup()
 
     def test_verify_keystore_holds_an_ed25519_key_with_a_ca_issued_chain(self) -> None:
-        pem = run_openssl(
-            "pkcs12", "-in", str(self.out / generate.VERIFY_KEYSTORE), "-passin", "pass:test-only-password", "-nodes"
-        )
-        self.assertIn("BEGIN PRIVATE KEY", pem)
-        certs = ["-----BEGIN CERTIFICATE-----" + part.split("-----END CERTIFICATE-----")[0] + "-----END CERTIFICATE-----\n"
-                 for part in pem.split("-----BEGIN CERTIFICATE-----")[1:]]
-        self.assertEqual(1, len(certs), "the leaf only: the suite rejects an x5c that includes the trust anchor")
-        leaf = run_openssl("x509", "-noout", "-subject", "-issuer", "-ext", "subjectAltName", stdin=certs[0].encode("ascii"))
+        keystore = ["pkcs12", "-in", str(self.out / generate.VERIFY_KEYSTORE), "-passin", "pass:test-only-password"]
+        certs = run_openssl(*keystore, "-nokeys")
+        self.assertEqual(1, certs.count("BEGIN CERTIFICATE"),
+                         "the leaf only: the suite rejects an x5c that includes the trust anchor")
+        leaf = run_openssl("x509", "-noout", "-subject", "-issuer", "-ext", "subjectAltName", stdin=certs.encode("ascii"))
         self.assertIn("DNS:verify.inji.test", leaf)
         self.assertIn("inji-conformance-harness test CA", leaf.split("issuer=", 1)[1])
-        block = "-----BEGIN PRIVATE KEY-----" + pem.split("-----BEGIN PRIVATE KEY-----", 1)[1].split(
-            "-----END PRIVATE KEY-----", 1)[0] + "-----END PRIVATE KEY-----\n"
-        key = run_openssl("pkey", "-noout", "-text", stdin=block.encode("ascii"))
+        # openssl pkey skips the bag attribute lines in front of the key.
+        key = run_openssl("pkey", "-noout", "-text", stdin=run_openssl(*keystore, "-nocerts", "-nodes").encode("ascii"))
         self.assertIn("ED25519", key)
 
     def test_missing_keystore_password_is_an_error(self) -> None:
