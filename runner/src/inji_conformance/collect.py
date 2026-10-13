@@ -96,11 +96,13 @@ def verdict_without_benchmark(
     if result is SuiteResult.REVIEW and review is not None and review.confirmed:
         return Verdict.CONFORMS, None
     if result is SuiteResult.REVIEW:
-        observed = review.observed.value if review else ReviewOutcome.MISSING.value
-        return Verdict.REGRESSION, (
-            f"result REVIEW: Inji Verify's verdict was {observed}, and no evidence image of it was uploaded, "
-            "so the review is not confirmed"
-        )
+        if review is None or review.observed is ReviewOutcome.MISSING:
+            why = "Inji Verify's verdict could not be read"
+        elif review.observed != review.expected:
+            why = f"Inji Verify's verdict was {review.observed.value}, the module expects {review.expected.value}"
+        else:
+            why = f"Inji Verify's verdict was {review.observed.value}, but no evidence image of it was uploaded"
+        return Verdict.REGRESSION, f"result REVIEW: {why}, so the review is not confirmed"
     if result in (SuiteResult.FAILED, SuiteResult.WARNING):
         names = ", ".join(sorted({f.condition for f in failures})) or "no logged condition"
         return Verdict.REGRESSION, f"result {result.value}: {names}"
@@ -180,6 +182,14 @@ def plan_modules(plan: Mapping[str, Any], selected: Sequence[str] | None) -> lis
         instances = module.get("instances") or []
         out.append((name, str(instances[-1]) if instances else None))
     return out
+
+
+def verdict_at_upload(handoffs: Sequence[HandoffRecord]) -> dict[str, str] | None:
+    """Inji Verify's verdict as the evidence upload read it (``{"vpResultStatus": ...}``), or None."""
+    for record in reversed(handoffs):
+        if record.kind is HandoffKind.VERIFICATION_EVIDENCE and record.data.get("vp_result_status"):
+            return {"vpResultStatus": record.data["vp_result_status"]}
+    return None
 
 
 def evidence_path(handoffs: Sequence[HandoffRecord]) -> str | None:

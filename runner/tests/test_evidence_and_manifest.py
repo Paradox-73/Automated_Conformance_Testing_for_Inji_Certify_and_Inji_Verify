@@ -17,10 +17,19 @@ import respx
 from PIL import Image
 
 from inji_conformance import manifest, model, run
-from inji_conformance.collect import evidence_path, review_from_vp_result
+from inji_conformance.collect import evidence_path, review_from_vp_result, verdict_at_upload, verdict_without_benchmark
 from inji_conformance.handoff import HandoffRecord, TestView, VerificationEvidenceHandoff, render_evidence
 from inji_conformance.inji_verify import VerifyClient
-from inji_conformance.model import Component, ExitCode, HandoffKind, ReviewOutcome
+from inji_conformance.model import (
+    Component,
+    ExitCode,
+    HandoffKind,
+    ModuleStatus,
+    Review,
+    ReviewOutcome,
+    SuiteResult,
+    Verdict,
+)
 from inji_conformance.suite import SuiteClient
 
 SUITE = "https://localhost.emobix.co.uk:18443"
@@ -236,3 +245,36 @@ def test_combined_run_keeps_the_other_plan_when_one_crashes(monkeypatch, tmp_pat
     out = capsys.readouterr()
     assert "inji-conformance run (certify): RuntimeError: boom" in out.err
     assert "verify exit 0" in out.out
+
+
+def test_verdict_at_upload_is_kept_for_the_results():
+    records = [
+        HandoffRecord(
+            "t1",
+            "m",
+            HandoffKind.VERIFICATION_EVIDENCE,
+            "x",
+            200,
+            1,
+            data={"evidence": "e.png", "vp_result_status": "FAILED"},
+        )
+    ]
+    assert verdict_at_upload(records) == {"vpResultStatus": "FAILED"}
+    assert verdict_at_upload([]) is None
+
+
+@pytest.mark.parametrize(
+    ("review", "reason"),
+    [
+        (None, "Inji Verify's verdict could not be read"),
+        (Review(expected=ReviewOutcome.VALID, observed=ReviewOutcome.MISSING), "could not be read"),
+        (Review(expected=ReviewOutcome.VALID, observed=ReviewOutcome.INVALID), "was invalid, the module expects valid"),
+        (
+            Review(expected=ReviewOutcome.VALID, observed=ReviewOutcome.VALID),
+            "but no evidence image of it was uploaded",
+        ),
+    ],
+)
+def test_unconfirmed_review_names_the_reason(review, reason):
+    verdict, why = verdict_without_benchmark(ModuleStatus.FINISHED, SuiteResult.REVIEW, [], review)
+    assert verdict is Verdict.REGRESSION and reason in why

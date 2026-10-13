@@ -55,6 +55,7 @@ from inji_conformance.collect import (
     plan_modules,
     review_from_vp_result,
     transaction_id,
+    verdict_at_upload,
 )
 from inji_conformance.handoff import (
     AuthorizationRequestHandoff,
@@ -643,9 +644,9 @@ def build_results(
         review = None
         if info and info.get("result") == "REVIEW" and verify is not None:
             tx = transaction_id(handoffs)
-            review = review_from_vp_result(
-                template.expected_review(name), verify.vp_result(tx) if tx else None, evidence_path(handoffs)
-            )
+            # The verdict the evidence image shows; read again only when no upload recorded one.
+            seen = verdict_at_upload(handoffs) or (verify.vp_result(tx) if tx else None)
+            review = review_from_vp_result(template.expected_review(name), seen, evidence_path(handoffs))
         result = module_result(
             name,
             test_id,

@@ -426,7 +426,11 @@ class VerificationEvidenceHandoff:
             detail=f"Inji Verify's verdict {result.get('vpResultStatus')} for {transaction} uploaded into "
             f"{len(placeholders)} placeholder(s) as {shown}",
             error=None if status < 400 else f"the suite answered HTTP {status}",
-            data={"evidence": shown, "transaction_id": transaction},
+            data={
+                "evidence": shown,
+                "transaction_id": transaction,
+                "vp_result_status": str(result.get("vpResultStatus", "")),
+            },
         )
 
 
