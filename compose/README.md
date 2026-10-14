@@ -50,7 +50,7 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 | `suite-mongodb` | `mongo:6.0.13`, named volume `suite-mongodb-data` | `SUITE_MONGODB_IMAGE` | none | - | 512 MiB |
 | `verify-service` | `injistackqa/inji-verify-service:1.0.x` (commit `ad3595f`) | `VERIFY_IMAGE` | 18461 (plain HTTP, debugging only) | - | 768 MiB |
 | `verify-db` | `postgres:13` + [`verify/init.sql`](verify/init.sql) | `VERIFY_DB_IMAGE` | none | - | 256 MiB |
-| `certify` | `injistackqa/inji-certify-with-plugins:develop` (commit `d6635da`) + [`certify/config/`](certify/README.md) | `CERTIFY_IMAGE` | 18460 (plain HTTP, debugging only) | - | 1 GiB |
+| `certify` | `injistackqa/inji-certify-with-plugins:1.0.x` (commit `bbd913e`, `release-1.0.x`) + [`certify/config/`](certify/README.md) | `CERTIFY_IMAGE` | 18460 (plain HTTP, debugging only) | - | 1 GiB |
 | `certify-db` | `postgres:15` + [`certify/certify_init.sql`](certify/certify_init.sql), named volume `certify-db-data` | `CERTIFY_DB_IMAGE` | none | - | 256 MiB |
 | `tls-proxy` | `nginx:1.30.5-alpine` + [`tls-proxy/`](tls-proxy/) | `TLS_PROXY_IMAGE` | 18450, 18451 | `verify.inji.test`, `certify.inji.test` | 128 MiB |
 | `minio` | `pgsty/minio:RELEASE.2026-08-04T00-00-00Z` + [`minio/init.sh`](minio/README.md), named volume `minio-data` | `MINIO_IMAGE` | 18900 (S3), 18901 (console) | `minio` | 512 MiB |

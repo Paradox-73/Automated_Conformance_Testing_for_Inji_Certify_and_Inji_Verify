@@ -4,12 +4,20 @@ What was run, when, on which commit and with what result. Every run id below has
 report, badge) in `docs/evidence/<date>-<run id>/`; dates in run ids and folder names are UTC, the runs took place on
 2026-10-14 IST. Test case definitions: [test-cases.md](test-cases.md).
 
-## Machine
+## Machines
 
-macOS 15.6.1 (Apple silicon), Docker Desktop (Engine 28.3.0, Compose 2.38.1) with a 4 GiB VM, GNU bash 5.3.20,
-Python 3.12.15, Maven 3.9.11 on JDK 25 (host build of the testrigs), shellcheck 0.11.0, actionlint 1.7.12. Images as
-pinned in `docker-compose.yml` (Inji Certify `develop@sha256:b5022884...`, Inji Verify `1.0.x@sha256:a9b81fd4...`,
-suite release-v5.3.1); each manifest lists every image and digest.
+- macOS 15.6.1 (Apple silicon), Docker Desktop (Engine 28.3.0, Compose 2.38.1) with a 4 GiB VM, GNU bash 5.3.20,
+  Python 3.12.15, Maven 3.9.11 on JDK 25 (host build of the testrigs), shellcheck 0.11.0, actionlint 1.7.12. Runs
+  dated 2026-10-13 in their run ids.
+- Windows 11 (10.0.26200), Git Bash (GNU bash 5.3.15), Docker Desktop 29.7.2 (Compose 5.5.1, 7792 MiB and 12 CPUs
+  for Docker, shared with another team's Inji stack), Python 3.12.10, Temurin 21.0.12 and Maven 3.9.9 for
+  `scripts/check.sh` only, shellcheck 0.11.0, actionlint 1.7.12. Runs dated 2026-10-14 in their run ids.
+- GitHub's hosted `ubuntu-24.04` runner (4 vCPU, 16 GB, 86 GB of free disk) for the workflow runs.
+
+Images as pinned in `docker-compose.yml` at the time of each run; each manifest lists every image and digest. Until
+2026-10-14 the Inji Certify default was `develop@sha256:b5022884...` (commit `d6635da`); since then it is
+`1.0.x@sha256:2c72a78c...` (commit `bbd913e`, see [Build comparison](#build-comparison)). Inji Verify is
+`1.0.x@sha256:a9b81fd4...`, the suite release-v5.3.1.
 
 ## Unit and component tests
 
@@ -68,9 +76,24 @@ The rig reports of TC-19 are in [evidence](evidence/2026-10-14-20261014T133851Z-
 
 ## Build comparison
 
-Not run: a run against `injistack/inji-certify-with-plugins:1.0.0-alpha.1` was planned as an optional item and
-dropped for time. `CERTIFY_IMAGE=<image> ./run-conformance.sh --component certify --runner-only` followed by
-`inji-conformance diff` against TC-02 does it.
+The issuer plan against three Inji Certify images, Windows machine, 2026-10-14, each with
+`CERTIFY_IMAGE=<image> ./run-conformance.sh --component certify --runner-only`, compared with `inji-conformance diff`
+against the certify results of the fresh-clone run `20261014T133851Z-c99cce` (develop image):
+
+| Image | Commit (label) | Run id | Exit | Gate | Difference from develop |
+|---|---|---|---|---|---|
+| `injistackqa/inji-certify-with-plugins:develop@sha256:b5022884...` | `d6635da`, 2026-09-09 | `20261014T133851Z-c99cce` | 0 | 0 regressions, 9 known gaps, 3 not applicable | (reference) |
+| `injistackqa/inji-certify-with-plugins:1.0.x@sha256:2c72a78c...` | `bbd913e` on `release-1.0.x`, 2026-10-09 | `20261014T140148Z-9643eb` | 0 | 0 regressions, 9 known gaps, 3 not applicable | none: 15 modules unchanged |
+| `injistack/inji-certify-with-plugins:1.0.0-alpha.1@sha256:1579b244...` | `8fdf716`, 2026-07-30 (the only 1.0 release image) | `20261014T135637Z-9de2b7` | 1 | 1 regression, 8 known gaps, 3 not applicable | `fail-unknown-credential-identifier`: the credential endpoint answers an unknown credential identifier with a status other than 400 (`EnsureHttpStatusCodeIs400`) and the error code `unknown_error` instead of `invalid_request` |
+
+The first attempt of the `1.0.x` run stopped before the plan with exit 3: the suite's MongoDB container did not
+become healthy while the other stack used the machine's CPUs. The rerun above passed. Exit 3 is the code for that
+case, so it did not read as a regression.
+
+Since 2026-10-14 the default image is `1.0.x`: the QA build of the `release-1.0.x` branch, which contains `d6635da`
+and gives the same verdicts. No Inji Certify 1.0 release image with DPoP support exists yet; `1.0.0-alpha.1` has no
+DPoP code, and its one difference above is a credential-endpoint error status. Evidence:
+[1.0.x](evidence/2026-10-14-20261014T140148Z-9643eb/), [1.0.0-alpha.1](evidence/2026-10-14-20261014T135637Z-9de2b7/).
 
 ## Repository checks and local CI
 

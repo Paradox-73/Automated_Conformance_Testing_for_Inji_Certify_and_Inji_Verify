@@ -1,0 +1,3 @@
+diff A 20261014T133851Z-c99cce -> B 20261014T135637Z-9de2b7
+changed  certify  oid4vci-1_0-issuer-fail-unknown-credential-identifier: known_gap (FAILED) -> regression (FAILED); new failing condition EnsureHttpStatusCodeIs400 (FAILURE); NEW REGRESSION
+result: changed; 1 changed, 0 added, 0 removed, 14 unchanged; 1 new regression, 0 fixed

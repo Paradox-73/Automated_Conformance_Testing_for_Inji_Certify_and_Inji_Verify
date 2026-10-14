@@ -8,8 +8,8 @@ OpenID Foundation conformance suite plays the wallet against it.
 
 | Item | Value |
 |---|---|
-| Image | `injistackqa/inji-certify-with-plugins:develop`, pinned by digest, label `commit_id` `d6635da` (built 2026-09-09). Override with `CERTIFY_IMAGE`. |
-| Why this image | The newest 1.0-line build with DPoP support. The `1.0.0-alpha.1` release image has no DPoP code. `compose/smoke.sh certify` prints the `commit_id` label of the image it ran. |
+| Image | `injistackqa/inji-certify-with-plugins:1.0.x`, pinned by digest, label `commit_id` `bbd913e` (built 2026-10-09 from the `release-1.0.x` branch). Override with `CERTIFY_IMAGE`. |
+| Why this image | No Inji Certify 1.0 release image with DPoP exists on 2026-10-14: the only one, `1.0.0-alpha.1`, has no DPoP code. `1.0.x` is the QA build of the `release-1.0.x` branch, the branch the imported api-testrig comes from. Until 2026-10-14 the default was the `develop` build `d6635da`, an ancestor of `bbd913e`; both give the same verdicts ([test-report.md](../../docs/test-report.md#build-comparison)). `compose/smoke.sh certify` prints the `commit_id` label of the image it ran. |
 | Database | `postgres:15` with the upstream [`certify_init.sql`](certify_init.sql) (schema and the seeded `FarmerCredential` configuration). Named volume `certify-db-data`. |
 | Keystore | PKCS12 file created by Certify at first start in the named volume `certify-keystore`. It holds the master keys; the database holds keys wrapped by them, so `down -v` removes both together. |
 | Issuer identifier | `https://certify.inji.test:18450` (the `tls-proxy` service, see [`../tls-proxy/sites/certify.conf`](../tls-proxy/sites/certify.conf)). |

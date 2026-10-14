@@ -1,0 +1,956 @@
+{
+  "schema_version": "1",
+  "run_id": "20261014T140148Z-9643eb",
+  "component": "certify",
+  "track": "gate",
+  "gating": true,
+  "suite": {
+    "base_url": "https://localhost.emobix.co.uk:18443",
+    "version": "5.3.1"
+  },
+  "target": {
+    "base_url": "https://certify.inji.test:18450"
+  },
+  "plan": {
+    "name": "oid4vci-1_0-issuer-test-plan",
+    "variant": {
+      "fapi_profile": "vci",
+      "credential_format": "sd_jwt_vc",
+      "vci_grant_type": "pre_authorization_code",
+      "vci_authorization_code_flow_variant": "issuer_initiated",
+      "client_auth_type": "private_key_jwt",
+      "sender_constrain": "dpop",
+      "authorization_request_type": "simple",
+      "fapi_request_method": "unsigned",
+      "vci_credential_encryption": "plain"
+    },
+    "id": "3u1HvkwNi1t37",
+    "config_file": "certify/config/certify.oid4vci-1_0-issuer.json",
+    "export": "certify/exports/oid4vci-1_0-issuer-test-plan-private_key_jwt-dpop-sd_jwt_vc-issuer_initiated-simple-unsigned-disabled-pre_authorization_code-plain-vci-3u1HvkwNi1t37-14-Oct-2026.zip"
+  },
+  "modules": [
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test",
+      "test_id": "4D1wawnheCZ5E9H",
+      "status": "FINISHED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "VCICredentialIssuerMetadataValidation",
+          "severity": "FAILURE",
+          "message": "Found invalid entries in OID4VCI Credential Issuer metadata input",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInCredentialIssuerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OID4VCI Credential Issuer metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'vci.allow_unexpected_credential_issuer_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "VCIValidateFormatOfCredentialConfigurationsInMetadata",
+          "severity": "WARNING",
+          "message": "Found credential configurations with unsupported formats",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINALA-A.2",
+            "OID4VCI-1FINALA-A.3.1",
+            "OID4VCI-1FINALA-A.1"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "severity": "WARNING",
+          "message": "Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the 'server.allow_unexpected_metadata_fields' array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.",
+          "block": "Verify OAuth Authorization Server Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.3",
+            "OID4VCI-1FINAL-12.2.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Certify writes logo, background_color, background_image and text_color of credential_metadata.display as null when a credential configuration does not set them; the metadata schema allows a string or an object, not null (measured 2026-10-14).",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.3",
+          "issue": "docs/findings/certify-metadata-null-display-values.md",
+          "matched": true,
+          "condition": "VCICredentialIssuerMetadataValidation",
+          "current_block": "Process Credential Issuer Metadata Response",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Warning that follows the null display values: the suite then reports scope, cryptographic_binding_methods_supported and proof_types_supported of the SD-JWT configuration as unknown, together with credential_definition and credential_signing_alg_values_supported of the ldp_vc configuration FarmerCredential (measured 2026-10-14).",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.3",
+          "issue": "docs/findings/certify-metadata-null-display-values.md",
+          "matched": true,
+          "condition": "CheckForUnexpectedParametersInCredentialIssuerMetadata",
+          "current_block": "Process Credential Issuer Metadata Response",
+          "expected_result": "warning"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "The credential configuration FarmerCredential uses the ldp_vc format of Appendix A.1; suite release-v5.3.1 validates only SD-JWT VC and mdoc configurations and warns about every other format.",
+          "owner": "suite",
+          "spec": "OID4VCI-1FINALA-A.1",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "VCIValidateFormatOfCredentialConfigurationsInMetadata",
+          "current_block": "Process Credential Issuer Metadata Response",
+          "expected_result": "warning"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Inji Certify publishes interactive_authorization_endpoint and require_interactive_authorization_request, which come from a later OpenID4VCI draft (interactive authorization); suite release-v5.3.1 does not know them and warns.",
+          "owner": "suite",
+          "spec": "OID4VCI-1FINAL-12.3",
+          "issue": "docs/suite-limitations.md",
+          "matched": true,
+          "condition": "CheckForUnexpectedParametersInServerMetadata",
+          "current_block": "Verify OAuth Authorization Server Metadata Response",
+          "expected_result": "warning"
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=4D1wawnheCZ5E9H",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-4D1wawnheCZ5E9H.html"
+      },
+      "duration_s": 2.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-metadata-test-signed",
+      "test_id": "IMJ1fsLQ1Beb5ws",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureContentTypeApplicationJwt",
+          "severity": "FAILURE",
+          "message": "Couldn't find content-type header in endpoint_response",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "RFC8414-3.2"
+          ],
+          "expected": true
+        },
+        {
+          "condition": "VCIDecodeSignedCredentialIssuerMetadata",
+          "severity": "FAILURE",
+          "message": "If present, a string is expected for credential_issuer_metadata_endpoint_response body but JsonNull was found",
+          "block": "Process Credential Issuer Metadata Response",
+          "requirements": [
+            "OID4VCI-1FINAL-12.2.2"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "Signed credential issuer metadata is optional and Inji Certify does not offer it: asked with Accept: application/jwt it answers the unsigned JSON document.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.2",
+          "issue": "docs/findings/certify-signed-metadata.md",
+          "matched": true,
+          "condition": "EnsureContentTypeApplicationJwt",
+          "current_block": "Process Credential Issuer Metadata Response",
+          "expected_result": "failure"
+        },
+        {
+          "kind": "expected_failure",
+          "comment": "Follows from the unsigned answer: there is no JWT to decode, so the suite stops the module (INTERRUPTED with result FAILED).",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.2",
+          "issue": "docs/findings/certify-signed-metadata.md",
+          "matched": true,
+          "condition": "VCIDecodeSignedCredentialIssuerMetadata",
+          "current_block": "Process Credential Issuer Metadata Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=IMJ1fsLQ1Beb5ws",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-signed-IMJ1fsLQ1Beb5ws.html"
+      },
+      "duration_s": 0.3
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow",
+      "test_id": "aYXBlBQ8P1a7zWm",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "severity": "FAILURE",
+          "message": "resource endpoint returned an unexpected http status",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "The happy flow adds a parameter with a random name to the credential request to check that the issuer ignores it; Inji Certify answers HTTP 400 invalid_request \"Unrecognized field ... in request\" instead of issuing.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.2",
+          "issue": "docs/findings/certify-credential-request-unknown-parameters.md",
+          "matched": true,
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 1506.5,
+          "at": "2026-10-14T14:03:36Z",
+          "detail": "offer 1: Inji Certify offer a90b8d35-d8ca-45d5-8e63-e16a95b02ce7 (with tx_code) delivered by reference; suite answered in 1435 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 1870.5,
+          "at": "2026-10-14T14:03:39Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"error_description\":null,\"cause\":\"EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"testId\":\"aYXBlBQ8P1a7zWm\"}"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=aYXBlBQ8P1a7zWm",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-aYXBlBQ8P1a7zWm.html"
+      },
+      "duration_s": 5.1
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-additional-requests",
+      "test_id": "Ce56yKuYz40zMzg",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "severity": "FAILURE",
+          "message": "resource endpoint returned an unexpected http status",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (\"JWT iss claim has value inji-conformance-wallet, must be\" empty) and answers HTTP 400 invalid_proof.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINALA-F.1",
+          "issue": "docs/findings/certify-proof-iss-rejected.md",
+          "matched": true,
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 146.0,
+          "at": "2026-10-14T14:03:42Z",
+          "detail": "offer 1: Inji Certify offer 21f0a962-e10a-4b92-93a9-339563f8d9db (with tx_code) delivered by reference; suite answered in 102 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 1868.8,
+          "at": "2026-10-14T14:03:43Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"error_description\":null,\"cause\":\"EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"testId\":\"Ce56yKuYz40zMzg\"}"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Ce56yKuYz40zMzg",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-additional-requests-Ce56yKuYz40zMzg.html"
+      },
+      "duration_s": 4.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-multiple-clients",
+      "test_id": "E6N4ZLHBL9oYivl",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "severity": "FAILURE",
+          "message": "resource endpoint returned an unexpected http status",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (\"JWT iss claim has value inji-conformance-wallet, must be\" empty) and answers HTTP 400 invalid_proof.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINALA-F.1",
+          "issue": "docs/findings/certify-proof-iss-rejected.md",
+          "matched": true,
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 317.0,
+          "at": "2026-10-14T14:03:46Z",
+          "detail": "offer 1: Inji Certify offer e70a1b3c-0d50-48b3-9bdc-454f7699d8ba (with tx_code) delivered by reference; suite answered in 234 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 641.8,
+          "at": "2026-10-14T14:03:48Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"error_description\":null,\"cause\":\"EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"testId\":\"E6N4ZLHBL9oYivl\"}"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=E6N4ZLHBL9oYivl",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-multiple-clients-E6N4ZLHBL9oYivl.html"
+      },
+      "duration_s": 3.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-happy-flow-skip-notification",
+      "test_id": "R7ZP1ApDwpNJmaa",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "severity": "FAILURE",
+          "message": "resource endpoint returned an unexpected http status",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (\"JWT iss claim has value inji-conformance-wallet, must be\" empty) and answers HTTP 400 invalid_proof.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINALA-F.1",
+          "issue": "docs/findings/certify-proof-iss-rejected.md",
+          "matched": true,
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 108.6,
+          "at": "2026-10-14T14:03:50Z",
+          "detail": "offer 1: Inji Certify offer c5cebb42-4883-41f8-8fe7-d35c58d7eace (with tx_code) delivered by reference; suite answered in 88 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 299.4,
+          "at": "2026-10-14T14:03:51Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"error_description\":null,\"cause\":\"EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"testId\":\"R7ZP1ApDwpNJmaa\"}"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=R7ZP1ApDwpNJmaa",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-skip-notification-R7ZP1ApDwpNJmaa.html"
+      },
+      "duration_s": 2.6
+    },
+    {
+      "name": "oid4vci-1_0-issuer-batch-issuance",
+      "test_id": "CFyiBgzd6SU47dB",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "The issuer metadata has no batch_credential_issuance, so the suite skips the batch module. Batch issuance is optional.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-12.2.4",
+          "issue": "docs/findings/certify-optional-features.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=CFyiBgzd6SU47dB",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-batch-issuance-CFyiBgzd6SU47dB.html"
+      },
+      "duration_s": 0.2
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-nonce",
+      "test_id": "Yi23vJEUdrknkOn",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 84.6,
+          "at": "2026-10-14T14:03:52Z",
+          "detail": "offer 1: Inji Certify offer 785c443d-44de-40a1-8c02-cf60da9459ae (with tx_code) delivered by reference; suite answered in 67 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 200,
+          "duration_ms": 315.3,
+          "at": "2026-10-14T14:03:53Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=Yi23vJEUdrknkOn",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-nonce-Yi23vJEUdrknkOn.html"
+      },
+      "duration_s": 2.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature",
+      "test_id": "iH2HZJsm9i9aSL9",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 90.0,
+          "at": "2026-10-14T14:03:55Z",
+          "detail": "offer 1: Inji Certify offer cfd28d2c-6b4d-40ed-afb9-c33a08cb772a (with tx_code) delivered by reference; suite answered in 65 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 200,
+          "duration_ms": 330.8,
+          "at": "2026-10-14T14:03:56Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=iH2HZJsm9i9aSL9",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-iH2HZJsm9i9aSL9.html"
+      },
+      "duration_s": 2.7
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-invalid-key-attestation-signature",
+      "test_id": "T8eZhFJsssMMkUL",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "The credential configuration does not ask for key attestations, so the suite has nothing to send an invalid one to.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINALA-F.1",
+          "issue": "docs/findings/certify-optional-features.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=T8eZhFJsssMMkUL",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-T8eZhFJsssMMkUL.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-missing-proof",
+      "test_id": "uprOKu6dfn5aHZY",
+      "status": "FINISHED",
+      "result": "PASSED",
+      "verdict": "conforms",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 108.5,
+          "at": "2026-10-14T14:03:58Z",
+          "detail": "offer 1: Inji Certify offer 30c1b861-779b-4882-8be2-6abd88368573 (with tx_code) delivered by reference; suite answered in 84 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 200,
+          "duration_ms": 421.3,
+          "at": "2026-10-14T14:03:59Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=uprOKu6dfn5aHZY",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-missing-proof-uprOKu6dfn5aHZY.html"
+      },
+      "duration_s": 2.5
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm",
+      "test_id": "iSzQ9ndERrjfWny",
+      "status": "FINISHED",
+      "result": "SKIPPED",
+      "verdict": "not_applicable",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [],
+      "benchmark": [
+        {
+          "kind": "expected_skip",
+          "comment": "The issuer metadata has no credential_response_encryption, so the suite skips the unsupported-algorithm module. Response encryption is optional.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.2",
+          "issue": "docs/findings/certify-optional-features.md",
+          "matched": true
+        }
+      ],
+      "handoffs": [],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=iSzQ9ndERrjfWny",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-iSzQ9ndERrjfWny.html"
+      },
+      "duration_s": 0.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-configuration",
+      "test_id": "RBfxwZfiYlzrNkj",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "VCIValidateCredentialErrorResponse",
+          "severity": "FAILURE",
+          "message": "Expected error code not found in credential error response: unknown_credential_configuration",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3.1"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "An unknown credential_configuration_id is answered with error invalid_credential_request instead of unknown_credential_configuration.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.3.1",
+          "issue": "docs/findings/certify-credential-error-codes.md",
+          "matched": true,
+          "condition": "VCIValidateCredentialErrorResponse",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 168.0,
+          "at": "2026-10-14T14:04:00Z",
+          "detail": "offer 1: Inji Certify offer 0fdf2aee-40ce-44a3-a26f-3dcaec378d13 (with tx_code) delivered by reference; suite answered in 113 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 316.3,
+          "at": "2026-10-14T14:04:02Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: VCIValidateCredentialErrorResponse: Expected error code not found in credential error response: unknown_credential_configuration\",\"error_description\":null,\"cause\":\"VCIValidateCredentialErrorResponse: Expected error code not found in credenti"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=RBfxwZfiYlzrNkj",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-configuration-RBfxwZfiYlzrNkj.html"
+      },
+      "duration_s": 2.4
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-unknown-credential-identifier",
+      "test_id": "QgcNxYbd48jgWda",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "VCIValidateCredentialErrorResponse",
+          "severity": "FAILURE",
+          "message": "Non-standard credential error response error code found: invalid_request",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3.1"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "A credential request with credential_identifier is answered with error invalid_request (\"Unrecognized field 'credential_identifier' in request\") instead of unknown_credential_identifier: Inji Certify does not accept the parameter at all.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINAL-8.3.1",
+          "issue": "docs/findings/certify-credential-error-codes.md",
+          "matched": true,
+          "condition": "VCIValidateCredentialErrorResponse",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 76.1,
+          "at": "2026-10-14T14:04:03Z",
+          "detail": "offer 1: Inji Certify offer 381a7c5e-d73f-4432-9386-f1fdbf57166c (with tx_code) delivered by reference; suite answered in 54 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 336.0,
+          "at": "2026-10-14T14:04:05Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: VCIValidateCredentialErrorResponse: Non-standard credential error response error code found: invalid_request\",\"error_description\":null,\"cause\":\"VCIValidateCredentialErrorResponse: Non-standard credential error response error code found: inva"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=QgcNxYbd48jgWda",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-identifier-QgcNxYbd48jgWda.html"
+      },
+      "duration_s": 2.8
+    },
+    {
+      "name": "oid4vci-1_0-issuer-fail-on-access-token-in-query",
+      "test_id": "EPxygLgnGjoMMFj",
+      "status": "INTERRUPTED",
+      "result": "FAILED",
+      "verdict": "known_gap",
+      "description": "Inji Certify at https://certify.inji.test:18450, harness run 20261014T140148Z-9643eb",
+      "variant": {
+        "client_auth_type": "private_key_jwt",
+        "sender_constrain": "dpop",
+        "credential_format": "sd_jwt_vc",
+        "vci_authorization_code_flow_variant": "issuer_initiated",
+        "authorization_request_type": "simple",
+        "fapi_request_method": "unsigned",
+        "grant_management": "disabled",
+        "vci_grant_type": "pre_authorization_code",
+        "vci_credential_encryption": "plain",
+        "fapi_profile": "vci"
+      },
+      "failures": [
+        {
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "severity": "FAILURE",
+          "message": "resource endpoint returned an unexpected http status",
+          "block": " Verify Credential Endpoint Response",
+          "requirements": [
+            "OID4VCI-1FINAL-8.3"
+          ],
+          "expected": true
+        }
+      ],
+      "benchmark": [
+        {
+          "kind": "expected_failure",
+          "comment": "The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (\"JWT iss claim has value inji-conformance-wallet, must be\" empty) and answers HTTP 400 invalid_proof.",
+          "owner": "inji",
+          "spec": "OID4VCI-1FINALA-F.1",
+          "issue": "docs/findings/certify-proof-iss-rejected.md",
+          "matched": true,
+          "condition": "EnsureHttpStatusCodeIsAnyOf",
+          "current_block": " Verify Credential Endpoint Response",
+          "expected_result": "failure"
+        }
+      ],
+      "handoffs": [
+        {
+          "kind": "credential_offer",
+          "http_status": 200,
+          "duration_ms": 94.0,
+          "at": "2026-10-14T14:04:06Z",
+          "detail": "offer 1: Inji Certify offer 92165114-3a65-4408-8757-6f648bbcb535 (with tx_code) delivered by reference; suite answered in 68 ms"
+        },
+        {
+          "kind": "tx_code",
+          "http_status": 400,
+          "duration_ms": 447.7,
+          "at": "2026-10-14T14:04:07Z",
+          "detail": "transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call",
+          "error": "{\"error\":\"net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"error_description\":null,\"cause\":\"EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status\",\"testId\":\"EPxygLgnGjoMMFj\"}"
+        }
+      ],
+      "links": {
+        "suite_log": "https://localhost.emobix.co.uk:18443/log-detail.html?log=EPxygLgnGjoMMFj",
+        "export": "certify/exports/html/test-log-oid4vci-1_0-issuer-fail-on-access-token-in-query-EPxygLgnGjoMMFj.html"
+      },
+      "duration_s": 2.8
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "conforms": 3,
+    "known_gap": 9,
+    "regression": 0,
+    "not_applicable": 3,
+    "stale_benchmark": 0
+  },
+  "gate": {
+    "passed": true,
+    "exit_code": 0,
+    "allow_stale": false,
+    "benchmark_files": [
+      "conformance/benchmark/certify.expected-failures.json",
+      "conformance/benchmark/certify.expected-skips.json"
+    ],
+    "messages": [
+      "gate: 0 regressions, 9 known gaps, 0 stale, 3 not applicable"
+    ]
+  },
+  "started_at": "2026-10-14T14:03:29Z",
+  "finished_at": "2026-10-14T14:04:14Z",
+  "notes": [
+    "Inji Certify's authorization server metadata was changed: authorization_endpoint added by the TLS proxy"
+  ]
+}

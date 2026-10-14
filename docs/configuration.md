@@ -24,7 +24,7 @@ for example to test a new Inji build:
 
 | Variable | Default |
 |---|---|
-| `CERTIFY_IMAGE` | `injistackqa/inji-certify-with-plugins:develop@sha256:b5022884...` |
+| `CERTIFY_IMAGE` | `injistackqa/inji-certify-with-plugins:1.0.x@sha256:2c72a78c...` |
 | `VERIFY_IMAGE` | `injistackqa/inji-verify-service:1.0.x@sha256:a9b81fd4...` |
 | `SUITE_SERVER_IMAGE`, `SUITE_NGINX_IMAGE`, `SUITE_MONGODB_IMAGE` | conformance suite release-v5.3.1 |
 | `CERTIFY_DB_IMAGE`, `VERIFY_DB_IMAGE`, `TLS_PROXY_IMAGE`, `PKI_IMAGE`, `PROBE_IMAGE`, `MINIO_IMAGE`, `MINIO_MC_IMAGE`, `RUNNER_IMAGE` | see `docker-compose.yml` |
