@@ -82,7 +82,7 @@
       "properties": {
         "passed": {"type": "boolean"},
         "exit_code": {
-          "description": "0 passed, 1 gate failed (regression or stale benchmark entry), 2 usage or configuration error, 3 environment not ready, 4 whole-run timeout.",
+          "description": "0 passed, 1 gate failed (regression or stale benchmark entry), 2 usage or configuration error, 3 environment not ready (a service did not answer, or no module results were collected), 4 whole-run timeout.",
           "enum": [0, 1, 2, 3, 4]
         },
         "allow_stale": {"type": "boolean", "description": "true when the run used --allow-stale: stale benchmark entries warn instead of failing."},

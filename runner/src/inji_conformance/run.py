@@ -2,7 +2,8 @@
 
 Steps for ``--component verify`` and ``--component certify``:
 
-1. wait until the suite and the Inji component answer (exit 3 when they do not);
+1. wait until the suite and the Inji component answer (exit 3 when they do not, and also when no module result
+   was collected);
 2. Inji Certify only, unless ``--no-seed``: add the credential configuration the plan requests (``cmd_seed``,
    idempotent), so a fresh stack needs no manual step;
 3. render the plan template into ``<out>/<component>/config/<template>.json``;
@@ -679,6 +680,9 @@ def build_results(
             exit_code=ExitCode.TIMEOUT,
             messages=("the run reached its time limit; modules that did not finish are regressions",),
         )
+    elif not modules:
+        gating = not ctx.no_gate and ctx.track is Track.GATE
+        gate = model.Gate(passed=False, exit_code=ExitCode.ENVIRONMENT_NOT_READY, messages=(model.NO_MODULES,))
     elif ctx.no_gate:
         gating = False
         gate = model.Gate(

@@ -366,3 +366,30 @@ def test_repository_benchmark_files_are_valid():
     for component in Component:
         loaded = benchmark.load(folder, component)
         assert loaded.files, f"no benchmark files for {component.value}"
+
+
+def test_a_run_without_modules_fails_with_exit_3_on_every_track(tmp_path):
+    for gating in (True, False):
+        classified = benchmark.classify(results_of(gating=gating), bench([], tmp_path=tmp_path))
+        assert (classified.gate.passed, classified.gate.exit_code) == (False, ExitCode.ENVIRONMENT_NOT_READY)
+        assert classified.gate.messages == (model.NO_MODULES,)
+        assert model.validate(classified.to_dict(), model.DocumentKind.RESULTS) == []
+
+
+def test_validate_rejects_a_passed_gate_without_modules():
+    issues = model.validate(results_of().to_dict(), model.DocumentKind.RESULTS)
+    assert any("no module results" in str(issue) for issue in issues)
+
+
+def test_gate_command_on_a_recorded_run_without_modules_never_passes(tmp_path, capsys):
+    run = tmp_path / "certify"
+    run.mkdir()
+    full = write_benchmark(tmp_path / "bench", [], [])
+    recorded = benchmark.classify(results_of(), benchmark.Benchmark())  # what the runner writes: exit 3
+    model.dump(recorded, run / "results.json")
+    assert cli.main(["gate", "--run", str(run), "--benchmark-dir", str(full)]) == ExitCode.ENVIRONMENT_NOT_READY
+    assert model.NO_MODULES in capsys.readouterr().out
+    # A file from an older harness that recorded such a run as passed is rejected as invalid.
+    (run / "results.json").write_text(json.dumps(results_of().to_dict()), encoding="utf-8")
+    assert cli.main(["gate", "--run", str(run), "--benchmark-dir", str(full)]) == ExitCode.USAGE
+    assert "no module results" in capsys.readouterr().err

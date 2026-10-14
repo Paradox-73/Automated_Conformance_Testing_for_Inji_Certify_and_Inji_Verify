@@ -51,6 +51,10 @@ The haip track never gates (`gating: false`). An entry that matches no module of
 disagrees with `run-test-plan.py`'s exit code for the same files, ends the run with exit 2: the benchmark or the
 harness is wrong, not Inji.
 
+A run that collected no module results (the plan was not created, or the suite listed no modules) never passes, on
+any track and with `--no-gate`: the gate records exit 3, and `inji-conformance validate` rejects a `results.json`
+that marks such a run as passed.
+
 ## Today's benchmark (2026-10-14)
 
 | Component | Configuration | Expected failures | Expected skips | Gate on the reference run |

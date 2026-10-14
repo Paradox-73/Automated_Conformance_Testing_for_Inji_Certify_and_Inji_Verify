@@ -58,9 +58,12 @@ class ExitCode(IntEnum):
     OK = 0
     GATE_FAILED = 1  # a regression, or a stale benchmark entry without --allow-stale
     USAGE = 2  # usage or configuration error
-    ENVIRONMENT_NOT_READY = 3
+    ENVIRONMENT_NOT_READY = 3  # also a run that collected no module results
     TIMEOUT = 4  # the whole run took longer than its time limit
     DIFF_CHANGED = 16  # "diff" only: the two runs differ (the convention of the suite's compare-results.py)
+
+
+NO_MODULES = "no module results were collected (the plan was not created or the suite listed no modules)"
 
 
 class Component(StrEnum):
@@ -741,6 +744,8 @@ def _check_results(results: Results) -> Iterator[Issue]:
     gate = results.gate
     if gate.passed != (gate.exit_code == ExitCode.OK):
         yield Issue("$.gate", f"passed={str(gate.passed).lower()} does not match exit_code {int(gate.exit_code)}")
+    if not results.modules and gate.passed:
+        yield Issue("$.gate.passed", "true although the run has no module results")
     failing = expected.regression + (0 if gate.allow_stale else expected.stale_benchmark)
     if results.gating:
         if failing and gate.passed:

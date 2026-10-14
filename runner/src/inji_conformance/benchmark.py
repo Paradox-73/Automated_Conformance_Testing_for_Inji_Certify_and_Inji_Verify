@@ -261,6 +261,15 @@ def gate_of(
     modules: Sequence[ModuleResult], benchmark: Benchmark, *, gating: bool, allow_stale: bool, home: Path | None
 ) -> model.Gate:
     """The gate for classified modules: exit 1 on a regression, or on a stale entry without ``allow_stale``."""
+    files = tuple(_display(path, home) for path in benchmark.files)
+    if not modules:
+        return model.Gate(
+            passed=False,
+            exit_code=ExitCode.ENVIRONMENT_NOT_READY,
+            allow_stale=allow_stale,
+            benchmark_files=files,
+            messages=(model.NO_MODULES,),
+        )
     summary = model.Summary.of(modules)
     failing = summary.regression + (0 if allow_stale else summary.stale_benchmark)
     passed = failing == 0 or not gating
@@ -276,7 +285,7 @@ def gate_of(
         passed=passed,
         exit_code=ExitCode.OK if passed else ExitCode.GATE_FAILED,
         allow_stale=allow_stale,
-        benchmark_files=tuple(_display(path, home) for path in benchmark.files),
+        benchmark_files=files,
         messages=tuple(messages),
     )
 

@@ -101,6 +101,48 @@ class FakeVerify:
         return {"vpResultStatus": "SUCCESS"}
 
 
+class FakeEmptySuite(FakeSuite):
+    def plan(self, plan_id):
+        return {"modules": []}
+
+
+def verify_context(tmp_path: Path, *, no_gate: bool = False, timed_out: bool = False, modules=None) -> run.RunContext:
+    template = plans.find_template(REPO_ROOT / "conformance" / "plans", Component.VERIFY)
+    folder = tmp_path / "verify"
+    (folder / "config").mkdir(parents=True, exist_ok=True)
+    (folder / "exports").mkdir(exist_ok=True)
+    config = folder / "config" / "verify.oid4vp-1final-verifier.json"
+    config.write_text("{}", encoding="utf-8")
+    return run.RunContext(
+        run_id="20261004T193000Z-abc123",
+        component=Component.VERIFY,
+        track=Track.GATE,
+        template=template,
+        started_at="2026-01-01T00:00:00Z",
+        suite_url="https://localhost.emobix.co.uk:18443",
+        suite_version="5.3.1",
+        target_url="https://verify.inji.test:18451/v1/verify",
+        out=tmp_path,
+        folder=folder,
+        config_path=config,
+        modules=("oid4vp-1final-verifier-happy-flow",) if modules is None else modules,
+        no_gate=no_gate,
+        timed_out=timed_out,
+    )
+
+
+@pytest.mark.parametrize(("no_gate", "plan_id"), [(False, "PLAN"), (True, "PLAN"), (False, None)])
+def test_build_results_without_modules_fails_with_exit_3(tmp_path, schema_dir, no_gate, plan_id):
+    ctx = verify_context(tmp_path, no_gate=no_gate, modules=())
+    responder = Responder(None, "alias", [])  # type: ignore[arg-type]
+    results = run.build_results(ctx, FakeEmptySuite(), FakeVerify(), plan_id, responder)  # type: ignore[arg-type]
+    assert results.modules == ()
+    assert (results.gate.passed, results.gate.exit_code) == (False, ExitCode.ENVIRONMENT_NOT_READY)
+    path = tmp_path / "results.json"
+    model.dump(results, path)
+    assert model.validate(model.read_json(path), model.DocumentKind.RESULTS, schema_dir) == []
+
+
 @pytest.mark.parametrize(("no_gate", "timed_out"), [(True, False), (False, False), (True, True), (False, True)])
 def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate, timed_out):
     template = plans.find_template(REPO_ROOT / "conformance" / "plans", Component.VERIFY)
