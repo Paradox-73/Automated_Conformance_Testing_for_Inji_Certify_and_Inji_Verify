@@ -1,0 +1,3 @@
+testrig injicertify exit code 0
+report <run>/testrig/invoke-certify/mosip-ps01-injicertify-conformance-2026-10-14_14-15-full-report_T-15_P-3_S-0_F-0_I-3_KI-9.html
+minio  automationtests/injicertify/mosip-ps01-injicertify-conformance-2026-10-14_14-15-full-report_T-15_P-3_S-0_F-0_I-3_KI-9.html
