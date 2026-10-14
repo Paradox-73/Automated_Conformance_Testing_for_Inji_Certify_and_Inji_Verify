@@ -261,7 +261,7 @@ jobs:
   full-stack:
     needs: checks
     # A called run reports the caller's event name, so workflow_call is recognised by its full_stack input.
-    if: github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || inputs.full_stack || github.event_name == 'push'
+    if: github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || inputs.full_stack
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
