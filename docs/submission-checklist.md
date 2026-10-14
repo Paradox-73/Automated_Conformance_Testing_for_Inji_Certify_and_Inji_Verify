@@ -17,7 +17,7 @@ Every artefact the problem statement asks for, where it is, who owns it, and its
 
 | Item | Where | Status |
 |---|---|---|
-| GitHub Actions CI/CD failing the build on regression | `.github/workflows/full-stack-conformance.yml` | written, passes actionlint; the first hosted run was refused by GitHub for the owner account's billing ([ci.md](ci.md)) |
+| GitHub Actions CI/CD failing the build on regression | `.github/workflows/full-stack-conformance.yml` | done; hosted runs green on 2026-10-14 ([test-report.md](test-report.md#github-actions)) |
 | Selective component and plan execution | `--component`, `--modules`, `--template`, `--track` | done |
 | Expected failures with written reasons; gate fails on anything else | `conformance/benchmark/`, [benchmark.md](benchmark.md) | done |
 | Result diff between runs | `inji-conformance diff`, report `--compare` | done |
@@ -37,18 +37,17 @@ Every artefact the problem statement asks for, where it is, who owns it, and its
 | a. Docker Compose configuration | `docker-compose.yml`, `compose/` | done |
 | b. JSON plan templates for issuer and verifier, 1.0 variants | `conformance/plans/` | done; gate variant decided ([conformance/README.md](../conformance/README.md)) |
 | c. `run-full-stack-conformance.sh` | repository root | done |
-| d. `.github/workflows/full-stack-conformance.yml` | `.github/workflows/` | done; hosted run pending billing |
+| d. `.github/workflows/full-stack-conformance.yml` | `.github/workflows/` | done; hosted runs green |
 | e. Docs: architecture, API automation, handoffs per component, self-certification, troubleshooting | `docs/` | done |
 | Test report, test data, Inji findings with evidence | [test-report.md](test-report.md), [test-data.md](test-data.md), [findings/](findings/README.md), `docs/evidence/` | done |
 | Demo script, deck outline, final README, report screenshots | `demo/demo.sh`, [demo/video-storyboard.md](demo/video-storyboard.md), [demo/deck-outline.md](demo/deck-outline.md), `README.md`, the reports in `docs/evidence/` | done |
-| Video and slides | | team, after this branch is merged |
-| Repository made public | GitHub settings | Kanav |
+| Video and slides | | team |
+| Repository made public | GitHub settings | done |
 
 ## Before submitting
 
-1. Merge `nikunj/ps01-finish` into `main`.
-2. Fix the GitHub billing (or make the repository public) and push once, so the workflow runs on hosted runners;
-   put the run URL in [test-report.md](test-report.md) and [ci.md](ci.md).
-3. Run [the fresh-clone check](test-report.md#fresh-clone-and-newcomer-walkthrough) once more on `main`.
-4. Record the video from [demo/video-storyboard.md](demo/video-storyboard.md) and build the slides from
+1. Run the manual checks in [manual-test-checklist.md](manual-test-checklist.md) (fresh clone on Linux and macOS,
+   report review, video dry run) and record them with
+   [manual-test-results-template.md](manual-test-results-template.md).
+2. Record the video from [demo/video-storyboard.md](demo/video-storyboard.md) and build the slides from
    [demo/deck-outline.md](demo/deck-outline.md).
