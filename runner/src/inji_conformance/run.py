@@ -400,9 +400,9 @@ def run_component(
     args: argparse.Namespace,
     component: Component,
     *,
-    run_id: str | None = None,
-    out: Path | None = None,
-    label: str = "suite",
+    run_id: str,
+    out: Path,
+    label: str,
 ) -> tuple[int, model.Results]:
     """Run one component's plan and write its results.json; returns (exit code, results)."""
     started_at = utc_now()
@@ -413,8 +413,6 @@ def run_component(
         home / "conformance" / "plans", component, track, name=getattr(args, "template", None)
     )
     template = plans.with_variant(template, variant_overrides(getattr(args, "variant", None)))
-    run_id = run_id or new_run_id()
-    out = out or (Path(args.out) if args.out else default_out_dir(run_id))
     folder = out / component.value
     for sub in ("config", "exports", "logs"):
         (folder / sub).mkdir(parents=True, exist_ok=True)
