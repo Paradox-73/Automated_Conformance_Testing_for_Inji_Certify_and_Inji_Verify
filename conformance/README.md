@@ -3,10 +3,9 @@
 Data that defines a conformance run: which suite test plans run with which options, which results are expected,
 and the JSON Schemas of the files the runner reads and writes.
 
-Lane: runner. Status on 2026-10-14: `schema/` holds the results and benchmark contract
-([`schema/README.md`](schema/README.md)); `plans/` holds the plan templates of both components and the HAIP
-readiness track ([`plans/README.md`](plans/README.md)); `benchmark/` holds the expected failures and skips measured
-on 2026-10-14 ([docs/benchmark.md](../docs/benchmark.md)).
+`schema/` holds the results and benchmark contract ([`schema/README.md`](schema/README.md)); `plans/` holds the plan
+templates of both components and the HAIP readiness track ([`plans/README.md`](plans/README.md)); `benchmark/` holds
+the expected failures and skips ([docs/benchmark.md](../docs/benchmark.md)).
 
 ## Gate variant of the issuer plan
 

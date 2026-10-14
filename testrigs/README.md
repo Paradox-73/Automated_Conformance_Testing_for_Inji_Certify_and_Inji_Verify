@@ -3,10 +3,9 @@
 The Inji api-testrigs (MOSIP's TestNG API test projects for Inji Certify and Inji Verify) and a bridge library
 that turns conformance results into TestNG results inside them.
 
-Lane: testrig. Status on 2026-10-14: both api-testrigs imported and integrated (bridge library, both rigs'
-`OpenIDConformanceTest` and `ConformanceRigRunner`), the testrig image, `build.sh`, `run-testrig.sh` and the MinIO
-upload work end to end ([docs/testrig-integration.md](../docs/testrig-integration.md)); the team's rig changes are
-in `upstream-patches/` as patch series.
+How the rows reach the rigs' reports, the image, the run commands and the S3 upload:
+[docs/testrig-integration.md](../docs/testrig-integration.md). The team's rig changes are in `upstream-patches/` as
+patch series.
 
 ## Contents
 
@@ -81,22 +80,8 @@ the team's changes.
   2026-10-04, 8 min 23 s under a shared Maven cache, shaded jar 404,728,104 bytes). Both rigs built through the
   aggregator on 2026-10-14 (`bash testrigs/build.sh`, 95 s with a warm cache).
 
-## Conformance rows in the rigs
-
-`OpenIDConformanceTest` adds one TestNG row per OpenID conformance test module (`TC_OIDF_VERIFY_nn`) to the rig's
-`EmailableReport`; `ConformanceRigRunner` runs only those rows and exits 1 when one fails. Settings, verdict mapping,
-the files added to the Verify rig and the run command are in
-[apitest-commons-conformance/README.md](apitest-commons-conformance/README.md). The team's changes to the imported
-Verify rig: `git diff f307a88 -- testrigs/inji-verify-api-test`.
-
-Build the bridge and the Inji Verify rig (JDK 21, Maven 3.9):
-
-```bash
-mvn -B -f testrigs/pom.xml -pl apitest-commons-conformance,inji-verify-api-test -am package     -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
-```
-
 ## Checks
 
 `bash scripts/check.sh testrigs` runs `mvn verify` on the bridge library (and the modules it needs) once
 `testrigs/pom.xml` exists. It needs JDK 21 and Maven 3.9; extra Maven options can come from the `MAVEN_ARGS`
-environment variable. On a machine where other builds share the Maven repository, run it under the shared lock.
+environment variable.

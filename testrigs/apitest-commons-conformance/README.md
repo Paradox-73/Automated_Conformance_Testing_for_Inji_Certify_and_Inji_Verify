@@ -120,11 +120,10 @@ one line in `pom.xml`):
 Run it from `testrigs/inji-verify-api-test` after the build (the jar path is the rig's shaded jar):
 
 ```bash
-export HARNESS_RUN_DIR=/e/Projects/MOSIP/PS01/run/harness
 java -Dmodules=injiverify -Denv.user=ps01 -Denv.endpoint=https://verify.inji.test:18451 \
      -Denv.testLevel=smokeAndRegression \
      -Dconformance.results.file=../../conformance/schema/examples/results-verify.example.json \
-     -Dconformance.report.dir=$HARNESS_RUN_DIR/wp11 \
+     -Dconformance.report.dir="${HARNESS_RUN_DIR:-../../run}/rig-try" \
      -cp target/apitest-injiverify-1.0.0-alpha.2-SNAPSHOT-jar-with-dependencies.jar \
      io.inji.testrig.apirig.injiverify.testrunner.ConformanceRigRunner
 echo "exit $?"
@@ -154,5 +153,4 @@ Run on 2026-10-04 on the team laptop (Windows 11, JDK 21.0.12, Maven 3.9.9), fro
 
 - Each rig run took 5 to 7 minutes, almost all of it the stock resource extraction from the 405 MB shaded jar;
   the TestNG part took under 5 seconds.
-- Invoke mode is covered by the JUnit tests (a stand-in runner), not yet by a run of the real `inji-conformance run`
-  against a live suite.
+- Invoke mode against a live suite: TC-16 and TC-17 in [docs/test-report.md](../../docs/test-report.md#testrigs).

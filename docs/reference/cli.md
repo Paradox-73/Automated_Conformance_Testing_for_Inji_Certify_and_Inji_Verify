@@ -40,7 +40,7 @@ Inside the stack: `bash scripts/dc.sh run --rm runner inji-conformance ...`; on 
 | 0 | gate passed (or `--no-gate`, or a non-gating track); file valid; runs the same |
 | 1 | gate failed: a regression or a stale benchmark entry; a file is invalid |
 | 2 | usage or configuration error, also a benchmark that matches no module or a gate that disagrees with `run-test-plan.py` |
-| 3 | environment, not Inji: Docker, ports, a service or the suite did not answer; the suite or the Inji component stopped answering during a run whose gate failed; a component's run crashed; or the run collected no module results |
+| 3 | environment, not Inji: Docker, ports, a service or the suite did not answer, a run key is missing, or seeding Inji Certify failed; the suite or the Inji component stopped answering during a run whose gate failed; a component's run crashed; or the run collected no module results |
 | 4 | the whole run reached its time limit; results are still written |
 | 5 | internal error: the harness itself crashed outside a component run (a bug to report, not a verdict on Inji) |
 | 16 | `diff`: the runs differ |

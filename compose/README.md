@@ -3,10 +3,6 @@
 Assets for the root [`docker-compose.yml`](../docker-compose.yml): one Docker Compose project (`ps01-harness`) that
 runs the OpenID Foundation conformance suite and the Inji systems under test side by side.
 
-Lane: platform. Status on 2026-10-04: compose v2 runs the suite, Inji Verify, Inji Certify, the TLS proxy, the
-run-time key generation and MinIO. `bash compose/smoke.sh verify` and `bash compose/smoke.sh certify reports` pass
-(output below).
-
 ## Quick start
 
 ```bash
@@ -30,8 +26,7 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 | `HARNESS_RUN_DIR` as a native path, Git Bash path rewriting off | Bind mounts work from Git Bash on Windows. |
 | `HARNESS_UID`, `HARNESS_GID` | `pki-init` and `runner` run as the calling user, so files they write in the run folder stay deletable on Linux. |
 
-`HARNESS_RUN_DIR` defaults to `<repo>/run` (ignored by git). On the team laptop it is
-`/e/Projects/MOSIP/PS01/run/harness`.
+`HARNESS_RUN_DIR` defaults to `<repo>/run` (ignored by git).
 
 ## Profiles and services
 
@@ -141,7 +136,7 @@ Measurements, logs (`up.log`, `down.log`, `probe.log`, and `compose.log` after a
 `$HARNESS_RUN_DIR/smoke/<UTC time>-<profiles>/`.
 
 Output on 2026-10-04 (Windows 11, Docker Desktop 29.7.2 with an 8 GB VM shared with other projects, images
-already pulled, under `with_lock docker-stack`):
+already pulled):
 
 ```text
 ports PASS 18443 18444 18451 18461 free
@@ -226,18 +221,4 @@ the keystore in a named volume instead of a folder of the checkout.
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-|---|---|
-| `precheck FAIL containers of ps01-harness already exist` | A stack is still running. Stop it: `bash scripts/dc.sh --profile '*' down`. |
-| `ports FAIL in use on 127.0.0.1: ...` | Another program listens on a harness port. Find it with `netstat -ano` (Windows) or `ss -ltnp` (Linux). |
-| `suite-server` never healthy, log says "A non-https request has been received" | Something calls the server without `X-Forwarded-Proto: https`. Go through `https://localhost.emobix.co.uk:18443`. |
-| `localhost.emobix.co.uk` does not resolve on the host | The name is public DNS for 127.0.0.1. Offline, add `127.0.0.1 localhost.emobix.co.uk` to the hosts file, or use `curl --resolve localhost.emobix.co.uk:18443:127.0.0.1`. |
-| `verify.inji.test` does not resolve on the host | Expected: the name exists only inside the compose network. Use `bash scripts/dc.sh run --rm probe --cacert /pki/ca.crt https://verify.inji.test:18451/v1/verify/actuator/health`, or `http://127.0.0.1:18461/v1/verify/...` for debugging. |
-| `VERIFY_DB_PASSWORD` error from `docker compose` | Compose was called directly. Use `bash scripts/dc.sh`. |
-| Verify cannot log in to its database after `env.local` was deleted | The database volume still has the old password: `bash scripts/dc.sh --profile '*' down -v`. |
-| Bind mounts empty or wrong on Windows | Call through `dc.sh` (it passes native paths and turns off Git Bash path rewriting). |
-| `certify` not healthy within the start limit | Certify takes about 2 minutes on a loaded laptop. Read `bash scripts/dc.sh --profile certify logs certify`; raise `SMOKE_START_TIMEOUT` if it is only slow. |
-| Certify fails to sign or to start after `env.local` or one volume was deleted | The keystore volume, the database volume and the passwords in `env.local` belong together: `bash scripts/dc.sh --profile '*' down -v` and start again. |
-| `certify` check shows `credential_issuer` other than `https://certify.inji.test:18450` | `CERTIFY_IMAGE` points at an image that ignores the mounted configuration, or the properties were edited; see [`certify/README.md`](certify/README.md). |
-| `minio` unhealthy, log says the bucket is missing | `compose/minio/init.sh` could not reach the server within 60 s (`MINIO_INIT_TIMEOUT`). `bash scripts/dc.sh --profile reports logs minio` shows the hook's output. |
-| `pull access denied` for `minio/minio` or `minio/mc` | Those images are no longer published; the defaults use the `pgsty` builds. Point `MINIO_IMAGE` / `MINIO_MC_IMAGE` at a build you can pull. |
+[docs/troubleshooting.md](../docs/troubleshooting.md#setup-and-the-stack).

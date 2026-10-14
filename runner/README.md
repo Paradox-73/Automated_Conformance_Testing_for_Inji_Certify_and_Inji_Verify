@@ -6,24 +6,8 @@ under test, and turns the suite's exports into one results file, a benchmark ver
 
 Lane: runner, except `src/inji_conformance/report/` and `tests/report/`, which belong to the delivery lane.
 
-## Status on 2026-10-14
-
-| Part | State |
-|---|---|
-| `inji_conformance.model` | Done: typed model of `results.json` v1, the run manifest and the benchmark files, with loaders and validation |
-| `inji-conformance validate` | Done |
-| `run --component verify` | Done, live: 11 of 11 modules conform with the default template; REVIEW modules get an image of Inji Verify's verdict uploaded into the suite's placeholder |
-| `seed certify` | Done, live: `created`, then `already present` (2026-10-14) |
-| `run --component certify` | Done, live: all 15 modules of the issuer plan complete; gate 0 regressions, 9 known gaps, 3 not applicable |
-| `run --combined` | Done: both plans at the same time (`--serial`: one after the other); writes `manifest.json` |
-| `gate` | Done: benchmark gate, JUnit XML, cross-check with `run-test-plan.py` ([inji_conformance.benchmark](src/inji_conformance/benchmark.py), [docs/benchmark.md](../docs/benchmark.md)) |
-| `report`, `diff` | Done (delivery lane): consolidated HTML report, badge, run diff; see [`src/inji_conformance/report/README.md`](src/inji_conformance/report/README.md) |
-
-`bash scripts/check.sh runner` on 2026-10-14: ruff clean, 450 tests passed. Every live result is in
-[docs/test-report.md](../docs/test-report.md).
-
-The data contract itself (schemas, rules, examples) is described in
-[`conformance/schema/README.md`](../conformance/schema/README.md).
+Every live result is in [docs/test-report.md](../docs/test-report.md). The data contract itself (schemas, rules,
+examples) is described in [`conformance/schema/README.md`](../conformance/schema/README.md).
 
 ## Install and test
 
@@ -37,91 +21,25 @@ Python 3.12 or newer. Runtime dependencies (`pyproject.toml`): `httpx` and `pypa
 suite scripts), `jinja2` (HTML report), `pillow` (evidence image for REVIEW modules), `jsonschema`. The `dev` extra
 adds `pytest`, `respx` and `ruff`.
 
-## Command reference
-
-```text
-inji-conformance run --component certify|verify | --combined [--target URL] [--modules A,B] [--track gate|haip]
-                     [--no-gate] [--allow-stale] [--serial] [--no-seed] [--variant NAME=VALUE]...
-                     [--timeout-minutes N] [--out DIR]
-inji-conformance seed certify [--target URL] [--track gate|haip]
-inji-conformance gate --run DIR [--benchmark-dir DIR] [--allow-stale] [--junit FILE]
-inji-conformance report --run DIR [--run DIR] [--combined] [--compare PREV] --out DIR
-inji-conformance diff A B [--out DIR] [--json FILE] [--strict]
-inji-conformance validate FILE... [--kind results|run-manifest|expected-failures|expected-skips]
-                          [--schema-dir DIR] [--quiet]
-```
-
-| Exit code | Meaning |
-|---|---|
-| 0 | Gate passed, or every file valid |
-| 1 | Gate failed (a regression, or a stale benchmark entry without `--allow-stale`), or a file is invalid |
-| 2 | Usage or configuration error (also: a subcommand not available in this version) |
-| 3 | Environment not ready |
-| 4 | The whole run hit its time limit |
-| 16 | `diff` only: the two runs differ |
-
-Example, from the repository root:
-
-```text
-$ inji-conformance validate conformance/schema/examples/results-verify.example.json
-validate results-verify.example.json: valid (results v1, verify, 11 modules)
-```
-
 ## How `run` works
 
-`inji-conformance run --component verify [--modules A,B] [--no-gate] [--target URL] [--timeout-minutes N] --out DIR`
-runs the OpenID4VP verifier plan against Inji Verify. It runs in the compose `runner` container, where every
-hostname of the test network resolves:
+Every subcommand, option and exit code: [docs/reference/cli.md](../docs/reference/cli.md). The steps of a run (plan
+rendering, staged suite scripts and keys, `run-test-plan.py`, the responder, the cross-check) and every API call:
+[docs/api-automation.md](../docs/api-automation.md). The verdicts and the gate:
+[docs/benchmark.md](../docs/benchmark.md).
+
+`run` runs in the compose `runner` container, where every hostname of the test network resolves:
 
 ```bash
 bash scripts/dc.sh --profile tools build runner
 bash scripts/dc.sh --profile verify up -d --wait
 bash scripts/dc.sh run --rm runner inji-conformance run --component verify \
   --modules oid4vp-1final-verifier-happy-flow --no-gate --out /reports/try1
-bash scripts/dc.sh down -v
+bash scripts/dc.sh --profile '*' down -v
 ```
 
-`/reports` in the container is `$HARNESS_RUN_DIR/reports` on the host. Steps:
-
-1. Waits up to 120 s for the suite (`GET /api/server`) and Inji Verify (`GET /actuator/health`); exit 3 if either
-   stays down.
-2. Renders the plan template `conformance/plans/verify.oid4vp-1final-verifier.json`
-   ([format](../conformance/plans/README.md)) into `<out>/verify/config/`. The alias is `inji-verify-<run id>`.
-3. Copies `run-test-plan.py`, `conformance.py` and `test_plan_parser.py` unchanged from
-   `third_party/oidf-conformance-suite/scripts/` into `<out>/verify/suite-scripts/`, with a `certs-keys/` folder
-   holding the run's suite signing key. The script reads every file in the `certs-keys` folder next to itself and
-   fills the config's `{suite-signing.jwk.json}` placeholder with it.
-4. Starts `run-test-plan.py --export-dir exports <plan spec> config/<template>.json` with `CONFORMANCE_SERVER`,
-   `CONFORMANCE_SERVER_MTLS` and `CONFORMANCE_DEV_MODE` set, and the handoff responder next to it. The script
-   creates the plan and each module, waits for each to finish and exports the plan. Its output is shown with the
-   prefix `suite |` and kept in `logs/run-test-plan.log`.
-5. Reads each module from the suite (`/api/plan`, `/api/info`, `/api/log`) and writes `results.json`; deletes the
-   staged `certs-keys/` folder, so the run folder holds no private key.
-
-`--component certify` follows the same steps with the differences in [The issuer path](#the-issuer-path).
-
-Without `--no-gate` the run applies the benchmark in `conformance/benchmark/` ([docs/benchmark.md](../docs/benchmark.md))
-and gives `run-test-plan.py` the same entries; the run exits 1 on a regression or a stale entry, and 2 when its gate
-and the script's exit code disagree. A REVIEW result counts as `conforms` only when Inji Verify showed the verdict
-the module expects and the image of it was uploaded ([docs/handoffs.md](../docs/handoffs.md)). `--no-gate` writes
-`gating: false` and exits 0 whatever the verdicts.
-
-Measured on 2026-10-04 (this laptop, compose profile `verify`, module `oid4vp-1final-verifier-happy-flow`,
-`--no-gate`): exit code 0, run time 23 s after the stack was up; the module reached FINISHED with result FAILED;
-one `authorization_request` handoff, HTTP 200 from the suite in 1750 ms. The failing conditions were
-`ValidateRequestObjectSignatureAgainstX5cHeader` (the request object's x5c leaf is self-signed),
-`EnsureHttpStatusCodeIs200` (Inji Verify's `direct-post` answered HTTP 500: its database has no
-`vp_submission.response_code` column, see `compose/verify/init.sql`), and the warnings
-`ValidateRequestObjectIssIfPresent` and `ValidateDirectPostResponse`. These are open items for the compose set-up
-and the findings write-up, not runner errors.
-
-| Exit code | Cause in `run` |
-|---|---|
-| 0 | Finished; gate passed, or `--no-gate` |
-| 1 | Gate failed |
-| 2 | Bad options or plan template |
-| 3 | Suite, Inji Verify or Inji Certify not reachable, a run key missing, or seeding Inji Certify failed |
-| 4 | `--timeout-minutes` (default 30) reached: `run-test-plan.py` is stopped and `results.json` still records every module, unfinished ones as regressions (also with `--no-gate`) |
+`/reports` in the container is `$HARNESS_RUN_DIR/reports` on the host. The suite script's output is shown with the
+prefix `suite |` and kept in `logs/run-test-plan.log`.
 
 ### The issuer path
 
@@ -227,7 +145,3 @@ keeps working.
 3. `pytest -q runner/tests`.
 4. `inji-conformance validate <file>` for every `conformance/schema/examples/*.json`: exit status 0 for a valid
    file, non-zero for files named `*.invalid.json`, which must be rejected.
-
-On Windows with Smart App Control on, a freshly written `inji-conformance.exe` launcher was once refused with
-"Permission denied" (2026-10-04); `pip install --force-reinstall --no-deps --editable ./runner` into the same venv
-wrote a launcher that ran.

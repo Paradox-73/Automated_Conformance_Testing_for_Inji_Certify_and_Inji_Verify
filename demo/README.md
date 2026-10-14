@@ -15,6 +15,4 @@ bash demo/demo.sh                              both components, runner, testrig,
 bash demo/demo.sh --regression --runner-only   gate passes, then fails on the injected regression, diff names it
 ```
 
-Measured 2026-10-14 (`bash demo/demo.sh --regression --runner-only`): the run before exits 0 (99 s), the run with
-the override exits 1 with 3 regressions named (97 s), the diff exits 16 with 3 changed modules, and the script ends
-with "demo ok: the gate caught the regression and the diff names the modules".
+Measured result: TC-20 in [docs/test-report.md](../docs/test-report.md#end-to-end-runs).
