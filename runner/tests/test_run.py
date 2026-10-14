@@ -143,6 +143,29 @@ def test_build_results_without_modules_fails_with_exit_3(tmp_path, schema_dir, n
     assert model.validate(model.read_json(path), model.DocumentKind.RESULTS, schema_dir) == []
 
 
+def test_failing_gate_becomes_exit_3_when_a_service_stopped_answering(tmp_path, capsys):
+    ctx = verify_context(tmp_path)
+    responder = Responder(None, "alias", [])  # type: ignore[arg-type]
+    results = run.build_results(ctx, FakeSuite(), FakeVerify(), "PLAN", responder)  # type: ignore[arg-type]
+    failed = results.__class__(
+        **{**results.__dict__, "gate": model.Gate(passed=False, exit_code=ExitCode.GATE_FAILED, messages=("x",))}
+    )
+
+    def refused() -> bool:
+        raise httpx.ConnectError("refused")
+
+    up = [("the conformance suite", lambda: True), ("Inji Verify", lambda: True)]
+    down = [("the conformance suite", lambda: True), ("Inji Verify", refused)]
+    assert run.first_down(up) is None
+    assert run.first_down(down) == "Inji Verify"
+    assert run.first_down([("Inji Verify", lambda: False)]) == "Inji Verify"
+    assert run.outage_instead_of_regression(failed, None) is failed
+    changed = run.outage_instead_of_regression(failed, "Inji Verify")
+    assert (changed.gate.passed, changed.gate.exit_code) == (False, ExitCode.ENVIRONMENT_NOT_READY)
+    assert "Inji Verify stopped answering" in changed.gate.messages[-1]
+    assert "Inji Verify stopped answering" in capsys.readouterr().err
+
+
 @pytest.mark.parametrize(("no_gate", "timed_out"), [(True, False), (False, False), (True, True), (False, True)])
 def test_build_results_writes_a_valid_results_file(tmp_path, schema_dir, no_gate, timed_out):
     template = plans.find_template(REPO_ROOT / "conformance" / "plans", Component.VERIFY)

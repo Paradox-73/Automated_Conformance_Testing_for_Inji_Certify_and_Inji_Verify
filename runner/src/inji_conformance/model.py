@@ -58,8 +58,11 @@ class ExitCode(IntEnum):
     OK = 0
     GATE_FAILED = 1  # a regression, or a stale benchmark entry without --allow-stale
     USAGE = 2  # usage or configuration error
-    ENVIRONMENT_NOT_READY = 3  # also a run that collected no module results
+    # The suite or the Inji component did not answer, stopped answering during the run, or the run collected no
+    # module results: the outcome says nothing about Inji's conformance.
+    ENVIRONMENT_NOT_READY = 3
     TIMEOUT = 4  # the whole run took longer than its time limit
+    INTERNAL_ERROR = 5  # the harness itself crashed (a bug); never recorded in results.json
     DIFF_CHANGED = 16  # "diff" only: the two runs differ (the convention of the suite's compare-results.py)
 
 

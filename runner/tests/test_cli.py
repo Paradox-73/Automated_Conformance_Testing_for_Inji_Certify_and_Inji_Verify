@@ -390,3 +390,36 @@ def test_report_package_missing_a_dependency_names_it(monkeypatch):
     monkeypatch.setattr(cli.importlib, "import_module", missing_dependency)
     module, reason = cli._load_report_module()
     assert module is None and "jinja2" in reason
+
+
+# --------------------------------------------------------------------------------------------------------------
+# Crashes are never exit 1 (1 means a regression)
+# --------------------------------------------------------------------------------------------------------------
+
+
+def test_serial_combined_run_records_a_crash_as_exit_3_and_still_runs_the_next_component(capsys, monkeypatch, tmp_path):
+    called = []
+
+    def crash(args, component, **kwargs):
+        called.append(component.value)
+        raise KeyError("boom")
+
+    monkeypatch.setattr(run_module, "run_component", crash)
+    code, out, err = run(capsys, "run", "--combined", "--serial", "--out", str(tmp_path / "out"))
+    assert code == ExitCode.ENVIRONMENT_NOT_READY
+    assert called == ["certify", "verify"]
+    assert "inji-conformance run (certify): KeyError" in err and "combined run" in out
+
+
+def test_single_component_crash_exits_3(capsys, monkeypatch, tmp_path):
+    monkeypatch.setattr(run_module, "run_component", lambda *a, **k: 1 / 0)
+    code, _out, err = run(capsys, "run", "--component", "verify", "--out", str(tmp_path / "out"))
+    assert code == ExitCode.ENVIRONMENT_NOT_READY
+    assert "ZeroDivisionError" in err
+
+
+def test_a_crash_outside_a_run_is_an_internal_error_not_a_regression(capsys, monkeypatch, tmp_path):
+    monkeypatch.setattr(run_module, "cmd_gate", lambda args: 1 / 0)
+    code, _out, err = run(capsys, "gate", "--run", str(tmp_path))
+    assert code == ExitCode.INTERNAL_ERROR == 5
+    assert "ZeroDivisionError" in err and "harness bug" in err

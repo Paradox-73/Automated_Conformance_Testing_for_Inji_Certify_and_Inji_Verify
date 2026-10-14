@@ -76,7 +76,9 @@ run <run id> finished in 80 s, exit code 0
 ```
 
 Exit codes: 0 gate passed, 1 gate failed (a regression or a stale benchmark entry; the lines above name the module
-and condition), 2 usage or configuration error, 3 environment not ready, 4 time limit. `./run-conformance.sh
+and condition), 2 usage or configuration error, 3 environment (a service did not answer or stopped answering, a run
+crashed, or no module results were collected), 4 time limit, 5 harness bug. The full table is in
+[reference/cli.md](reference/cli.md#exit-codes). `./run-conformance.sh
 --help` lists every option.
 
 ## 5. Read the results

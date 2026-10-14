@@ -10,7 +10,9 @@ Subcommands:
 - ``validate``  check results, run manifest and benchmark files against the contract in conformance/schema/
 
 Exit codes (``model.ExitCode``): 0 passed or valid, 1 gate failed or a file is invalid, 2 usage or configuration
-error, 3 environment not ready, 4 whole-run timeout; ``diff`` exits 16 when the runs differ.
+error, 3 environment not ready (the suite or the Inji component did not answer, stopped answering, or no module
+result was collected), 4 whole-run timeout, 5 internal error (the harness crashed); ``diff`` exits 16 when the runs
+differ.
 
 The ``report`` and ``diff`` subcommands live in the package ``inji_conformance.report`` so that it can change
 without touching this file. That package provides:
@@ -30,6 +32,7 @@ import importlib
 import json
 import re
 import sys
+import traceback
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from types import ModuleType
@@ -281,7 +284,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    return int(args.handler(args))
+    try:
+        return int(args.handler(args))
+    except Exception:  # Python's own exit status for a crash, 1, would read as a regression
+        traceback.print_exc()
+        print("inji-conformance: internal error (exit 5): a harness bug, not a verdict on Inji", file=sys.stderr)
+        return int(ExitCode.INTERNAL_ERROR)
 
 
 if __name__ == "__main__":

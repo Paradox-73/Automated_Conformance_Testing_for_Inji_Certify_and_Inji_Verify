@@ -2,8 +2,8 @@
 
 Steps for ``--component verify`` and ``--component certify``:
 
-1. wait until the suite and the Inji component answer (exit 3 when they do not, and also when no module result
-   was collected);
+1. wait until the suite and the Inji component answer (exit 3 when they do not, and also when a failing run ends
+   with one of them no longer answering, or when no module result was collected);
 2. Inji Certify only, unless ``--no-seed``: add the credential configuration the plan requests (``cmd_seed``,
    idempotent), so a fresh stack needs no manual step;
 3. render the plan template into ``<out>/<component>/config/<template>.json``;
@@ -42,8 +42,9 @@ import subprocess
 import sys
 import threading
 import time
+import traceback
 import zipfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -271,11 +272,10 @@ def cmd_run(args: argparse.Namespace) -> int:
             code = error.exit_code if isinstance(error, RunError) else ExitCode.USAGE
             print(f"{prefix}: {error}", file=sys.stderr)
             outcomes[component] = (int(code), None)
-        except Exception as error:  # one plan's crash must not hide the other plan's results
+        except Exception as error:  # a crash is never a regression, and must not hide the other plan's results
+            traceback.print_exc()
             print(f"{prefix}: {type(error).__name__}: {error}", file=sys.stderr)
             outcomes[component] = (int(ExitCode.ENVIRONMENT_NOT_READY), None)
-            if not parallel:
-                raise
 
     if parallel:
         threads = [threading.Thread(target=one, args=(c,), name=f"plan-{c.value}") for c in components]
@@ -439,11 +439,14 @@ def run_component(
             server.update(suite.server_info())
             return True
 
-        wait_until_ready(suite_ready, f"the conformance suite at {suite_url}")
+        services: list[tuple[str, Callable[[], bool]]] = [(f"the conformance suite at {suite_url}", suite_ready)]
         if verify is not None:
-            wait_until_ready(lambda: verify.health() == 200, f"Inji Verify at {target_url}")
+            services.append((f"Inji Verify at {target_url}", lambda: verify.health() == 200))
         if certify is not None:
-            wait_until_ready(lambda: bool(certify.issuer_metadata()), f"Inji Certify at {target_url}")
+            services.append((f"Inji Certify at {target_url}", lambda: bool(certify.issuer_metadata())))
+        for what, check in services:
+            wait_until_ready(check, what)
+        if certify is not None:
             if getattr(args, "no_seed", False):
                 print("seed certify: skipped (--no-seed)")
             else:
@@ -551,6 +554,8 @@ def run_component(
         results = build_results(context, suite, verify, plan_id, responder, html_pages)
         if bench is not None and not context.timed_out:
             results = apply_benchmark(results, bench, home, script_code, allow_stale=bool(args.allow_stale))
+        if results.gate is not None and results.gate.exit_code == ExitCode.GATE_FAILED:
+            results = outage_instead_of_regression(results, first_down(services))
         shim = certify.as_metadata_shim() if certify is not None else None
         if shim:
             results = dataclasses.replace(
@@ -795,6 +800,30 @@ def apply_benchmark(
         classified.gate, passed=False, exit_code=ExitCode.USAGE, messages=(*classified.gate.messages, *problems)
     )
     return dataclasses.replace(classified, gate=gate)
+
+
+def first_down(services: Sequence[tuple[str, Callable[[], bool]]]) -> str | None:
+    """The first service that does not answer one readiness check now, else None."""
+    for what, check in services:
+        try:
+            if check():
+                continue
+        except Exception:  # any failure to answer means the service is down
+            pass
+        return what
+    return None
+
+
+def outage_instead_of_regression(results: model.Results, down: str | None) -> model.Results:
+    """A failing gate becomes exit 3 when a service stopped answering: its failures are no verdict on Inji."""
+    if down is None:
+        return results
+    message = f"{down} stopped answering during the run: the failures above are not verdicts on Inji (exit 3)"
+    print(f"inji-conformance run: {message}", file=sys.stderr)
+    gate = dataclasses.replace(
+        results.gate, passed=False, exit_code=ExitCode.ENVIRONMENT_NOT_READY, messages=(*results.gate.messages, message)
+    )
+    return dataclasses.replace(results, gate=gate)
 
 
 def _duration(log: list[dict]) -> float | None:

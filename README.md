@@ -34,7 +34,7 @@ component: `./run-conformance.sh --component certify|verify`; `--help` lists eve
 | Consolidated HTML report with the suite's logs and HTML export linked, badge, Markdown summary | `run/reports/<run id>/report/` |
 | Run manifest: git commit, image digests, wall time per plan | `run/reports/<run id>/manifest.json` |
 | TestNG rows `TC_OIDF_CERTIFY_nn` and `TC_OIDF_VERIFY_nn` in the api-testrigs' `EmailableReport`, uploaded to S3 (MinIO bucket `automationtests`) | `run/reports/<run id>/testrig/` |
-| Exit code for CI: 0 passed, 1 regression or stale benchmark entry, 2 configuration, 3 environment, 4 timeout | |
+| Exit code for CI: 0 passed, 1 regression or stale benchmark entry, 2 configuration, 3 environment (outage, crash, no modules collected), 4 timeout, 5 harness bug | [docs/reference/cli.md](docs/reference/cli.md#exit-codes) |
 | Run diff: which modules changed | `inji-conformance diff` |
 | GitHub Actions workflow for pushes, releases, a weekly run and Inji release pipelines | `.github/workflows/full-stack-conformance.yml` |
 
