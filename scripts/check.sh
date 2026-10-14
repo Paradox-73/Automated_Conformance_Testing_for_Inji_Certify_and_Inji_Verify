@@ -29,8 +29,7 @@
 # Exit status: 0 when no check failed, 1 when at least one check failed, 2 for a usage error.
 #
 # The checks read the working tree: tracked files plus untracked files that .gitignore does not exclude, so new
-# files are checked before they are committed. On a machine where other jobs share the Maven repository, run the
-# testrigs check under the shared Maven lock.
+# files are checked before they are committed.
 
 set -euo pipefail
 
@@ -269,8 +268,7 @@ check_secrets() {
       if [[ ${rule_names[$i]} == credential-assignment && $text =~ [:=][[:space:]]*(true|false|null)[[:space:]]*,?[[:space:]]*$ ]]; then
         continue # a JSON or YAML true, false or null value (a flag such as a gate result), not a credential
       fi
-      if [[ ${rule_names[$i]} == credential-assignment && $path == docs/evidence/*/results.json ]] ||
-        [[ ${rule_names[$i]} == credential-assignment && $path == docs/evidence/*/*/results.json ]]; then
+      if [[ ${rule_names[$i]} == credential-assignment && $path == docs/evidence/*/results.json ]]; then
         # Committed run results: a module name that contains a credential word, followed by a colon and the result,
         # has the shape of an assignment. The key and token rules above still read these files.
         continue
@@ -425,14 +423,9 @@ check_testrigs() {
   ((major >= 21)) || skip_tool "JDK 21 needed, JAVA_HOME points to JDK $major"
 
   # Maven 3.9 also reads extra options (for example a settings file) from the MAVEN_ARGS environment variable.
-  local -a args=(-B --no-transfer-progress -f testrigs/pom.xml)
-  local scope="whole testrigs build"
-  if [[ -f testrigs/apitest-commons-conformance/pom.xml ]]; then
-    args+=(-pl apitest-commons-conformance -am)
-    scope="bridge module"
-  fi
-  run_indented "$mvn" "${args[@]}" verify || fail "Maven verify failed ($scope)"
-  pass "Maven verify passed ($scope, JDK $major)"
+  run_indented "$mvn" -B --no-transfer-progress -f testrigs/pom.xml -pl apitest-commons-conformance -am verify ||
+    fail "Maven verify failed (bridge module)"
+  pass "Maven verify passed (bridge module, JDK $major)"
 }
 
 # ---------------------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ for arg in "$@"; do
   case $arg in
     --regression) regression=1 ;;
     --runner-only) extra+=(--runner-only) ;;
-    -h | --help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
+    -h | --help) sed -n '4,12p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
     *) die "unknown option: $arg (see --help)" 2 ;;
   esac
 done

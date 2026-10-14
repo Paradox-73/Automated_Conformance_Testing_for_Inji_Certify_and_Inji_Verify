@@ -162,20 +162,16 @@ log_info "runner exit code $RUNNER_CODE"
 EXIT_CODE=$RUNNER_CODE
 
 if ((!RUNNER_ONLY)); then
-  if [[ -f $HARNESS_ROOT/testrigs/run-testrig.sh ]]; then
-    for component in "${COMPONENTS[@]}"; do
-      [[ -f $OUT/$component/results.json ]] || continue
-      set +e
-      bash "$HARNESS_ROOT/testrigs/run-testrig.sh" "$component" --results "$OUT/$component/results.json" \
-        --out "$OUT/testrig/$component" 2>&1 | tee "$OUT/logs/testrig-$component.log"
-      rig_code=${PIPESTATUS[0]}
-      set -e
-      log_info "testrig $component exit code $rig_code"
-      ((rig_code <= EXIT_CODE)) || EXIT_CODE=$rig_code
-    done
-  else
-    log_warn "testrigs/run-testrig.sh not found: testrig step skipped"
-  fi
+  for component in "${COMPONENTS[@]}"; do
+    [[ -f $OUT/$component/results.json ]] || continue
+    set +e
+    bash "$HARNESS_ROOT/testrigs/run-testrig.sh" "$component" --results "$OUT/$component/results.json" \
+      --out "$OUT/testrig/$component" 2>&1 | tee "$OUT/logs/testrig-$component.log"
+    rig_code=${PIPESTATUS[0]}
+    set -e
+    log_info "testrig $component exit code $rig_code"
+    ((rig_code <= EXIT_CODE)) || EXIT_CODE=$rig_code
+  done
 fi
 
 REPORT_ARGS=(--run "$CONTAINER_OUT" --out "$CONTAINER_OUT/report")

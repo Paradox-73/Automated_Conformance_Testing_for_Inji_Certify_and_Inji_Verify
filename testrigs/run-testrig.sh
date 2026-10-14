@@ -29,7 +29,7 @@ source "$SCRIPT_DIR/../scripts/lib/common.sh"
 readonly IMAGE=${TESTRIG_IMAGE:-ps01-harness/testrig:local}
 readonly NETWORK=${HARNESS_COMPOSE_PROJECT}_default
 
-usage() { sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '4,22p' "$0" | sed 's/^# \{0,1\}//'; }
 
 component=${1:-}
 case $component in

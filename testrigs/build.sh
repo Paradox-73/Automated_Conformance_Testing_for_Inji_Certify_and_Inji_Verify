@@ -27,7 +27,7 @@ image=0
 case ${1:-} in
   '') ;;
   --image) image=1 ;;
-  -h | --help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
+  -h | --help) sed -n '4,15p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
   *) die "unknown option: $1 (use --image or --help)" 2 ;;
 esac
 

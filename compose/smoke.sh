@@ -6,12 +6,6 @@
 #
 #   bash compose/smoke.sh PROFILE...        PROFILE: suite, verify, certify, reports
 #
-# On this laptop run it under the shared Docker lock, after pulling images outside the lock:
-#   bash scripts/dc.sh --profile verify pull
-#   with_lock docker-stack bash compose/smoke.sh verify
-#   bash scripts/dc.sh --profile certify --profile reports pull
-#   with_lock docker-stack bash compose/smoke.sh certify reports
-#
 # Output: one line per check, "<check> PASS|FAIL <detail>", with detail lines indented below. The lines other
 # scripts and the acceptance checks look for:
 #   suite PASS <version>                      suite API answers on the host and inside the network

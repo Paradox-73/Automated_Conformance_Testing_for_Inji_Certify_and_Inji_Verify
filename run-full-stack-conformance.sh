@@ -59,11 +59,9 @@ prepare() {
     >"$logs/prepare-pull.log" 2>&1 || die "pull failed; see $logs/prepare-pull.log" 3
   log_info "building the runner image (log: $logs/prepare-build.log)"
   dc --profile tools build runner >"$logs/prepare-build.log" 2>&1 || die "runner build failed; see $logs/prepare-build.log" 3
-  if [[ -f $HARNESS_ROOT/testrigs/build.sh ]]; then
-    log_info "building the testrig jars and image (log: $logs/prepare-testrig.log)"
-    bash "$HARNESS_ROOT/testrigs/build.sh" --image >"$logs/prepare-testrig.log" 2>&1 ||
-      die "testrig build failed; see $logs/prepare-testrig.log" 3
-  fi
+  log_info "building the testrig jars and image (log: $logs/prepare-testrig.log)"
+  bash "$HARNESS_ROOT/testrigs/build.sh" --image >"$logs/prepare-testrig.log" 2>&1 ||
+    die "testrig build failed; see $logs/prepare-testrig.log" 3
   log_info "prepared in $(($(date -u +%s) - started)) s"
 }
 
