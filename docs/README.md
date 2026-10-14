@@ -18,7 +18,7 @@ Other documents: [architecture](architecture.md), [handoffs](handoffs.md), [API 
 | Git and bash 4.4+ | everything | Git for Windows (Git Bash) | `brew install git bash` (macOS ships bash 3.2) | distribution packages |
 | Docker with Compose v2, at least 4 GiB of memory for Docker | the stack | Docker Desktop | Docker Desktop | Docker Engine and the Compose plugin |
 | Python 3.12+ | repository checks | python.org installer | `brew install python@3.12` | distribution packages |
-| JDK 21+ and Maven 3.9 (optional) | building the testrigs on the host; without them `testrigs/build.sh` builds in a container | Temurin 21 | `brew install openjdk maven` | distribution packages |
+| JDK 21+ and Maven 3.9 (optional) | `bash scripts/check.sh testrigs` (the bridge's unit tests); the testrig image compiles the rig jars itself, so a full run needs no JDK | Temurin 21 | `brew install openjdk maven` | distribution packages |
 | shellcheck, actionlint (optional) | `bash scripts/check.sh shell workflows` | release binaries | `brew install shellcheck actionlint` | distribution packages |
 
 About 10 GB of free disk: the suite, Inji and database images take about 6 GB, the testrig image 2.1 GB.

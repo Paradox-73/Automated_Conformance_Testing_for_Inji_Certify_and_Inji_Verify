@@ -42,15 +42,24 @@ bash scripts/dc.sh run --rm minio-mc ls local/automationtests/injicertify/
 bash scripts/dc.sh --profile '*' down -v
 ```
 
-- `testrigs/build.sh` builds both shaded jars (about 390 MB each) with the host's Maven on JDK 21 or newer, else in
-  the `maven:3.9.11-eclipse-temurin-21` image with a cache volume; `--image` builds `ps01-harness/testrig:local`
-  (Temurin 21 JRE, Python 3 with the runner, both jars and suite files; 2.1 GB).
+- `testrigs/build.sh --image` builds `ps01-harness/testrig:local` from `testrigs/Dockerfile` in two stages. The
+  first stage (`maven:3.9.11-eclipse-temurin-21`) compiles both shaded jars (about 390 MB each) from the sources in
+  the build context, with the Maven repository in a BuildKit cache mount. The second stage (Temurin 21 JRE, Python 3
+  with the runner, both jars and suite files; 2.1 GB) is the image. Only Docker is needed on the host, on any OS.
+- `testrigs/build.sh` without `--image` builds the jars on the host instead: with the host's Maven on JDK 21 or
+  newer, else in the Maven image with the checkout bind-mounted, which is slow on Windows and macOS.
 - `testrigs/run-testrig.sh certify|verify --results FILE | --invoke` runs the rig in that image on the compose
   network as the calling user; with MinIO running it uploads to `automationtests/<module>/`.
 - `./run-conformance.sh` (without `--runner-only`) runs the consume mode for each component after the runner and
   copies the report to `<run>/testrig/<component>/`.
 
-Measured 2026-10-14 (warm Maven cache): jars in 95 s; Certify rig in invoke mode exit 0,
+Image build measured 2026-10-14 on Windows 11 without a host JDK (Docker Desktop, 8 GB VM, 12 CPUs, shared with
+another team's Inji stack): first build 648 s, of which Maven 541 s; a rebuild with `--no-cache` and the Maven cache
+mount kept took 926 s while that stack's three Java services used about 6 CPUs, so the time is bounded by CPU in
+the Docker VM (compiling and shading two 390 MB jars), not by downloads. Before the jars moved into the image, the
+bind-mounted Maven container on the same machine was still in the Certify rig's `jar` step after 60 minutes.
+
+Measured 2026-10-14 (host Maven, warm cache): jars in 95 s; Certify rig in invoke mode exit 0,
 `mosip-ps01-injicertify-conformance-2026-10-13_21-54-full-report_T-15_P-3_S-0_F-0_I-3_KI-9.html`, listed in MinIO under
 `automationtests/injicertify/`; Verify rig exit 0, `..._T-11_P-11_S-0_F-0_I-0_KI-0.html` under
 `automationtests/injiverify/`. A rig run takes 1 to 3 minutes in the image, most of it the stock resource

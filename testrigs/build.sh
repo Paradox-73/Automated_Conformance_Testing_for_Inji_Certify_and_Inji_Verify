@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # shellcheck source-path=SCRIPTDIR
 #
-# Build the two Inji api-testrigs with the conformance bridge (both shaded jars), and with --image the testrig image.
+# Build the testrig image, or the two Inji api-testrig jars with the conformance bridge on the host.
 #
-#   bash testrigs/build.sh            the jars: testrigs/inji-*-api-test/target/apitest-inji*-jar-with-dependencies.jar
-#   bash testrigs/build.sh --image    the jars, then the image ps01-harness/testrig:local (TESTRIG_IMAGE overrides)
+#   bash testrigs/build.sh --image    the image ps01-harness/testrig:local (TESTRIG_IMAGE overrides); the jars are
+#                                     compiled inside the image build, so only Docker is needed (any OS)
+#   bash testrigs/build.sh            the jars on the host: testrigs/inji-*-api-test/target/apitest-inji*-jar-with-dependencies.jar
 #
-# Uses the host's Maven when it runs on JDK 21 or newer (the rigs compile for release 21), else the maven:3.9-eclipse-temurin-21 image with a
-# named volume as the Maven repository (ps01-harness-m2), so later builds reuse the downloads. MAVEN_ARGS adds
-# options, for example a settings file with a mirror. A cold build of both rigs downloads several hundred MB.
+# Host jars use the host's Maven when it runs on JDK 21 or newer (the rigs compile for release 21), else the
+# maven:3.9-eclipse-temurin-21 image with the checkout bind-mounted and a named volume as the Maven repository
+# (ps01-harness-m2). That container path is slow on Windows and macOS bind mounts; prefer --image there. MAVEN_ARGS
+# adds options to host builds, for example a settings file with a mirror.
 
 set -euo pipefail
 
@@ -24,7 +26,7 @@ image=0
 case ${1:-} in
   '') ;;
   --image) image=1 ;;
-  -h | --help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
+  -h | --help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
   *) die "unknown option: $1 (use --image or --help)" 2 ;;
 esac
 
@@ -35,12 +37,20 @@ host_maven_ok() {
   [[ $java_version =~ ^[0-9]+$ ]] && ((java_version >= 21))
 }
 
+started=$(date -u +%s)
+cd "$HARNESS_ROOT"
+if ((image)); then
+  harness_require_cmd docker "install Docker"
+  log_info "building the image $IMAGE (the jars are compiled in its first stage)"
+  docker build -f testrigs/Dockerfile -t "$IMAGE" .
+  log_info "image built in $(($(date -u +%s) - started)) s"
+  exit 0
+fi
+
 args=(-B -f testrigs/pom.xml -pl "$MODULES" -am package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true)
 # shellcheck disable=SC2206 # MAVEN_ARGS is a list of options by design
 [[ -n ${MAVEN_ARGS:-} ]] && args+=($MAVEN_ARGS)
 
-started=$(date -u +%s)
-cd "$HARNESS_ROOT"
 if host_maven_ok; then
   log_info "building with the host's Maven: mvn ${args[*]}"
   "$(harness_find_tool mvn)" "${args[@]}"
@@ -61,7 +71,3 @@ for jar in testrigs/inji-certify-api-test/target/apitest-injicertify-*-jar-with-
 done
 log_info "jars built in $(($(date -u +%s) - started)) s"
 
-if ((image)); then
-  log_info "building the image $IMAGE"
-  docker build -f testrigs/Dockerfile -t "$IMAGE" .
-fi
