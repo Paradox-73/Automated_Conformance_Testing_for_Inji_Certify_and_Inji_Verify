@@ -62,6 +62,12 @@ Parallel against serial: on this 4 GiB VM the parallel runner-only runs (TC-03) 
 114 s and 130 s side by side. The CI runners and machines with more memory are expected to gain from `--combined`;
 that has not been measured yet.
 
+Gate checks without a stack: TC-10, `inji-conformance gate` on the certify results of TC-02 with the
+`fail-unknown-credential-identifier` entry removed from a copy of the benchmark, exited 1 and printed `regression:
+oid4vci-1_0-issuer-fail-unknown-credential-identifier: result FAILED: not in the benchmark:
+VCIValidateCredentialErrorResponse`. TC-11: in every run above without `--no-gate`, the runner's gate and
+`run-test-plan.py`'s exit code agreed.
+
 The issuer plan with `sender_constrain=mtls` (TC-12) reached the same conditions as `dpop`; both stop at the
 credential endpoint before any sender-constraint check, so the gate keeps `dpop` (`conformance/README.md`).
 

@@ -68,11 +68,9 @@ the Docker VM (compiling and shading two 390 MB jars), not by downloads. With th
 rebuild of the Maven stage took 186 s and the whole image 269 s. Before the jars moved into the image, the
 bind-mounted Maven container on the same machine was still in the Certify rig's `jar` step after 60 minutes.
 
-Measured 2026-10-14 (host Maven, warm cache): jars in 95 s; Certify rig in invoke mode exit 0,
-`mosip-ps01-injicertify-conformance-2026-10-13_21-54-full-report_T-15_P-3_S-0_F-0_I-3_KI-9.html`, listed in MinIO under
-`automationtests/injicertify/`; Verify rig exit 0, `..._T-11_P-11_S-0_F-0_I-0_KI-0.html` under
-`automationtests/injiverify/`. A rig run takes 1 to 3 minutes in the image, most of it the stock resource
-extraction from the jar.
+Host Maven with a warm cache built both jars in 95 s. A rig run takes 1 to 3 minutes in the image, most of it the
+stock resource extraction from the jar. The rig runs and their reports: TC-16 and TC-17 in
+[test-report.md](test-report.md#testrigs).
 
 ## Report upload
 

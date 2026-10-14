@@ -77,7 +77,5 @@ that marks such a run as passed.
 run/venv/bin/inji-conformance gate --run run/reports/wp10-certify/certify --junit run/junit-certify.xml
 ```
 
-With one Certify entry removed, the same command exits 1 and names the module and condition (measured 2026-10-14
-with the `fail-unknown-credential-identifier` entry removed: `regression:
-oid4vci-1_0-issuer-fail-unknown-credential-identifier: result FAILED: not in the benchmark:
-VCIValidateCredentialErrorResponse`).
+With one Certify entry removed, the same command exits 1 and names the module and condition (TC-10 in
+[test-report.md](test-report.md#end-to-end-runs)).
