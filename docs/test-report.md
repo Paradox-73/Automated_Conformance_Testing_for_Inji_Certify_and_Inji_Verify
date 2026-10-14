@@ -15,11 +15,11 @@ suite release-v5.3.1); each manifest lists every image and digest.
 
 | Suite | Language | Tests | Result (2026-10-14) |
 |---|---|---|---|
-| `runner/tests` (pytest) | Python | 450 | all passed |
+| `runner/tests` (pytest) | Python | 460 | all passed |
 | `compose/pki/test_generate.py` (unittest) | Python | 19 | all passed |
 | `docs/tools/test_check_docs.py` (unittest) | Python | 11 | all passed |
 | `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 52 | 0 failures, 0 errors |
-| `scripts/tests/test-*.sh` (TAP) | bash | 80 cases in 4 scripts, plus the PKI script | all ok |
+| `scripts/tests/test-*.sh` (TAP) | bash | 86 cases in 5 scripts, plus the PKI script | all ok |
 
 `bash scripts/check.sh all` result: see [Repository checks and local CI](#repository-checks-and-local-ci).
 
@@ -44,7 +44,8 @@ the runner and testrig containers come on top.
 | TC-13 | `CERTIFY_AS_METADATA=as-is`, Certify, `--no-gate` | `20261013T222630Z-e4420c` | 51 s | 0 | 13 of 15 modules stop at `CheckServerConfiguration` |
 | TC-14 | verifier x509_san_dns template | `20261013T222732Z-0cc34f` | 86 s | 0 | 0 regressions, 10 known gaps, 0 stale, 1 not applicable |
 | TC-15 | `--combined --runner-only --track haip` | `20261013T222452Z-1865df` | 86 s | 0 | not gating; 63 + 11 modules, all regressions ([readiness](certification-readiness.md)) |
-| TC-19 | `./run-full-stack-conformance.sh --no-prepare` (with testrigs and MinIO) | `20261013T222910Z-f08c5b` | 250 s | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` |
+| TC-19 | `./run-full-stack-conformance.sh --no-prepare` from a fresh clone, Windows 11 (with testrigs and MinIO) | `20261014T133851Z-c99cce` | 728 s | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` ([timings](evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)) |
+| TC-19 (macOS) | the same in the working clone | `20261013T222910Z-f08c5b` | not recorded | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` |
 | TC-20 | `bash demo/demo.sh --regression --runner-only` | `20261013T223652Z-34a7ff` (before), `20261013T223845Z-e3ac63` (regression) | 99 s + 97 s | 0 | before 0, regression 1, diff 16 with 3 changed modules, "demo ok" |
 
 Parallel against serial: on this 4 GiB VM the parallel runner-only runs (TC-03) took longer than the serial one
@@ -63,7 +64,7 @@ credential endpoint before any sender-constraint check, so the gate keeps `dpop`
 | TC-17 | `bash testrigs/run-testrig.sh verify --invoke` | 0 | `mosip-ps01-injiverify-conformance-2026-10-13_21-57-full-report_T-11_P-11_S-0_F-0_I-0_KI-0.html`, listed in MinIO `automationtests/injiverify/` |
 | TC-18 | `git apply --check --directory=api-test` of `testrigs/upstream-patches/` on inji-certify `203b143` and inji-verify `6a6ab3b` | 0 | all three patches apply |
 
-The rig reports of TC-19 are in [evidence](evidence/2026-10-13-20261013T222910Z-f08c5b/testrig/).
+The rig reports of TC-19 are in [evidence](evidence/2026-10-14-20261014T133851Z-c99cce/testrig/).
 
 ## Build comparison
 
@@ -73,17 +74,21 @@ dropped for time. `CERTIFY_IMAGE=<image> ./run-conformance.sh --component certif
 
 ## Repository checks and local CI
 
-`bash scripts/ci-local.sh verify` (2026-10-14), whose first step is `bash scripts/check.sh all` in strict mode:
+`bash scripts/check.sh --strict all` on the Windows machine, 2026-10-14, 326 s, exit 0:
 
 ```text
-PASS  eol        1147 text files use LF (7 byte-identical upstream CRLF files exempted)
-PASS  secrets    1147 text files scanned, no findings (11 files skipped as fixtures listed in .gitguardian.yaml)
-PASS  shell      20 scripts clean under shellcheck 0.11.0, 5 shell test scripts passed
+PASS  eol        1166 text files use LF (7 byte-identical upstream CRLF files exempted)
+PASS  secrets    1166 text files scanned, no findings (11 files skipped as fixtures listed in .gitguardian.yaml)
+PASS  shell      21 scripts clean under shellcheck 0.11.0, 6 shell test scripts passed
 PASS  runner     ruff clean, pytest passed, 9 examples valid, 3 invalid examples rejected
 PASS  testrigs   Maven verify passed (bridge module, JDK 21)
 PASS  workflows  2 workflow files clean under actionlint 1.7.12
 PASS  docs       docs/tools/check_docs.py and its tests passed
+checks: 7 passed, 0 failed, 0 skipped
 ```
+
+`bash scripts/ci-local.sh verify` ran on the macOS machine on 2026-10-14. Its first step is the same command in strict
+mode, and all seven checks passed; that output was not saved, so the block above replaces it.
 
 Then the prepare step and `./run-conformance.sh --component verify` with the testrig and MinIO (run
 `20261013T225035Z-c26c8f`, 183 s, exit 0, rig report `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded); exit code 0, artifact in
@@ -92,9 +97,18 @@ configuration's private keys; the workflow and `ci-local.sh` now drop the whole 
 
 ## GitHub Actions
 
-The workflow passes `actionlint`. Its first run on GitHub (2026-10-14, run 38476075682) did not start: GitHub refused
-the jobs because of the repository owner's billing ([ci.md](ci.md#status-of-the-real-runs)). No hosted run result
-exists yet.
+Hosted runs of `.github/workflows/full-stack-conformance.yml` on branch `ps01-finish`, all on 2026-10-14
+([ci.md](ci.md#status-of-the-real-runs) has the history before these):
+
+| Run | Commit | Jobs | Result |
+|---|---|---|---|
+| [38567545466](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38567545466) | `bfbf62c` | checks, conformance (certify, verify), combined | all green; the first green hosted run |
+| [38572816013](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38572816013) | `b10f4b2` | the same, with the testrig jars built in the image and the explicit harness checkout | all green; prepare 231 s and 239 s with no image cache, verify run 126 s |
+| [38574676932](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38574676932) | `fd3a38b` | the same plus full-stack (enabled on push for this one run) | all green; full-stack prepare 238 s, run 190 s, exit 0 |
+
+Both gates passed in every run: certify `0 regressions, 9 known gaps, 0 stale, 3 not applicable`, verify
+`0 regressions, 0 known gaps, 0 stale`. The `workflow_call` path has not run from an Inji repository yet
+([manual-test-checklist.md](manual-test-checklist.md), MT-12).
 
 ## Fresh clone and newcomer walkthrough
 
@@ -103,4 +117,7 @@ exists yet.
 | 2026-10-04 | Windows 11, Git Bash | Docker Desktop 29.7.2 | the team's setup per CONTRIBUTING.md | | checks and the WP-06 verifier module ran ([STATUS.md](STATUS.md)) |
 | 2026-10-14 | macOS 15.6.1 | Docker Desktop 28.3.0, 4 GiB | clone of `nikunj/ps01-finish` at `e85a9fb`, `--prepare-only`, `--no-prepare`, `demo.sh --regression` | 3 min | not completed: the laptop's disk filled up while the clone built its own 2.1 GB testrig image (`--prepare-only` exit 3, "Out of diskspace"); the later steps found no healthy stack. Not a harness defect, but the fresh-clone check is still open: rerun it with about 10 GB free |
 
-The same commands passed in the working clone on 2026-10-14 (TC-03, TC-19, TC-20).
+| 2026-10-14 | Windows 11, Git Bash, no JDK | Docker Desktop 29.7.2, 7792 MiB, shared with another stack | clone of `ps01-finish` at `5ec802c`, `--prepare-only`, `--no-prepare` | 250 s + 728 s | passed, exit 0; images were already pulled ([evidence](evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)) |
+
+The same commands passed in the working clone on 2026-10-14 (TC-03, TC-19, TC-20). A fresh clone on Linux and macOS,
+and one with no images pulled, are in [manual-test-checklist.md](manual-test-checklist.md) (MT-01 to MT-03).

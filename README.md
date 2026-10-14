@@ -1,14 +1,14 @@
 # Inji conformance harness
 
-![conformance badge of the run of 2026-10-14](docs/evidence/2026-10-13-20261013T222910Z-f08c5b/report/badge.svg)
+![conformance badge of the run of 2026-10-14](docs/evidence/2026-10-14-20261014T133851Z-c99cce/report/badge.svg)
 
 Automated OpenID conformance testing of [Inji Certify](https://github.com/inji/inji-certify) (credential issuer)
 and [Inji Verify](https://github.com/inji/inji-verify) (verifier) against the
 [OpenID Foundation conformance suite](https://gitlab.com/openid/conformance-suite), with no person in the loop.
 MOSIP Decode 2026, problem statement 01, team Badmosip.
 
-The badge is from the full-stack run of 2026-10-14 (run `20261013T222910Z-f08c5b`, both components with the
-api-testrigs; [evidence](docs/evidence/2026-10-13-20261013T222910Z-f08c5b/)).
+The badge is from the fresh-clone full-stack run of 2026-10-14 (run `20261014T133851Z-c99cce` at commit `5ec802c`,
+both components with the api-testrigs; [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/)).
 
 ## Quick start
 
@@ -22,8 +22,14 @@ Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. From a clean clone:
 
 The second command starts the stack, runs the OpenID4VCI 1.0 issuer plan against Inji Certify and the OpenID4VP 1.0
 verifier plan against Inji Verify in parallel, adds the results to both Inji api-testrigs and uploads their reports to
-MinIO, writes the HTML report, stops the stack, and exits with the gate's code (0 on 2026-10-14, in 250 s). One
-component: `./run-conformance.sh --component certify|verify`; `--help` lists every option. Full guide:
+MinIO, writes the HTML report, stops the stack, and exits with the gate's code.
+
+Measured on 2026-10-14 from a fresh clone on a Windows 11 laptop with no JDK, with the images already pulled and
+another team's stack in the same Docker VM: the first command took 250 s, the second 728 s, exit 0
+([timings](docs/evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)). On GitHub's hosted runner, with no
+image cache, the prepare step took 231 s and 239 s (run 38572816013).
+
+One component: `./run-conformance.sh --component certify|verify`; `--help` lists every option. Full guide:
 [docs/README.md](docs/README.md).
 
 ## What you get

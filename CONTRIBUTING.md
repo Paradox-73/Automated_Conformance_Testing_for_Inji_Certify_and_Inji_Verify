@@ -7,7 +7,10 @@ left: [docs/STATUS.md](docs/STATUS.md).
 
 Versions in the second column are the ones the team ran on 2026-10-04 (Windows 11 with Git Bash). On 2026-10-14
 everything also ran on macOS 15 (Apple silicon) with Docker Desktop (Compose 2.38.1, 4 GiB VM), Homebrew bash 5.3,
-Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12.
+Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12. The rigs compile for Java release
+21, so any JDK 21 or newer builds them; `bash scripts/check.sh testrigs` prints the JDK it used. On 2026-10-14 the
+checks and the full stack also ran on Windows 11 with Git Bash, Temurin 21.0.12, Maven 3.9.9 and Docker Desktop
+29.7.2.
 
 | Tool | Known to work | Needed for | Download |
 |---|---|---|---|
@@ -15,8 +18,8 @@ Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12.
 | bash 4.4 or newer | Git Bash; bash on Linux | every script | Linux: built in. macOS ships bash 3.2: install a newer bash, for example with Homebrew (<https://brew.sh>, `brew install bash`) |
 | Docker with Compose v2 | Docker Desktop 29.7.2, Compose 5.5.1 | the local stack | Windows and macOS: Docker Desktop <https://docs.docker.com/desktop/>. Linux: Docker Engine <https://docs.docker.com/engine/install/> plus the Compose plugin <https://docs.docker.com/compose/install/linux/> |
 | Python 3.12 or newer | 3.12 | the runner, `bash scripts/check.sh runner`, `docs` | <https://www.python.org/downloads/> |
-| JDK 21 | Temurin 21.0.12 | testrig lane only | <https://adoptium.net/temurin/releases/?version=21> |
-| Maven 3.9 | 3.9.9 | testrig lane only | <https://maven.apache.org/download.cgi> |
+| JDK 21 or newer | Temurin 21.0.12 | `bash scripts/check.sh testrigs` and host jar builds only; the testrig image compiles the jars itself | <https://adoptium.net/temurin/releases/?version=21> |
+| Maven 3.9 | 3.9.9 | the same as the JDK | <https://maven.apache.org/download.cgi> |
 | shellcheck | 0.11.0 | `bash scripts/check.sh shell` | <https://github.com/koalaman/shellcheck#installing> |
 | actionlint | 1.7.12 | `bash scripts/check.sh workflows` (once `.github/` exists) | <https://github.com/rhysd/actionlint/blob/main/docs/install.md> |
 | Node.js (optional) | - | one extra golden test of the runner; `npx --yes html-validate` on reports | <https://nodejs.org/en/download> |
@@ -62,9 +65,9 @@ Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12.
    bash scripts/check.sh all
    ```
 
-   Expected: `PASS` for eol, secrets, shell and runner (shell needs shellcheck), `PASS` or `SKIP` for testrigs
-   (needs JDK 21 and Maven), `SKIP` for workflows and docs (their inputs do not exist yet). The runner tests took
-   about 4 minutes on the team laptop.
+   Expected: `PASS` for all seven checks when shellcheck, actionlint, JDK 21 and Maven are installed. Without one
+   of those tools, its check prints `SKIP` with the reason (`FAIL` with `--strict`). On 2026-10-14 the whole command
+   took 326 s on a Windows 11 laptop, of which the runner tests took about 80 s.
 
 5. Pull the images once (about 2 GB compressed):
 
@@ -161,7 +164,7 @@ guide with expected output, and [docs/reference/cli.md](docs/reference/cli.md) l
 ```bash
 ./run-full-stack-conformance.sh --prepare-only          # pull images, build the runner and testrig images
 ./run-conformance.sh --component verify --runner-only    # one component, runner only (80 s on 2026-10-14)
-./run-full-stack-conformance.sh --no-prepare            # both components, testrigs, MinIO, report (250 s)
+./run-full-stack-conformance.sh --no-prepare            # both components, testrigs, MinIO, report (728 s on 2026-10-14)
 ```
 
 Pieces on their own, for development:

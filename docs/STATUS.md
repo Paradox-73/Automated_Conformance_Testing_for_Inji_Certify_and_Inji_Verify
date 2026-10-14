@@ -8,7 +8,7 @@ Status of the harness on **2026-10-14**, branch `nikunj/ps01-finish` (from `main
 | Repository | <https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify> |
 | `main` | `ae2de5a`: WP-01 to WP-07, WP-11, WP-13, WP-08's code, the two platform fixes |
 | This branch | WP-08 to WP-18 finished as far as one machine allows; open items below |
-| Open | the first hosted GitHub Actions run (refused by GitHub for the owner account's billing), the fresh-clone check (laptop ran out of disk), the video and slides (team) |
+| Open | the video and slides (team); the manual checks in [manual-test-checklist.md](manual-test-checklist.md) (fresh clone on Linux and macOS, report review, video dry run) |
 
 How to work on a task: [CONTRIBUTING.md](../CONTRIBUTING.md). The words used below:
 
@@ -46,10 +46,10 @@ but part of the acceptance check could not be run.
 | WP-12 | testrig | Inji Certify rig integration, MinIO upload, testrig image | WP-09, WP-11 | DONE | `1ff1a86`, `e0aba8c` |
 | WP-13 | delivery | Consolidated HTML report, badge and run diff | WP-04 | DONE | `faad42c`, `fb772ae` |
 | WP-14 | runner | Parallel execution and HAIP readiness track | WP-10 | DONE | `ebd137e`, `3ae4510` |
-| WP-15 | platform | GitHub Actions workflow `full-stack-conformance.yml` | WP-10, WP-12, WP-13 | PARTIAL | `b50de8b`; the hosted run is open |
+| WP-15 | platform | GitHub Actions workflow `full-stack-conformance.yml` | WP-10, WP-12, WP-13 | DONE | `b50de8b`; hosted runs green on 2026-10-14 ([test-report.md](test-report.md#github-actions)) |
 | WP-16 | delivery | Documentation set | WP-10, WP-11 | DONE | `cc5a25e`, `058a51f` |
 | WP-17 | delivery | Test report, test data and Inji findings | WP-09, WP-12, WP-14, WP-16 | DONE | `cc5a25e`, `058a51f`, `50d1836`; build comparison dropped |
-| WP-18 | delivery | Demo script, video and deck material, final README | WP-13, WP-15, WP-16, WP-17 | PARTIAL | `f05b4d0`, `058a51f`; fresh-clone check open (disk), video and slides by the team |
+| WP-18 | delivery | Demo script, video and deck material, final README | WP-13, WP-15, WP-16, WP-17 | PARTIAL | `f05b4d0`, `058a51f`; fresh clone passed on Windows on 2026-10-14; video and slides by the team |
 
 Also on this branch: `ae5dc91` (the scripts and their tests on macOS), `861a04b` and `f05b4d0` (secrets and eol
 fixes found by the checks).
@@ -63,7 +63,8 @@ Every run with its run id, duration and evidence is in [test-report.md](test-rep
 - Inji Certify: all 15 modules of the issuer plan complete; 3 PASSED, 9 known gaps, 3 not applicable; `dpop` and
   `mtls` reach the same conditions.
 - One command for each component and both, parallel and serial, with the same verdicts on reruns; the full stack
-  with both testrigs and the MinIO upload in 250 s, peak memory 1619 MiB.
+  with both testrigs and the MinIO upload (728 s from a fresh clone on a shared Windows laptop on 2026-10-14),
+  peak memory 1619 MiB.
 - Robustness cases R1 to R6 as planned in the WP-17 card ([test-cases.md](test-cases.md)).
 - Ten Inji gaps written up as issue drafts ([findings/README.md](findings/README.md)); HAIP gaps ranked
   ([certification-readiness.md](certification-readiness.md)).
@@ -113,9 +114,9 @@ Every run with its run id, duration and evidence is in [test-report.md](test-rep
 
 - Workflow, example caller and `scripts/ci-local.sh` written; actionlint clean; `bash scripts/ci-local.sh verify`
   result in [test-report.md](test-report.md).
-- What remains: the first hosted run. GitHub refused run 38476075682 before any job started because of the
-  repository owner's billing. After the billing is fixed (or the repository is public), push once and put the run
-  URL in [test-report.md](test-report.md) and [ci.md](ci.md); set WP-15 to DONE if it is green.
+- Hosted runs on 2026-10-14: 38567545466, 38572816013 and 38574676932 (the last with the full-stack job) passed
+  every job ([test-report.md](test-report.md#github-actions)). The `workflow_call` path from an Inji repository has
+  not run yet (MT-12 in [manual-test-checklist.md](manual-test-checklist.md)).
 
 ### WP-16 Documentation
 

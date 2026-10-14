@@ -65,10 +65,17 @@ the first failing step. Result on 2026-10-14: see [test-report.md](test-report.m
 
 ## Status of the real runs
 
+- Hosted runs on branch `ps01-finish`, 2026-10-14: 38567545466, 38572816013 and 38574676932 passed every job; the
+  last one also ran full-stack (prepare 238 s, run 190 s). Details and links:
+  [test-report.md](test-report.md#github-actions).
+- Measured on those runs: the `ubuntu-24.04` runner had 86 GB of free disk, so the step that deletes preinstalled
+  SDKs now runs only below 20 GB; the prepare step took 231 s to 239 s with no image cache.
+- `full-stack` runs for releases, the schedule, `workflow_dispatch` and calls. `workflow_dispatch` works only once
+  the workflow is on `main`; before the merge, run 38574676932 enabled it on push for one commit.
 - `actionlint` 1.7.12 on the workflow and the example: no output, exit 0 (2026-10-14).
 - The first push of the workflow (2026-10-14, run
   [38476075682](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38476075682))
   was refused by GitHub before any job started: "The job was not started because recent account payments have
-  failed or your spending limit needs to be increased". The repository is private, so hosted runners bill the
-  owner's account. Fixing the billing or making the repository public (public repositories run on free hosted
-  runners with 4 vCPU and 16 GB) lets the next push run it; nothing in the workflow has to change.
+  failed or your spending limit needs to be increased". The repository was private then, so hosted runners
+  billed the owner's account. It has been public since 2026-10-14, and public repositories run on free hosted
+  runners.

@@ -23,6 +23,6 @@ with ids and evidence are in [test-report.md](test-report.md). All dates 2026-10
 | TC-16 | Testrig rows and MinIO upload, Certify | `bash testrigs/run-testrig.sh certify --invoke` with the certify and reports profiles | exit 0, report in `automationtests/injicertify/` | exit 0, `T-15_P-3_S-0_F-0_I-3_KI-9`, listed in MinIO |
 | TC-17 | Testrig rows and MinIO upload, Verify | `bash testrigs/run-testrig.sh verify --invoke` | exit 0, report in `automationtests/injiverify/` | exit 0, `T-11_P-11_S-0_F-0_I-0_KI-0`, listed in MinIO |
 | TC-18 | Upstream patches apply | `git apply --check --directory=api-test` on clean upstream checkouts | succeeds | succeeds for all three patches |
-| TC-19 | Full stack with testrigs | `./run-full-stack-conformance.sh --no-prepare` | exit 0, both rig reports, MinIO keys | exit 0 (250 s), both reports in MinIO |
+| TC-19 | Full stack with testrigs | `./run-full-stack-conformance.sh --no-prepare` | exit 0, both rig reports, MinIO keys | exit 0 (728 s from a fresh clone, run `20261014T133851Z-c99cce`), both reports in MinIO |
 | TC-20 | Demo with regression | `bash demo/demo.sh --regression --runner-only` | gate 0, then 1, diff 16, "demo ok" | as expected, exit 0 |
 | TC-21 | Repository checks and local CI | `bash scripts/ci-local.sh verify` | every check PASS, run exit 0 | 7 PASS, run exit 0 (183 s) |

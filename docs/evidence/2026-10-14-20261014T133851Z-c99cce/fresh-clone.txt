@@ -1,0 +1,24 @@
+Fresh-clone acceptance run, 2026-10-14 (UTC 13:34:37 to 13:50:58)
+
+Machine: Windows 11 (10.0.26200), Git Bash (GNU bash 5.3.15), Docker Desktop 29.7.2 with Compose 5.5.1, Docker VM
+7792 MiB and 12 CPUs. Another team's Inji stack ran in the same Docker VM during the whole run. No JDK or Maven on
+PATH. The images of docker-compose.yml and Docker's build cache were already on the machine from earlier runs.
+
+Commands, in an empty folder. <repository> was the team's checkout on the same disk; commit 5ec802c is the one
+pushed to GitHub as ps01-finish.
+
+  git clone -c core.longpaths=true --branch ps01-finish <repository> h      3 s, commit 5ec802c
+  cd h
+  ./run-full-stack-conformance.sh --prepare-only                          exit 0, 250 s ("prepared in 240 s")
+  ./run-full-stack-conformance.sh --no-prepare                            exit 0, 728 s ("finished in 707 s")
+
+Where the 707 s of the second command went (from its log and manifest.json):
+
+  stack up and healthy                       169 s
+  both plans in parallel (runner)            130 s (certify 106 s, verify 130 s)
+  api-testrig step, certify then verify      about 360 s
+  report and teardown                        the rest
+
+Result: certify 15 modules (3 conforms, 9 known gaps, 3 not applicable), verify 11 modules (11 conforms), gate
+passed, exit 0. Rig reports T-15_P-3_S-0_F-0_I-3_KI-9 and T-11_P-11_S-0_F-0_I-0_KI-0, both uploaded to MinIO
+automationtests/. manifest.json records git_dirty false.

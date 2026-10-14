@@ -11,7 +11,8 @@ Ten slides. Every number on a slide comes from [test-report.md](../test-report.m
    badge, diff, GitHub Actions workflow. Diagram: `docs/diagrams/components.svg`.
 4. **How a test runs without a person**: the two sequence diagrams (`sequence-issuer.svg`, `sequence-verifier.svg`).
 5. **Results**: Inji Verify 11 of 11 modules conform (default configuration); Inji Certify 15 of 15 modules complete,
-   3 pass, 9 known gaps, 3 not applicable; full stack in 250 s with testrigs; peak memory 1.6 GiB.
+   3 pass, 9 known gaps, 3 not applicable; full stack with testrigs in 728 s from a fresh clone (Windows laptop shared
+   with another stack); peak memory 1.6 GiB.
 6. **The gate**: verdict table; one benchmark entry per accepted failure with owner, clause, finding; cross-check
    with the suite's own analysis; demo of the injected regression (exit 1, three modules named, diff exit 16).
 7. **What we found in Inji**: the ten findings ([findings/README.md](../findings/README.md)): metadata without
