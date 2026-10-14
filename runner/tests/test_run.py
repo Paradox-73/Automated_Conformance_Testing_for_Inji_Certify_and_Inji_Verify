@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -143,6 +144,20 @@ def test_build_results_without_modules_fails_with_exit_3(tmp_path, schema_dir, n
     assert model.validate(model.read_json(path), model.DocumentKind.RESULTS, schema_dir) == []
 
 
+@pytest.mark.parametrize("script_code", [0, 1])
+def test_a_run_without_modules_keeps_exit_3_through_the_repository_benchmark(tmp_path, script_code, capsys):
+    ctx = verify_context(tmp_path, modules=())
+    responder = Responder(None, "alias", [])  # type: ignore[arg-type]
+    results = run.build_results(ctx, FakeEmptySuite(), FakeVerify(), None, responder)  # type: ignore[arg-type]
+    bench = run.load_benchmark(argparse.Namespace(benchmark_dir=None), REPO_ROOT, Component.VERIFY)
+    # The x509_san_dns configuration has 20 entries; none can match a run without modules.
+    bench = bench.for_config("config/verify.oid4vp-1final-verifier-x509-san-dns.json")
+    assert bench.failures
+    gated = run.apply_benchmark(results, bench, REPO_ROOT, script_code, allow_stale=False)
+    assert (gated.gate.passed, gated.gate.exit_code) == (False, ExitCode.ENVIRONMENT_NOT_READY)
+    assert gated.gate.messages == (model.NO_MODULES,)
+
+
 def test_failing_gate_becomes_exit_3_when_a_service_stopped_answering(tmp_path, capsys):
     ctx = verify_context(tmp_path)
     responder = Responder(None, "alias", [])  # type: ignore[arg-type]
@@ -156,9 +171,11 @@ def test_failing_gate_becomes_exit_3_when_a_service_stopped_answering(tmp_path, 
 
     up = [("the conformance suite", lambda: True), ("Inji Verify", lambda: True)]
     down = [("the conformance suite", lambda: True), ("Inji Verify", refused)]
-    assert run.first_down(up) is None
-    assert run.first_down(down) == "Inji Verify"
-    assert run.first_down([("Inji Verify", lambda: False)]) == "Inji Verify"
+    assert run.first_down(up, interval_s=0) is None
+    assert run.first_down(down, interval_s=0) == "Inji Verify"
+    assert run.first_down([("Inji Verify", lambda: False)], interval_s=0) == "Inji Verify"
+    answers = iter([False, True])  # one slow answer, then up again: not an outage
+    assert run.first_down([("Inji Verify", lambda: next(answers))], interval_s=0) is None
     assert run.outage_instead_of_regression(failed, None) is failed
     changed = run.outage_instead_of_regression(failed, "Inji Verify")
     assert (changed.gate.passed, changed.gate.exit_code) == (False, ExitCode.ENVIRONMENT_NOT_READY)

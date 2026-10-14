@@ -779,9 +779,12 @@ def apply_benchmark(
 
     Two outcomes stop the run with exit 2, because the benchmark or the harness is wrong rather than Inji: an entry
     that matches no module of a whole-plan run, and a gate that disagrees with ``run-test-plan.py`` on the same
-    benchmark files.
+    benchmark files. A run without module results keeps its exit 3: with nothing collected, every entry is unused
+    and the script's exit code says nothing about the benchmark.
     """
     classified = benchmark.classify(results, bench, allow_stale=allow_stale, home=home)
+    if not classified.modules:
+        return classified
     problems = []
     unused = benchmark.unused_entries(classified, bench)
     if unused:
@@ -802,15 +805,24 @@ def apply_benchmark(
     return dataclasses.replace(classified, gate=gate)
 
 
-def first_down(services: Sequence[tuple[str, Callable[[], bool]]]) -> str | None:
-    """The first service that does not answer one readiness check now, else None."""
+def first_down(
+    services: Sequence[tuple[str, Callable[[], bool]]], attempts: int = 3, interval_s: float = 5.0
+) -> str | None:
+    """The first service that fails every one of ``attempts`` readiness checks, ``interval_s`` apart, else None.
+
+    The retries keep one slow answer from turning a regression (exit 1) into an outage (exit 3).
+    """
     for what, check in services:
-        try:
-            if check():
-                continue
-        except Exception:  # any failure to answer means the service is down
-            pass
-        return what
+        for attempt in range(attempts):
+            try:
+                if check():
+                    break
+            except Exception:  # any failure to answer counts as not answering
+                pass
+            if attempt + 1 < attempts:
+                time.sleep(interval_s)
+        else:
+            return what
     return None
 
 
