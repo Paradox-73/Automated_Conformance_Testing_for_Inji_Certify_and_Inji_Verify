@@ -168,7 +168,7 @@ jobs:
         id: images
         run: |
           bash scripts/dc.sh --profile '*' config --images | sort >"$RUNNER_TEMP/images.txt"
-          echo "key=images-${{ hashFiles('docker-compose.yml', 'runner/**', 'testrigs/Dockerfile') }}-$(sha256sum "$RUNNER_TEMP/images.txt" | cut -c1-16)" >>"$GITHUB_OUTPUT"
+          echo "key=images-${{ hashFiles('docker-compose.yml', 'runner/**') }}-$(sha256sum "$RUNNER_TEMP/images.txt" | cut -c1-16)" >>"$GITHUB_OUTPUT"
       - name: Image cache
         id: cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -265,8 +265,9 @@ jobs:
 
   full-stack:
     needs: checks
-    # A called run reports the caller's event name, so workflow_call is recognised by its full_stack input.
-    if: github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || inputs.full_stack
+    # A called run reports the caller's event name, so a call is recognised by its full_stack input, which is a
+    # boolean only under workflow_call and null for every other event.
+    if: inputs.full_stack == true || (inputs.full_stack == null && (github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'))
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
