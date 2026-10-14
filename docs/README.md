@@ -9,7 +9,8 @@ Other documents: [architecture](architecture.md), [handoffs](handoffs.md), [API 
 [benchmark](benchmark.md), [testrig integration](testrig-integration.md), [CI](ci.md),
 [configuration](configuration.md), [troubleshooting](troubleshooting.md),
 [self-certification](self-certification.md), [command reference](reference/cli.md),
-[results file](reference/results-schema.md), [test report](test-report.md), [Inji findings](findings/README.md).
+[results file](reference/results-schema.md), [test report](test-report.md), [Inji findings](findings/README.md),
+[manual test checklist](manual-test-checklist.md).
 
 ## 1. Prerequisites
 
