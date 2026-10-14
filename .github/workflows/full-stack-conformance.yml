@@ -87,8 +87,9 @@ env:
   CI: "true"
   NO_COLOR: "1"
   HARNESS_RUN_DIR: ${{ github.workspace }}/run
-  CERTIFY_IMAGE_OVERRIDE: ${{ inputs.certify_image }}
-  VERIFY_IMAGE_OVERRIDE: ${{ inputs.verify_image }}
+  # Empty on push and pull request; docker-compose.yml then uses its pinned image.
+  CERTIFY_IMAGE: ${{ inputs.certify_image }}
+  VERIFY_IMAGE: ${{ inputs.verify_image }}
   TRACK: ${{ inputs.track || 'gate' }}
   STRICT: ${{ inputs.strict }} # empty on push and pull request: strict
   # Empty inputs (push, pull request, schedule, release): this repository at the commit that triggered the run.
@@ -160,10 +161,6 @@ jobs:
         with:
           repository: ${{ env.HARNESS_REPOSITORY }}
           ref: ${{ env.HARNESS_REF }}
-      - name: Image overrides
-        run: |
-          if [ -n "$CERTIFY_IMAGE_OVERRIDE" ]; then echo "CERTIFY_IMAGE=$CERTIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
-          if [ -n "$VERIFY_IMAGE_OVERRIDE" ]; then echo "VERIFY_IMAGE=$VERIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
       - name: Image list
         id: images
         run: |
@@ -287,10 +284,6 @@ jobs:
         with:
           repository: ${{ env.HARNESS_REPOSITORY }}
           ref: ${{ env.HARNESS_REF }}
-      - name: Image overrides
-        run: |
-          if [ -n "$CERTIFY_IMAGE_OVERRIDE" ]; then echo "CERTIFY_IMAGE=$CERTIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
-          if [ -n "$VERIFY_IMAGE_OVERRIDE" ]; then echo "VERIFY_IMAGE=$VERIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
       - name: ./run-full-stack-conformance.sh
         run: |
           case $TRACK in gate | haip) ;; *) echo "track must be gate or haip, not $TRACK" >&2; exit 2 ;; esac

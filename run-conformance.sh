@@ -49,7 +49,7 @@ Runner options (passed to "inji-conformance run" unchanged):
   --timeout-minutes N     time limit of the whole run (default 30)
 
 Settings (environment): HARNESS_RUN_DIR, HARNESS_COMPOSE_FILES (comma-separated compose overrides, for example
-demo/regression.compose.yml), image overrides such as CERTIFY_IMAGE (see CONTRIBUTING.md).
+demo/regression.compose.yml), image overrides such as CERTIFY_IMAGE (see docs/configuration.md).
 
 Examples:
   ./run-conformance.sh --component verify --runner-only
