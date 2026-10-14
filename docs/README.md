@@ -58,7 +58,8 @@ Both components in parallel, with the api-testrig step and the MinIO upload:
 ./run-full-stack-conformance.sh --no-prepare
 ```
 
-Expected output, last lines (Inji Verify alone, 80 s on 2026-10-14):
+Expected last lines of `./run-conformance.sh --component verify --runner-only` (80 s on 2026-10-14); the combined run
+ends the same way with a line for each component and the testrig report and MinIO paths:
 
 ```text
 gate: 0 regressions, 0 known gaps, 0 stale
@@ -89,11 +90,13 @@ Compare two runs:
 
 <!-- run 2026-10-14 -->
 ```bash
-run/venv/bin/inji-conformance diff run/reports/wp10-combined-1 run/reports/wp10-combined-2
+run/venv/bin/inji-conformance diff run/reports/<run 1> run/reports/<run 2>
 ```
 
-`run/venv` is the virtual environment `bash scripts/check.sh runner` creates; inside the stack the same command is
-`bash scripts/dc.sh run --rm runner inji-conformance diff /reports/<run 1> /reports/<run 2>`.
+`run/venv` is the virtual environment `bash scripts/check.sh runner` creates (on Windows the command is
+`run/venv/Scripts/inji-conformance`); inside the stack the same command is
+`bash scripts/dc.sh run --rm --no-deps runner inji-conformance diff /reports/<run 1> /reports/<run 2>` (without
+`--no-deps` it leaves a `pki-init` container that stops the next run at the preflight).
 
 ## 6. Check the repository
 

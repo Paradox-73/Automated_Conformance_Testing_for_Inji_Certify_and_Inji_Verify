@@ -40,8 +40,10 @@ Check a file:
 
 <!-- run 2026-10-14 -->
 ```bash
-run/venv/bin/inji-conformance validate run/reports/wp10-combined-1/manifest.json run/reports/wp10-combined-1/certify/results.json
+run/venv/bin/inji-conformance validate run/reports/<run id>/manifest.json run/reports/<run id>/certify/results.json
 ```
+
+On Windows the command is `run/venv/Scripts/inji-conformance`.
 
 ## manifest.json
 

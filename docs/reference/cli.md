@@ -21,8 +21,9 @@ options below (`--modules`, `--track`, `--serial`, `--allow-stale`, `--variant`,
 
 ## `inji-conformance` (the runner)
 
-Inside the stack: `bash scripts/dc.sh run --rm runner inji-conformance ...`; on the host:
-`run/venv/bin/inji-conformance ...` after `bash scripts/check.sh runner`.
+Inside the stack: `bash scripts/dc.sh run --rm runner inji-conformance ...` (add `--no-deps` when the stack is not
+running, as for `diff`, `gate`, `report` and `validate`); on the host: `run/venv/bin/inji-conformance ...`
+(Windows: `run/venv/Scripts/inji-conformance ...`) after `bash scripts/check.sh runner`.
 
 | Subcommand | Does |
 |---|---|

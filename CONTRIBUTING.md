@@ -83,7 +83,7 @@ Pieces on their own, for development:
   `bash scripts/dc.sh run --rm runner inji-conformance run --component verify --modules oid4vp-1final-verifier-happy-flow --out /reports/try1`,
   then `bash scripts/dc.sh --profile '*' down -v`. Rebuild the runner image after changing `runner/` or
   `conformance/`: `bash scripts/dc.sh --profile tools build runner`.
-- Re-gate a recorded run without a stack: `"$HARNESS_RUN_DIR/venv/bin/inji-conformance" gate --run <run>/<component>`.
+- Re-gate a recorded run without a stack: `"$HARNESS_RUN_DIR/venv/bin/inji-conformance" gate --run <run>/<component>` (Windows: `venv/Scripts/inji-conformance`).
 - Report and diff on the recorded fixtures: `inji-conformance report --run runner/tests/report/fixtures/run-a --out "$HARNESS_RUN_DIR/report-try"`
   and `inji-conformance diff runner/tests/report/fixtures/run-a runner/tests/report/fixtures/run-b` (exit 16: they differ).
 - A testrig on a results file: `bash testrigs/run-testrig.sh verify --results <run>/verify/results.json` (needs

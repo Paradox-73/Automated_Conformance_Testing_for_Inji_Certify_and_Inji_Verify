@@ -74,8 +74,10 @@ that marks such a run as passed.
 
 <!-- run 2026-10-14 -->
 ```bash
-run/venv/bin/inji-conformance gate --run run/reports/wp10-certify/certify --junit run/junit-certify.xml
+run/venv/bin/inji-conformance gate --run run/reports/<run id>/certify --junit run/junit-certify.xml
 ```
+
+On Windows the command is `run/venv/Scripts/inji-conformance`.
 
 With one Certify entry removed, the same command exits 1 and names the module and condition (TC-10 in
 [test-report.md](test-report.md#end-to-end-runs)).
