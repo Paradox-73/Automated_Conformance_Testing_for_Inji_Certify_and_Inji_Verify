@@ -19,6 +19,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@main
     with:
+      # The called jobs run in this repository, so they check out the harness by name; keep harness_ref equal to
+      # the ref after "@" in the uses: line above (a release tag or commit pins both).
+      harness_ref: main
       component: certify   # verify in inji-verify
       track: gate
       strict: true

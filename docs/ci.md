@@ -9,11 +9,12 @@ same steps on a developer machine.
 |---|---|
 | push, pull request | checks, conformance (certify and verify), combined |
 | release published, weekly schedule (Monday 03:17 UTC), `workflow_dispatch` | the same, plus full-stack |
-| `workflow_call` from an Inji repository | the same as dispatch, with that repository's image |
+| `workflow_call` from an Inji repository | the same as dispatch, with that repository's image; full-stack unless `full_stack: false` |
 
 `workflow_dispatch` and `workflow_call` take `component` (both, certify, verify), `track` (gate, haip), `strict`
 (stale benchmark entries fail; off adds `--allow-stale`), `certify_image` and `verify_image` (image overrides, for
-example a new digest). Runs of one ref cancel each other (`concurrency`).
+example a new digest). `workflow_call` also takes `harness_repository`, `harness_ref` and `full_stack` (see
+[Inji release pipelines](#inji-release-pipelines)). Runs of one ref cancel each other (`concurrency`).
 
 ## Jobs
 
@@ -31,6 +32,26 @@ Artifacts are uploaded with `if: always()`, so a failed gate still leaves its re
 [.github/examples/inji-release-caller.yml](../.github/examples/inji-release-caller.yml) is the workflow an Inji
 repository adds: after its release build it calls this workflow (`uses: ...full-stack-conformance.yml@main`) with the
 image it just pushed, so a release that regresses fails in the Inji repository's own checks.
+
+A called workflow runs in the caller's repository: `actions/checkout` without arguments would check out
+inji-certify or inji-verify. Every job therefore checks out the harness by name:
+
+| Input | Default | Set it to |
+|---|---|---|
+| `harness_repository` | `Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify` | a fork of the harness, if the caller uses one |
+| `harness_ref` | `main` | the same ref as after `@` in the caller's `uses:` line, so the workflow file and the checked-out scripts match |
+| `full_stack` | `true` | `false` to skip the full-stack job (the per-component jobs still gate) |
+
+To add the hook to an Inji repository:
+
+1. Copy `.github/examples/inji-release-caller.yml` to `.github/workflows/` in inji-certify or inji-verify.
+2. Set `workflows:` to the name of the workflow that builds and pushes the image.
+3. In inji-verify, replace `component: certify` with `component: verify` and `certify_image` with `verify_image`.
+4. Pin `@<tag or commit>` in `uses:` and the same value in `harness_ref`.
+5. Run it once with `workflow_dispatch` and a known digest; the run's summary shows the gate.
+
+The diff against the last successful run reads the harness repository's runs; when the caller's token cannot read
+them, the diff is left out and the rest of the job is unchanged.
 
 ## Locally
 

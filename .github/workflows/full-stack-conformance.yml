@@ -9,6 +9,8 @@
 #   full-stack   ./run-full-stack-conformance.sh from scratch (releases, the weekly schedule, manual runs)
 #
 # Inji release pipelines call it with new image digests (workflow_call); see .github/examples/inji-release-caller.yml.
+# A called run executes in the caller's repository, so every job checks out this harness explicitly
+# (harness_repository, harness_ref); the caller sets harness_ref to the same ref as its "uses: ...@<ref>".
 # The same steps run on a developer machine with: bash scripts/ci-local.sh certify|verify
 name: full-stack-conformance
 
@@ -60,6 +62,18 @@ on:
       verify_image:
         type: string
         default: ""
+      harness_repository:
+        description: "Repository of this harness, checked out by every job (the caller's repository is not it)"
+        type: string
+        default: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify
+      harness_ref:
+        description: "Branch, tag or commit of the harness; use the same ref as in the caller's uses: line"
+        type: string
+        default: main
+      full_stack:
+        description: "Also run the full-stack job (./run-full-stack-conformance.sh from scratch)"
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -75,6 +89,11 @@ env:
   HARNESS_RUN_DIR: ${{ github.workspace }}/run
   CERTIFY_IMAGE_OVERRIDE: ${{ inputs.certify_image }}
   VERIFY_IMAGE_OVERRIDE: ${{ inputs.verify_image }}
+  TRACK: ${{ inputs.track || 'gate' }}
+  STRICT: ${{ inputs.strict }} # empty on push and pull request: strict
+  # Empty inputs (push, pull request, schedule, release): this repository at the commit that triggered the run.
+  HARNESS_REPOSITORY: ${{ inputs.harness_repository || github.repository }}
+  HARNESS_REF: ${{ inputs.harness_ref || github.sha }}
 
 jobs:
   checks:
@@ -82,6 +101,9 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.HARNESS_REPOSITORY }}
+          ref: ${{ env.HARNESS_REF }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.12"
@@ -130,6 +152,9 @@ jobs:
             /opt/hostedtoolcache/CodeQL /usr/local/share/powershell /usr/local/share/chromium
           df -h /
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.HARNESS_REPOSITORY }}
+          ref: ${{ env.HARNESS_REF }}
       - name: Image overrides
         run: |
           if [ -n "$CERTIFY_IMAGE_OVERRIDE" ]; then echo "CERTIFY_IMAGE=$CERTIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
@@ -158,8 +183,9 @@ jobs:
           docker save -o "$RUNNER_TEMP/images.tar" "${images[@]}"
       - name: Conformance run (${{ matrix.component }})
         run: |
-          args=(--component "${{ matrix.component }}" --out "ci-${{ matrix.component }}" --track "${{ inputs.track || 'gate' }}")
-          if [ "${{ inputs.strict }}" = "false" ]; then args+=(--allow-stale); fi
+          case $TRACK in gate | haip) ;; *) echo "track must be gate or haip, not $TRACK" >&2; exit 2 ;; esac
+          args=(--component "${{ matrix.component }}" --out "ci-${{ matrix.component }}" --track "$TRACK")
+          if [ "$STRICT" = "false" ]; then args+=(--allow-stale); fi
           ./run-conformance.sh "${args[@]}"
       - name: Job summary
         if: always()
@@ -184,6 +210,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.HARNESS_REPOSITORY }}
+          ref: ${{ env.HARNESS_REF }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.12"
@@ -196,10 +225,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          id=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow full-stack-conformance.yml --branch main \
-            --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          # The harness repository's runs, also when an Inji repository called this workflow; no previous run (or
+          # no read access to it) only means no diff.
+          id=$(gh run list --repo "$HARNESS_REPOSITORY" --workflow full-stack-conformance.yml --branch main \
+            --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty') || id=
           if [ -n "$id" ] && [ "$id" != "$GITHUB_RUN_ID" ]; then
-            gh run download "$id" --repo "$GITHUB_REPOSITORY" --pattern 'conformance-*' --dir previous || true
+            gh run download "$id" --repo "$HARNESS_REPOSITORY" --pattern 'conformance-*' --dir previous || true
           fi
       - name: Consolidated report, badge and diff
         run: |
@@ -229,7 +260,8 @@ jobs:
 
   full-stack:
     needs: checks
-    if: github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # A called run reports the caller's event name, so workflow_call is recognised by its full_stack input.
+    if: github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || inputs.full_stack
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -241,14 +273,18 @@ jobs:
             /opt/hostedtoolcache/CodeQL /usr/local/share/powershell /usr/local/share/chromium
           df -h /
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.HARNESS_REPOSITORY }}
+          ref: ${{ env.HARNESS_REF }}
       - name: Image overrides
         run: |
           if [ -n "$CERTIFY_IMAGE_OVERRIDE" ]; then echo "CERTIFY_IMAGE=$CERTIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
           if [ -n "$VERIFY_IMAGE_OVERRIDE" ]; then echo "VERIFY_IMAGE=$VERIFY_IMAGE_OVERRIDE" >>"$GITHUB_ENV"; fi
       - name: ./run-full-stack-conformance.sh
         run: |
-          args=(--out ci-full-stack --track "${{ inputs.track || 'gate' }}")
-          if [ "${{ inputs.strict }}" = "false" ]; then args+=(--allow-stale); fi
+          case $TRACK in gate | haip) ;; *) echo "track must be gate or haip, not $TRACK" >&2; exit 2 ;; esac
+          args=(--out ci-full-stack --track "$TRACK")
+          if [ "$STRICT" = "false" ]; then args+=(--allow-stale); fi
           ./run-full-stack-conformance.sh "${args[@]}"
       - name: Job summary and key removal
         if: always()
