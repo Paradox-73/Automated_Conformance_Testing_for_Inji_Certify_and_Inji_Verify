@@ -64,6 +64,17 @@ props=$(rig verify https://verify.example.test:9443)
 check "TESTRIG_ENDPOINT sets env.endpoint, which the runner's target follows" \
   "$(option env.endpoint <<<"$props")" "https://verify.example.test:9443"
 
+# The rig must run as the user the compose services run as, or it cannot read the run's keys in invoke mode.
+PATH="$WORK/bin:$PATH" STUB_LOG="$WORK/stub.log" HARNESS_RUN_DIR="$WORK/run" HARNESS_UID=1234 HARNESS_GID=5678 \
+  bash "$REPO/testrigs/run-testrig.sh" verify --invoke --out "$WORK/out-user" >/dev/null 2>&1 || true
+check "the rig runs as HARNESS_UID:HARNESS_GID" "$(grep -A1 '^-u$' "$WORK/stub.log")" "$(printf -- '-u\n1234:5678')"
+rm -f "$WORK/stub.log"
+PATH="$WORK/bin:$PATH" STUB_LOG="$WORK/stub.log" HARNESS_RUN_DIR="$WORK/run" \
+  bash "$REPO/testrigs/run-testrig.sh" verify --invoke --out "$WORK/out-user" >/dev/null 2>&1 || true
+check "the rig runs as the same default user as dc.sh" "$(grep -A1 '^-u$' "$WORK/stub.log" | tail -n 1)" \
+  "$(harness_container_user)"
+rm -f "$WORK/stub.log"
+
 props=$(PATH="$WORK/bin:$PATH" STUB_LOG="$WORK/stub.log" HARNESS_RUN_DIR="$WORK/run" \
   bash "$REPO/testrigs/run-testrig.sh" certify --results /nonexistent 2>&1 || true)
 check "consume mode still refuses a missing results file" "${props##*: }" "/nonexistent"

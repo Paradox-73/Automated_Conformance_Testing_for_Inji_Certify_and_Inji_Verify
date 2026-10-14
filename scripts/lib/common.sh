@@ -71,6 +71,17 @@ harness_is_windows() {
   return 1
 }
 
+# harness_container_user: print the uid:gid the harness's containers run as (HARNESS_UID and HARNESS_GID override).
+# On Windows (Git Bash) the uid is a large SID-derived number; Docker Desktop ignores ownership of bind mounts, so
+# the image's ordinary user id 1000 is used there, the same user that pki-init writes the run's keys as.
+harness_container_user() {
+  if harness_is_windows; then
+    printf '%s:%s\n' "${HARNESS_UID:-1000}" "${HARNESS_GID:-1000}"
+  else
+    printf '%s:%s\n' "${HARNESS_UID:-$(id -u)}" "${HARNESS_GID:-$(id -g)}"
+  fi
+}
+
 # harness_native_path PATH: print PATH in the form native programs expect. On Windows that is C:/x/y (forward
 # slashes, which docker, java and python all accept); elsewhere the path is printed unchanged.
 harness_native_path() {

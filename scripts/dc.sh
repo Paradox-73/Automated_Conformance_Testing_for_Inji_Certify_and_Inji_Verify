@@ -125,13 +125,7 @@ main() {
   harness_run_dir reports >/dev/null
   ensure_env_file "$run_dir/env.local"
 
-  # On Windows (Git Bash) the uid is a large SID-derived number; Docker Desktop ignores ownership of bind mounts,
-  # so the image's ordinary user id is used there.
-  if harness_is_windows; then
-    HARNESS_UID=${HARNESS_UID:-1000} HARNESS_GID=${HARNESS_GID:-1000}
-  else
-    HARNESS_UID=${HARNESS_UID:-$(id -u)} HARNESS_GID=${HARNESS_GID:-$(id -g)}
-  fi
+  IFS=: read -r HARNESS_UID HARNESS_GID < <(harness_container_user)
   HARNESS_RUN_DIR=$(harness_native_path "$run_dir")
   export HARNESS_UID HARNESS_GID HARNESS_RUN_DIR
 

@@ -99,7 +99,7 @@ fi
 log_info "testrig $module ($mode) in $IMAGE; report folder $out"
 set +e
 # shellcheck disable=SC2016 # "$@" and $(ls ...) are for the sh inside the container
-harness_no_pathconv docker run --rm --network "$NETWORK" -u "$(id -u):$(id -g)" -w "/home/$module" \
+harness_no_pathconv docker run --rm --network "$NETWORK" -u "$(harness_container_user)" -w "/home/$module" \
   "${mounts[@]}" "${env_args[@]}" "$IMAGE" \
   sh -c 'exec java "$@" -cp "$(ls /home/'"$module"'/apitest-'"$module"'-*-jar-with-dependencies.jar)" io.inji.testrig.apirig.'"$module"'.testrunner.ConformanceRigRunner' \
   sh "${java_props[@]}" >"$out/testrig.log" 2>&1
