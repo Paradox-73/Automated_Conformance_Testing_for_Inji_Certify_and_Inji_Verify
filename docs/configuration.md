@@ -18,6 +18,11 @@ Everything that can be set without editing code. Defaults reproduce the measured
 | `TESTRIG_ENDPOINT` | the compose service | `env.endpoint` of the rig in `run-testrig.sh`; in invoke mode the runner tests it |
 | `MAVEN_ARGS` | unset | Extra Maven options for host builds of the testrigs and for `check.sh testrigs` |
 | `CONFORMANCE_MAX_CONSECUTIVE_FAILURES` | `1000` (runner) | `run-test-plan.py`'s abort after modules in a row that did not finish |
+| `PKI_FORCE` | unset | `1` makes `pki-init` write a new key set |
+| `MINIO_ROOT_USER` | `harness` | MinIO user; its password `MINIO_ROOT_PASSWORD` is generated into `env.local` |
+| `SMOKE_START_TIMEOUT`, `SMOKE_STATS_INTERVAL` | `420`, `3` | Seconds `compose/smoke.sh` waits for a healthy stack, and between memory samples |
+| `OIDF_SUITE_CLONE`, `OIDF_SUITE_URL` | see [third_party/README.md](../third_party/README.md) | Where `bash third_party/reimport.sh verify` finds the upstream suite |
+| `HARNESS_SUITE_URL`, `HARNESS_VERIFY_URL`, `HARNESS_CERTIFY_URL`, `HARNESS_PKI_DIR`, `HARNESS_REPORTS_DIR` | set by the `runner` service | Where the runner finds the suite, Inji and the keys; only needed when running the runner outside Compose |
 
 ## Images
 
@@ -45,12 +50,13 @@ committed. Certify's keystore volume, its database volume and `env.local` belong
 
 All bound to 127.0.0.1; preflight checks them and names what holds a busy one.
 
-| Port | Service |
-|---|---|
-| 18443, 18444 | conformance suite (web and API; mTLS listener) |
-| 18450, 18451 | Inji Certify and Inji Verify over TLS (`tls-proxy`) |
-| 18460, 18461 | Inji Certify and Inji Verify over plain HTTP, for debugging |
-| 18900, 18901 | MinIO S3 API and console |
+| Port | Service | Open from the host |
+|---|---|---|
+| 18443 | conformance suite web page and API | `https://localhost.emobix.co.uk:18443` (self-signed certificate; the name is public DNS for 127.0.0.1) |
+| 18444 | conformance suite mTLS listener | - |
+| 18450, 18451 | Inji Certify and Inji Verify over TLS (`tls-proxy`; `https://certify.inji.test:18450`, `https://verify.inji.test:18451/v1/verify` inside the network) | only through containers |
+| 18460, 18461 | Inji Certify and Inji Verify over plain HTTP, for debugging | `http://127.0.0.1:18461/v1/verify/...` |
+| 18900, 18901 | MinIO S3 API and web console | `http://127.0.0.1:18901`, user `harness`, password `MINIO_ROOT_PASSWORD` from `env.local` |
 
 ## Plan templates
 

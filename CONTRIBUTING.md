@@ -1,37 +1,8 @@
 # Contributing
 
-How to set up a computer, run what exists today, and finish one of the remaining tasks. What is done and what is
-left: [docs/STATUS.md](docs/STATUS.md).
-
-## Tools and versions
-
-Versions in the second column are the ones the team ran on 2026-10-04 (Windows 11 with Git Bash). On 2026-10-14
-everything also ran on macOS 15 (Apple silicon) with Docker Desktop (Compose 2.38.1, 4 GiB VM), Homebrew bash 5.3,
-Python 3.12.15, Maven 3.9.11 on JDK 25, shellcheck 0.11.0 and actionlint 1.7.12. The rigs compile for Java release
-21, so any JDK 21 or newer builds them; `bash scripts/check.sh testrigs` prints the JDK it used. On 2026-10-14 the
-checks and the full stack also ran on Windows 11 with Git Bash, Temurin 21.0.12, Maven 3.9.9 and Docker Desktop
-29.7.2.
-
-| Tool | Known to work | Needed for | Download |
-|---|---|---|---|
-| Git (on Windows: Git for Windows, which includes Git Bash) | Git for Windows 2.x | everything | <https://git-scm.com/downloads> |
-| bash 4.4 or newer | Git Bash; bash on Linux | every script | Linux: built in. macOS ships bash 3.2: install a newer bash, for example with Homebrew (<https://brew.sh>, `brew install bash`) |
-| Docker with Compose v2 | Docker Desktop 29.7.2, Compose 5.5.1 | the local stack | Windows and macOS: Docker Desktop <https://docs.docker.com/desktop/>. Linux: Docker Engine <https://docs.docker.com/engine/install/> plus the Compose plugin <https://docs.docker.com/compose/install/linux/> |
-| Python 3.12 or newer | 3.12 | the runner, `bash scripts/check.sh runner`, `docs` | <https://www.python.org/downloads/> |
-| JDK 21 or newer | Temurin 21.0.12 | `bash scripts/check.sh testrigs` and host jar builds only; the testrig image compiles the jars itself | <https://adoptium.net/temurin/releases/?version=21> |
-| Maven 3.9 | 3.9.9 | the same as the JDK | <https://maven.apache.org/download.cgi> |
-| shellcheck | 0.11.0 | `bash scripts/check.sh shell` | <https://github.com/koalaman/shellcheck#installing> |
-| actionlint | 1.7.12 | `bash scripts/check.sh workflows` (once `.github/` exists) | <https://github.com/rhysd/actionlint/blob/main/docs/install.md> |
-| Node.js (optional) | - | one extra golden test of the runner; `npx --yes html-validate` on reports | <https://nodejs.org/en/download> |
-| GitHub CLI `gh` (optional) | - | opening pull requests from the terminal | <https://cli.github.com/> |
-
-- Docker memory: the measured peaks were 0.9 GiB for the `verify` profile and 1.5 GiB for `certify` plus
-  `reports`; the runner and testrig containers come on top. The team laptop gave Docker an 8 GB VM shared with
-  other projects.
-- Disk: the suite images take about 2.3 GB, the Inji Certify image about 2.0 GB, plus Postgres, MinIO, nginx and
-  Inji Verify. A cold Maven build of one testrig downloads several hundred MB into `~/.m2`.
-- Tools that are not on `PATH` can go in `$HARNESS_TOOLS_DIR/bin` (default `$HARNESS_RUN_DIR/tools/bin`):
-  `scripts/check.sh` looks there for shellcheck, actionlint and Maven.
+How to set up a computer to work on the harness, test a change, and get it merged. Running the harness as a user:
+[docs/README.md](docs/README.md). Tools and versions: [docs/README.md](docs/README.md#1-prerequisites). Settings,
+ports and images: [docs/configuration.md](docs/configuration.md). Problems: [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ## One-time setup
 
@@ -66,36 +37,10 @@ checks and the full stack also ran on Windows 11 with Git Bash, Temurin 21.0.12,
    ```
 
    Expected: `PASS` for all seven checks when shellcheck, actionlint, JDK 21 and Maven are installed. Without one
-   of those tools, its check prints `SKIP` with the reason (`FAIL` with `--strict`). On 2026-10-14 the whole command
-   took 326 s on a Windows 11 laptop, of which the runner tests took about 80 s.
+   of those tools, its check prints `SKIP` with the reason (`FAIL` with `--strict`). Tools that are not on `PATH`
+   can go in `$HARNESS_TOOLS_DIR/bin` (default `$HARNESS_RUN_DIR/tools/bin`).
 
-5. Pull the images once (about 2 GB compressed):
-
-   ```bash
-   bash scripts/dc.sh --profile verify pull
-   bash scripts/dc.sh --profile certify --profile reports pull
-   bash scripts/dc.sh --profile tools build runner
-   ```
-
-## Settings read from the environment
-
-| Variable | Default | Meaning |
-|---|---|---|
-| `HARNESS_RUN_DIR` | `<repo>/run` | Run folder (see above). |
-| `HARNESS_COMPOSE_PROJECT` | `ps01-harness` | Compose project name; must start with `ps01-`. |
-| `HARNESS_TOOLS_DIR` | `$HARNESS_RUN_DIR/tools` | Extra tools in `<dir>/bin`. |
-| `HARNESS_CHECK_STRICT` | `0` | `1` turns a missing tool into a check failure (`CI=true` does the same). |
-| `MAVEN_ARGS` | unset | Extra Maven options for `bash scripts/check.sh testrigs`, for example a settings file with a mirror. |
-| `SMOKE_START_TIMEOUT`, `SMOKE_STATS_INTERVAL` | `420`, `3` | Seconds `compose/smoke.sh` waits for a healthy stack, and between memory samples. |
-| `PKI_FORCE` | unset | `1` makes `pki-init` write a new key set. |
-| `VERIFY_IMAGE`, `CERTIFY_IMAGE`, `SUITE_SERVER_IMAGE`, ... | pinned digests in `docker-compose.yml` | Run against other images; full list in [compose/README.md](compose/README.md). |
-| `MINIO_ROOT_USER` | `harness` | MinIO user; its password `MINIO_ROOT_PASSWORD` is generated into `$HARNESS_RUN_DIR/env.local`. |
-| `OIDF_SUITE_CLONE`, `OIDF_SUITE_URL` | see [third_party/README.md](third_party/README.md) | Where `bash third_party/reimport.sh verify` finds the upstream suite. |
-| `HARNESS_SUITE_URL`, `HARNESS_VERIFY_URL`, `HARNESS_CERTIFY_URL`, `HARNESS_PKI_DIR`, `HARNESS_REPORTS_DIR` | set by the `runner` service | Where the runner finds the suite, Inji and the keys; only needed when running the runner outside Compose. |
-
-`scripts/dc.sh` writes `$HARNESS_RUN_DIR/env.local` on first use with random passwords (`VERIFY_DB_PASSWORD`,
-`CERTIFY_DB_PASSWORD`, `CERTIFY_KEYSTORE_PASSWORD`, `MINIO_ROOT_PASSWORD`, `VERIFY_KEYSTORE_PASSWORD`). It is never committed. Delete it only
-together with the volumes (`bash scripts/dc.sh --profile '*' down -v`).
+5. Pull the images and build the runner and testrig images once: `./run-full-stack-conformance.sh --prepare-only`.
 
 ## Build and test
 
@@ -106,8 +51,8 @@ together with the volumes (`bash scripts/dc.sh --profile '*' down -v`).
 | `bash scripts/check.sh shell` | shellcheck on every script, then `scripts/tests/test-*.sh` | shellcheck |
 | `bash scripts/check.sh runner` | ruff, pytest (`runner/tests`), validation of `conformance/schema/examples/*.json` | Python 3.12 |
 | `bash scripts/check.sh testrigs` | `mvn verify` of the bridge library `testrigs/apitest-commons-conformance` | JDK 21, Maven 3.9 |
+| `bash scripts/check.sh workflows docs` | actionlint on `.github/`; `docs/tools/check_docs.py` and its tests | actionlint, Python 3.12 |
 | `bash third_party/reimport.sh check` | the vendored suite scripts still match their import | bash |
-| `mvn -B -f testrigs/pom.xml -pl apitest-commons-conformance,inji-verify-api-test -am package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true` | builds the bridge and the Inji Verify rig's shaded jar (8 min 23 s with a warm shared cache on 2026-10-04) | JDK 21, Maven 3.9 |
 
 The runner's virtual environment can also be used directly:
 
@@ -120,52 +65,16 @@ The runner's virtual environment can also be used directly:
 
 Always call Compose through `scripts/dc.sh`. It adds the project name, the root `docker-compose.yml`, the
 generated `env.local`, and on Windows turns off Git Bash path rewriting. A plain `docker compose` fails with a
-missing `VERIFY_DB_PASSWORD`.
+missing `VERIFY_DB_PASSWORD`. Profiles and services: [compose/README.md](compose/README.md#profiles-and-services).
 
 ```bash
 bash scripts/dc.sh --profile verify up -d --wait                 # suite + Inji Verify + TLS proxy
 bash scripts/dc.sh --profile certify --profile reports up -d --wait   # suite + Inji Certify + TLS proxy + MinIO
 bash scripts/dc.sh --profile '*' down -v                          # stop everything and delete the volumes
 bash compose/smoke.sh verify                                      # start, check, measure, remove
-bash compose/smoke.sh certify reports
 ```
 
 Always stop with `--profile '*'`: a plain `down` leaves profiled services running.
-
-| Profile | Services |
-|---|---|
-| `suite` | `suite-mongodb`, `suite-server`, `suite-nginx` |
-| `verify` | the suite, `verify-db`, `verify-service`, `pki-init`, `tls-proxy` |
-| `certify` | the suite, `certify-db`, `certify`, `pki-init`, `tls-proxy` |
-| `reports` | `minio` with the bucket `automationtests` |
-| `tools` | one-off containers for `bash scripts/dc.sh run --rm`: `runner`, `probe` (curl), `minio-mc`, `pki-init` |
-
-Host ports, all bound to 127.0.0.1 only:
-
-| Port | What | Open from the host |
-|---|---|---|
-| 18443 | suite web page and API | `https://localhost.emobix.co.uk:18443` (self-signed certificate; the name is public DNS for 127.0.0.1) |
-| 18444 | suite mTLS listener | - |
-| 18450 | Inji Certify over TLS (`https://certify.inji.test:18450` inside the network) | only through containers |
-| 18451 | Inji Verify over TLS (`https://verify.inji.test:18451/v1/verify` inside the network) | only through containers |
-| 18460, 18461 | Inji Certify and Inji Verify over plain HTTP, for debugging | `http://127.0.0.1:18461/v1/verify/...` |
-| 18900, 18901 | MinIO S3 API and web console | `http://127.0.0.1:18901`, user `harness`, password `MINIO_ROOT_PASSWORD` from `env.local` |
-
-The `*.inji.test` names exist only inside the Compose network, so everything that calls them (the runner, the
-testrigs, `probe`) runs in a container. Example:
-`bash scripts/dc.sh run --rm probe --cacert /pki/ca.crt https://verify.inji.test:18451/v1/verify/actuator/health`.
-More detail: [compose/README.md](compose/README.md).
-
-## Running the harness
-
-The one-command scripts are the normal way to run everything; [docs/README.md](docs/README.md) is the step-by-step
-guide with expected output, and [docs/reference/cli.md](docs/reference/cli.md) lists every option.
-
-```bash
-./run-full-stack-conformance.sh --prepare-only          # pull images, build the runner and testrig images
-./run-conformance.sh --component verify --runner-only    # one component, runner only (80 s on 2026-10-14)
-./run-full-stack-conformance.sh --no-prepare            # both components, testrigs, MinIO, report (728 s on 2026-10-14)
-```
 
 Pieces on their own, for development:
 
@@ -186,9 +95,10 @@ Pieces on their own, for development:
   `fix:`, `docs:`, `test:`, `chore:`, and `import:` for upstream code. One logical change per commit.
 - **Sign-off**: every commit is signed off from your own GitHub account: `git commit -s` adds
   `Signed-off-by: Your Name <you@example.com>`. Forgot it on the last commit: `git commit --amend -s --no-edit`.
-- **Pull requests**: small (one task card, or one clear part of one), from a branch named after the task, for
-  example `feat/issuer-path`. A teammate reviews and approves before merge. Nobody pushes to `main` directly.
-- **Lanes**: change only the folders your task card owns ([docs/STATUS.md](docs/STATUS.md#how-to-split-the-remaining-work)).
+- **Pull requests**: small, from a branch named after the change, for example `feat/issuer-path`. Run
+  `bash scripts/check.sh all` before every push, paste the command, date and output of any live run into the pull
+  request description, and update the docs that describe the changed parts in the same pull request. A teammate
+  reviews and approves before merge. Nobody pushes to `main` directly.
 - **Upstream code** is imported unchanged in its own commit `import: upstream <repo>@<commit> (<licence>)`, with the
   upstream licence file, before any team change; the change follows in a separate commit, so `git log -p` shows
   the team's diff. Extract with `git -c core.autocrlf=false archive <commit> <path>` or `git cat-file blob`, never
@@ -203,57 +113,8 @@ Pieces on their own, for development:
 - **Line endings**: LF everywhere (`.editorconfig`), checked by `bash scripts/check.sh eol`.
 - **Runtime output** never goes into the repository; `git status --porcelain` must be empty after a run.
 - **Docs claim only what was run**, with the date, the command and the result. Anything not run is written as a
-  plan or left out.
-
-## Picking up a task card
-
-1. Open [docs/STATUS.md](docs/STATUS.md), pick a TODO or PARTIAL task whose "Depends on" tasks are DONE (or a part
-   the card marks "can start now"), and tell the team in the team chat, so two people do not take the same lane.
-2. Branch from the latest `main`:
-
-   ```bash
-   git switch main && git pull
-   git switch -c feat/<short-task-name>
-   ```
-
-3. Read the card's goal, owned folders, acceptance check and notes, and the README of each folder you will touch.
-4. Work in small commits (`git commit -s`), with unit tests next to the code. Run `bash scripts/check.sh all`
-   before every push.
-5. Run the card's acceptance check exactly as written. Paste the command, the date and the output into the pull
-   request description.
-6. In the same pull request: update the lane README and any doc your change affects, and update your task's row
-   and card in [docs/STATUS.md](docs/STATUS.md) (status, commit ids, what was measured, what is left).
-7. Push and open the pull request (`git push -u origin HEAD`, then the GitHub page or `gh pr create`). Ask a
-   teammate for review; merge after approval.
+  plan or left out. Measured results live in [docs/test-report.md](docs/test-report.md); other documents link to
+  it instead of repeating the numbers.
 
 If you do not have push access to the repository, ask the owner to add you as a collaborator, or fork it and open
 the pull request from your fork.
-
-## Troubleshooting
-
-| Symptom | Cause and fix |
-|---|---|
-| `Filename too long` during clone or checkout (Windows) | Long paths in the imported testrigs. Clone with `git -c core.longpaths=true clone ...` and run `git config core.longpaths true`. |
-| `check.sh eol` fails on a file you wrote | The editor saved CRLF. Use an editor that honours `.editorconfig`, or convert the file to LF. |
-| An imported upstream file no longer matches upstream | It was copied from a working tree that Git for Windows converted to CRLF. Re-extract with `git -c core.autocrlf=false archive` or `git cat-file blob`. |
-| A check prints `SKIP ... not found` | The tool is missing. Install it or put it in `$HARNESS_TOOLS_DIR/bin`. With `CI=true` or `--strict` it is a FAIL. |
-| `python3` opens the Microsoft Store or prints a hint (Windows) | The Store placeholder. Install Python from python.org and turn off the App execution aliases for `python.exe` and `python3.exe` in Windows settings. |
-| `inji-conformance.exe`: "Permission denied" right after install (Windows with Smart App Control) | Reinstall the launcher: `"$HARNESS_RUN_DIR/venv/Scripts/python" -m pip install --force-reinstall --no-deps --editable ./runner`. This fixed it on 2026-10-04. |
-| `VERIFY_DB_PASSWORD` error from `docker compose` | Compose was called directly. Use `bash scripts/dc.sh`. |
-| A run uses an old stack, or `precheck FAIL containers of ps01-harness already exist` | A stack is still running. `bash scripts/dc.sh --profile '*' down -v`. |
-| `ports FAIL in use on 127.0.0.1: ...` | Another program uses a harness port. Find it with `netstat -ano` (Windows) or `ss -ltnp` (Linux) and stop it. |
-| `up --wait` fails because a one-shot container exited | Compose (5.5.1, measured) fails `--wait` when a one-shot container that nothing depends on has exited. That is why `pki-init` is only in the `verify`, `certify` and `tools` profiles and MinIO's bucket is created by a `post_start` hook; keep new one-shot steps the same way. |
-| `localhost.emobix.co.uk` does not resolve | The name is public DNS for 127.0.0.1. Offline, add `127.0.0.1 localhost.emobix.co.uk` to the hosts file. |
-| `verify.inji.test` or `certify.inji.test` does not resolve on the host | Expected: those names exist only inside the Compose network. Use the `probe` or `runner` container. |
-| `suite-server` never healthy; its log says "A non-https request has been received" | Something called the server without `X-Forwarded-Proto: https`. Go through `https://localhost.emobix.co.uk:18443`. |
-| Inji Certify not healthy within the start limit | It needs about 2 minutes on a loaded machine. Read `bash scripts/dc.sh --profile certify logs certify`; raise `SMOKE_START_TIMEOUT` if it is only slow. |
-| Inji Certify fails to start or sign after `env.local` or one volume was deleted | Its keystore volume, its database volume and `env.local` belong together: `bash scripts/dc.sh --profile '*' down -v` and start again. |
-| Inji Certify returns HTTP 200 but nothing happened | Its admin APIs report errors as HTTP 200 with an `errors` list in the body. Read the body. |
-| `pull access denied` for `minio/minio` or `minio/mc` | Those images are no longer published; the defaults use the `pgsty` builds. |
-| `inji-conformance run` exits 3 | The suite or the Inji component did not answer within 120 s, or a key from `pki-init` is missing. Start the stack with `up -d --wait` first. |
-| `inji-conformance run` exits 4 | The whole run hit `--timeout-minutes` (default 30); `results.json` is still written. Free Docker resources or raise the limit. |
-| Verifier modules fail at the wallet's response with HTTP 500 from Inji Verify | The Verify database was created before `compose/verify/init.sql` gained the `vp_submission` response code columns (2026-10-07). The database has no volume, so `bash scripts/dc.sh down -v` and a new `up` recreate it. |
-| Changes to `conformance/plans/` have no effect in a run | The runner image copies `conformance/`. Rebuild it: `bash scripts/dc.sh --profile tools build runner`. |
-| First Maven build of a testrig takes 8-15 minutes | Downloads, and the rig pom declares a snapshots repository that Maven probes for every artifact. Keep `~/.m2`; pass a mirror through `MAVEN_ARGS` if you have one. |
-| A rig report lands in the wrong place or is missing (Windows) | TestNG's output folder is relative to the working directory: keep `conformance.report.dir` on the same drive as the working directory. |
-| A rig report has no conformance rows | `EmailableReport` leaves out suites whose name contains "Master Suite"; the rows must be in the child suite. |
