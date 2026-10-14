@@ -101,3 +101,6 @@ exists yet.
 | Date | OS | Docker | What | Duration | Outcome |
 |---|---|---|---|---|---|
 | 2026-10-04 | Windows 11, Git Bash | Docker Desktop 29.7.2 | the team's setup per CONTRIBUTING.md | | checks and the WP-06 verifier module ran ([STATUS.md](STATUS.md)) |
+| 2026-10-14 | macOS 15.6.1 | Docker Desktop 28.3.0, 4 GiB | clone of `nikunj/ps01-finish` at `e85a9fb`, `--prepare-only`, `--no-prepare`, `demo.sh --regression` | 3 min | not completed: the laptop's disk filled up while the clone built its own 2.1 GB testrig image (`--prepare-only` exit 3, "Out of diskspace"); the later steps found no healthy stack. Not a harness defect, but the fresh-clone check is still open: rerun it with about 10 GB free |
+
+The same commands passed in the working clone on 2026-10-14 (TC-03, TC-19, TC-20).

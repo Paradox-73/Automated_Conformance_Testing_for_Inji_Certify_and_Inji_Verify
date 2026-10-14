@@ -8,7 +8,7 @@ Status of the harness on **2026-10-14**, branch `nikunj/ps01-finish` (from `main
 | Repository | <https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify> |
 | `main` | `ae2de5a`: WP-01 to WP-07, WP-11, WP-13, WP-08's code, the two platform fixes |
 | This branch | WP-08 to WP-18 finished as far as one machine allows; open items below |
-| Open | the first hosted GitHub Actions run (refused by GitHub for the owner account's billing), the video and slides (team) |
+| Open | the first hosted GitHub Actions run (refused by GitHub for the owner account's billing), the fresh-clone check (laptop ran out of disk), the video and slides (team) |
 
 How to work on a task: [CONTRIBUTING.md](../CONTRIBUTING.md). The words used below:
 
@@ -49,7 +49,7 @@ but part of the acceptance check could not be run.
 | WP-15 | platform | GitHub Actions workflow `full-stack-conformance.yml` | WP-10, WP-12, WP-13 | PARTIAL | `b50de8b`; the hosted run is open |
 | WP-16 | delivery | Documentation set | WP-10, WP-11 | DONE | `cc5a25e`, `058a51f` |
 | WP-17 | delivery | Test report, test data and Inji findings | WP-09, WP-12, WP-14, WP-16 | DONE | `cc5a25e`, `058a51f`, `50d1836`; build comparison dropped |
-| WP-18 | delivery | Demo script, video and deck material, final README | WP-13, WP-15, WP-16, WP-17 | DONE | `f05b4d0`, `058a51f`; video and slides by the team |
+| WP-18 | delivery | Demo script, video and deck material, final README | WP-13, WP-15, WP-16, WP-17 | PARTIAL | `f05b4d0`, `058a51f`; fresh-clone check open (disk), video and slides by the team |
 
 Also on this branch: `ae5dc91` (the scripts and their tests on macOS), `861a04b` and `f05b4d0` (secrets and eol
 fixes found by the checks).
@@ -134,8 +134,12 @@ Every run with its run id, duration and evidence is in [test-report.md](test-rep
 ### WP-18 Demo and final README
 
 - `demo/demo.sh` (`--regression` exits 0 after the gate failed as intended), video storyboard, deck outline, final
-  README with the recorded badge, [submission-checklist.md](submission-checklist.md). The fresh-clone check is in
-  [test-report.md](test-report.md). Video and slides: the team.
+  README with the recorded badge, report screenshots in `docs/demo/screenshots/`,
+  [submission-checklist.md](submission-checklist.md). Video and slides: the team.
+- What remains: the fresh-clone acceptance. The attempt of 2026-10-14 ran out of disk on the laptop while building
+  the testrig image ([test-report.md](test-report.md#fresh-clone-and-newcomer-walkthrough)); rerun
+  `./run-full-stack-conformance.sh --prepare-only` and `--no-prepare` and `bash demo/demo.sh --regression` in a fresh
+  clone with about 10 GB free.
 
 ### Open problems found by the tasks
 

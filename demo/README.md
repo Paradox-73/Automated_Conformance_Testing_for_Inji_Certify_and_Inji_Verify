@@ -8,6 +8,7 @@ The live demo and the material for the demo video.
 | `regression.compose.yml` | Compose override that gives Inji Certify a wrong issuer identifier: a configuration-only regression, nothing in Inji's code changes |
 | [../docs/demo/video-storyboard.md](../docs/demo/video-storyboard.md) | Shots, timings and narration of the video (under 5 minutes) |
 | [../docs/demo/deck-outline.md](../docs/demo/deck-outline.md) | The slides |
+| [../docs/demo/screenshots/](../docs/demo/screenshots/) | The HTML report of the full-stack run, the report and diff of the injected regression (2026-10-14) |
 
 ```text
 bash demo/demo.sh                              both components, runner, testrig, MinIO; prints the report path
