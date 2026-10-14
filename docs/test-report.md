@@ -1,8 +1,10 @@
 # Test report
 
 What was run, when, on which commit and with what result. Every run id below has its evidence (manifest, results,
-report, badge) in `docs/evidence/<date>-<run id>/`; dates in run ids and folder names are UTC, the runs took place on
-2026-10-14 IST. Test case definitions: [test-cases.md](test-cases.md).
+`report/summary.md`, badge) in `docs/evidence/<date>-<run id>/`; dates in run ids and folder names are UTC, the runs
+took place on 2026-10-14 IST. The HTML report is kept for the README's run `20261014T133851Z-c99cce` only;
+`inji-conformance report --run docs/evidence/<folder> --out <dir>` rebuilds it for any other run from its
+`results.json` (the suite's exports are never committed, so its export links stay empty). Test case definitions: [test-cases.md](test-cases.md).
 
 ## Machines
 
