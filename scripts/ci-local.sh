@@ -17,6 +17,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/common.sh"
 
 component=${1:-}
+if [[ $component == -h || $component == --help ]]; then sed -n '4,11s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"; exit 0; fi
 [[ $component == certify || $component == verify ]] || die "usage: bash scripts/ci-local.sh certify|verify [OPTIONS]" 2
 shift
 
