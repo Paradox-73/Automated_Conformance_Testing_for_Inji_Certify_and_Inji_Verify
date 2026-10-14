@@ -11,7 +11,7 @@ Standard library only. Every Markdown file git tracks (or would add) is checked,
   heading that exists (GitHub's anchor rules), also within the same file.
 - ``dated``: in the user documents (``docs/`` and the top-level ``README.md``) every ``bash``/``sh``/``console`` code
   block carries the date it was last run, ``<!-- run YYYY-MM-DD -->`` on one of the three lines above the fence,
-  between 2026-10-04 and today. ``docs/STATUS.md``, ``CONTRIBUTING.md`` and the lane READMEs hold commands for work
+  between 2026-10-04 and today. ``CONTRIBUTING.md`` and the lane READMEs hold commands for work
   in progress and are not held to it; ``docs/design/`` holds no commands.
 - ``evidence``: every run id cited in ``docs/test-report.md`` has a folder ``docs/evidence/<date>-<run id>/`` with a
   ``manifest.json`` that started on 2026-10-04 or later.
@@ -37,7 +37,7 @@ from pathlib import Path
 EARLIEST_RUN = dt.date(2026, 10, 4)
 UPSTREAM = ("third_party/", "testrigs/inji-certify-api-test/", "testrigs/inji-verify-api-test/")
 GENERATED = ("docs/evidence/",)  # files the runner wrote (summary.md of a run), copied as evidence
-NOT_DATED = ("docs/STATUS.md", "docs/design/")
+NOT_DATED = ("docs/design/",)
 COMMAND_LANGUAGES = {"bash", "sh", "shell", "console"}
 FINDING_HEADINGS = (
     "Summary",

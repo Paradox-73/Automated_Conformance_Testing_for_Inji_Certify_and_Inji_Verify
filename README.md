@@ -66,7 +66,7 @@ Results on 2026-10-14 ([test report](docs/test-report.md)): Inji Verify 11 of 11
 | [docs/findings/](docs/findings/README.md), [docs/suite-limitations.md](docs/suite-limitations.md) | Inji gaps found; suite-side limitations |
 | [docs/reference/cli.md](docs/reference/cli.md), [docs/reference/results-schema.md](docs/reference/results-schema.md) | commands; results and manifest files |
 | [demo/](demo/README.md), [docs/demo/](docs/demo/video-storyboard.md) | demo script, video storyboard, deck outline |
-| [docs/STATUS.md](docs/STATUS.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/submission-checklist.md](docs/submission-checklist.md) | tasks and their status, how to contribute, the submission |
+| [CONTRIBUTING.md](CONTRIBUTING.md), [docs/submission-checklist.md](docs/submission-checklist.md) | how to contribute; where each deliverable of the problem statement is |
 | [docs/manual-test-checklist.md](docs/manual-test-checklist.md), [docs/manual-test-results-template.md](docs/manual-test-results-template.md) | the checks only a person can do (fresh clone per OS, report review, video dry run) and the form to report them |
 
 ## Repository checks

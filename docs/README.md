@@ -3,14 +3,9 @@
 Step by step from an empty machine to a conformance report of Inji Certify and Inji Verify. Every command block
 below carries the date it was last run; on 2026-10-14 that was macOS 15.6.1 on Apple silicon with Docker Desktop
 (Engine 28.3.0, Compose 2.38.1, a 4 GiB VM), GNU bash 5.3, Python 3.12.15. The same commands run in Git Bash on
-Windows and in bash on Linux; the team's Windows measurements of 2026-10-04 are in [STATUS.md](STATUS.md).
+Windows and in bash on Linux; every measured run is in [test-report.md](test-report.md).
 
-Other documents: [architecture](architecture.md), [handoffs](handoffs.md), [API automation](api-automation.md),
-[benchmark](benchmark.md), [testrig integration](testrig-integration.md), [CI](ci.md),
-[configuration](configuration.md), [troubleshooting](troubleshooting.md),
-[self-certification](self-certification.md), [command reference](reference/cli.md),
-[results file](reference/results-schema.md), [test report](test-report.md), [Inji findings](findings/README.md),
-[manual test checklist](manual-test-checklist.md).
+Every other document is listed in the [top-level README](../README.md#documentation).
 
 ## 1. Prerequisites
 
@@ -76,11 +71,9 @@ run <run id> finished in 80 s, exit code 0
 [info] stack stopped and removed
 ```
 
-Exit codes: 0 gate passed, 1 gate failed (a regression or a stale benchmark entry; the lines above name the module
-and condition), 2 usage or configuration error, 3 environment (a service did not answer or stopped answering, a run
-crashed, or no module results were collected), 4 time limit, 5 harness bug. The full table is in
-[reference/cli.md](reference/cli.md#exit-codes). `./run-conformance.sh
---help` lists every option.
+Exit code 1 means the gate failed (the lines above name the module and condition); 3 means the environment, not
+Inji, failed. Every code: [reference/cli.md](reference/cli.md#exit-codes). `./run-conformance.sh --help` lists every
+option.
 
 ## 5. Read the results
 

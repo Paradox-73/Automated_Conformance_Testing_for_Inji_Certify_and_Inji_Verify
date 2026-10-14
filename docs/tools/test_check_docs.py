@@ -19,7 +19,7 @@ import check_docs
 TODAY = dt.date(2026, 10, 14)
 GOOD_GUIDE = """# Guide
 
-How to run it, see [the status](STATUS.md#all-tasks) and [below](#run-it).
+How to run it, see [the design](design/README.md#all-tasks) and [below](#run-it).
 
 ## Run it
 
@@ -59,7 +59,7 @@ class CheckDocsTest(unittest.TestCase):
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
         self.write("README.md", "# Project\n\nSee [the guide](docs/README.md).\n")
         self.write("docs/README.md", GOOD_GUIDE)
-        self.write("docs/STATUS.md", "# Status\n\n## All tasks\n\n```bash\nnot dated, allowed here\n```\n")
+        self.write("docs/design/README.md", "# Design\n\n## All tasks\n\n```bash\nnot dated, allowed here\n```\n")
         self.write("docs/badge.svg", "<svg/>\n")
 
     def tearDown(self) -> None:
@@ -89,9 +89,9 @@ class CheckDocsTest(unittest.TestCase):
             self.assertIn("is outside 2026-10-04 to 2026-10-14", self.findings()[0])
 
     def test_a_broken_link_or_anchor_is_found(self) -> None:
-        self.write("docs/README.md", GOOD_GUIDE.replace("STATUS.md#all-tasks", "STATUS.md#no-such"))
+        self.write("docs/README.md", GOOD_GUIDE.replace("design/README.md#all-tasks", "design/README.md#no-such"))
         self.assertEqual(
-            ["docs/README.md:3: link: STATUS.md#no-such: no heading with anchor #no-such"], self.findings()
+            ["docs/README.md:3: link: design/README.md#no-such: no heading with anchor #no-such"], self.findings()
         )
         self.write("docs/README.md", GOOD_GUIDE.replace("badge.svg", "missing.svg"))
         self.assertEqual(["docs/README.md:12: link: missing.svg does not exist"], self.findings())
