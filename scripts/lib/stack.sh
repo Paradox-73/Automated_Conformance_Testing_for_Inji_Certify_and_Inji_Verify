@@ -18,10 +18,6 @@ declare -gA STACK_PORTS=(
 # combined stack ran in a 4 GiB Docker VM on 2026-10-14; the runner and testrig containers come on top.
 readonly STACK_MIN_MEMORY=$((3 * 1024 * 1024 * 1024))
 
-dc() {
-  bash "$HARNESS_ROOT/scripts/dc.sh" "$@"
-}
-
 # stack_ports PROFILE...: the host ports the given profiles publish.
 stack_ports() {
   local profile ports=()

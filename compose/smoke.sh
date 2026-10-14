@@ -70,10 +70,6 @@ Profiles: ${KNOWN_PROFILES[*]}
 EOF
 }
 
-dc() {
-  bash "$HARNESS_ROOT/scripts/dc.sh" "$@"
-}
-
 # result CHECK STATUS [DETAIL]: print one result line and remember it for smoke.json.
 result() {
   local check=$1 status=$2 detail=${3:-}

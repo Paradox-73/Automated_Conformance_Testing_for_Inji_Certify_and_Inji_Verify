@@ -161,3 +161,8 @@ harness_venv_python() {
 harness_require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "required command not found: $1${2:+ ($2)}"
 }
+
+# dc ARGS...: docker compose through scripts/dc.sh (project, files, env.local and the run folder set).
+dc() {
+  bash "$HARNESS_ROOT/scripts/dc.sh" "$@"
+}
