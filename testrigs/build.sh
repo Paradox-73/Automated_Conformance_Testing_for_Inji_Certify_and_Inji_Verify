@@ -10,7 +10,8 @@
 # Host jars use the host's Maven when it runs on JDK 21 or newer (the rigs compile for release 21), else the
 # maven:3.9-eclipse-temurin-21 image with the checkout bind-mounted and a named volume as the Maven repository
 # (ps01-harness-m2). That container path is slow on Windows and macOS bind mounts; prefer --image there. MAVEN_ARGS
-# adds options to host builds, for example a settings file with a mirror.
+# adds options to host builds, for example a settings file with a mirror; TESTRIG_MAVEN_ARGS adds options to the
+# Maven stage of --image (a host settings-file path does not exist inside the build, so the two are separate).
 
 set -euo pipefail
 
@@ -26,7 +27,7 @@ image=0
 case ${1:-} in
   '') ;;
   --image) image=1 ;;
-  -h | --help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
+  -h | --help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' && exit 0 ;;
   *) die "unknown option: $1 (use --image or --help)" 2 ;;
 esac
 
@@ -42,7 +43,7 @@ cd "$HARNESS_ROOT"
 if ((image)); then
   harness_require_cmd docker "install Docker"
   log_info "building the image $IMAGE (the jars are compiled in its first stage)"
-  docker build -f testrigs/Dockerfile -t "$IMAGE" .
+  docker build -f testrigs/Dockerfile --build-arg "MAVEN_ARGS=${TESTRIG_MAVEN_ARGS:-}" -t "$IMAGE" .
   log_info "image built in $(($(date -u +%s) - started)) s"
   exit 0
 fi

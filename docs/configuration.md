@@ -14,7 +14,9 @@ Everything that can be set without editing code. Defaults reproduce the measured
 | `CERTIFY_AS_METADATA` | `add-authorization-endpoint` | `as-is` serves Inji Certify's OAuth metadata unchanged ([finding](findings/certify-as-metadata-authorization-endpoint.md)) |
 | `VERIFY_KEYSTORE_PATH`, `VERIFY_X509_SAN_DNS_HOST` | the pki-init keystore, `verify.inji.test` | Inji Verify's request signing keystore and its SAN |
 | `TESTRIG_IMAGE` | `ps01-harness/testrig:local` | Image `testrigs/build.sh --image` builds and `run-testrig.sh` runs |
-| `MAVEN_ARGS` | unset | Extra Maven options for the testrig build and check |
+| `TESTRIG_MAVEN_ARGS` | empty | Extra Maven options for the jar stage of `testrigs/build.sh --image`, for example `-Dmaven.repo.remote=...`; `MAVEN_ARGS` applies to host builds only |
+| `TESTRIG_ENDPOINT` | the compose service | `env.endpoint` of the rig in `run-testrig.sh`; in invoke mode the runner tests it |
+| `MAVEN_ARGS` | unset | Extra Maven options for host builds of the testrigs and for `check.sh testrigs` |
 | `CONFORMANCE_MAX_CONSECUTIVE_FAILURES` | `1000` (runner) | `run-test-plan.py`'s abort after modules in a row that did not finish |
 
 ## Images

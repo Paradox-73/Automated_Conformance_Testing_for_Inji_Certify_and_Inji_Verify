@@ -8,13 +8,15 @@
 #   /home/injicertify/apitest-injicertify-*-jar-with-dependencies.jar, /home/injicertify/testNgXmlFiles/
 #   /home/injiverify/apitest-injiverify-*-jar-with-dependencies.jar,   /home/injiverify/testNgXmlFiles/
 #   /opt/harness (runner package in /opt/harness/venv, third_party/, conformance/)
-# testrigs/run-testrig.sh starts it on the compose network as the calling user; the rigs extract their resources
-# next to the jar, so both folders are writable by any user. Nothing is written outside the container except the
-# report folder mounted at /out.
+# testrigs/run-testrig.sh starts it on the compose network as the compose services' user; the rigs extract their
+# resources next to the jar, so both folders are writable by any user. Nothing is written outside the container
+# except the report folder mounted at /out.
 
 # Stage 1: the jars. The Maven repository lives in a BuildKit cache mount, so a rebuild downloads nothing new.
 # Tests, javadoc and source jars are left out here; "bash scripts/check.sh testrigs" runs the bridge tests.
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237 AS jars
+# Extra Maven options for this stage, for example a mirror (build.sh passes TESTRIG_MAVEN_ARGS); Maven 3.9 reads them.
+ARG MAVEN_ARGS=""
 WORKDIR /src
 COPY testrigs testrigs
 RUN --mount=type=cache,target=/root/.m2 \
