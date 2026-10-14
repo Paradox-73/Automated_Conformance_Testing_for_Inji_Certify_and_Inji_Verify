@@ -1,3 +1,5 @@
+-- Changed by the inji-conformance-harness project (Apache-2.0 section 4(b) notice): 2026-10-07 added the
+-- statements at the end of this file; the rest is inji-verify@6a6ab3b docker-compose/docker-compose-injistack/init.sql.
 CREATE SCHEMA IF NOT EXISTS verify;
 
 CREATE TABLE IF NOT EXISTS verify.authorization_request_details (

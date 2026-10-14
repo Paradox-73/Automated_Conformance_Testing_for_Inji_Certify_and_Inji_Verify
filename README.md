@@ -81,5 +81,13 @@ Team code is MIT ([LICENSE](LICENSE)). Imported code keeps its licence and is im
 | `compose/certify/`, `compose/verify/` | Inji compose configuration and database scripts | Apache-2.0 |
 | `compose/suite/` | the suite's nginx configuration | MIT |
 
-Images run unmodified: the conformance suite (MIT), Inji Certify and Inji Verify (Apache-2.0, as their repositories'
-LICENSE files state), PostgreSQL, MongoDB, nginx, MinIO (AGPL-3.0, run as a separate program), Temurin, Python.
+The Inji labels follow each repository's root `LICENSE` at the imported `release-1.0.x` commit, which is Apache-2.0
+and is kept byte for byte next to the imported files. Some upstream files carry an MPL-2.0 header or text
+(`compose/certify/config/certify-default.properties`, `testrigs/inji-certify-api-test/README.md`), and both
+repositories' `master` branches now have an MPL-2.0 `LICENSE`; those files are kept as upstream wrote them. Every
+upstream file the team changed carries a change notice at its top: the two rig `pom.xml` files,
+`compose/certify/config/certify-default.properties` and `compose/verify/init.sql`.
+
+Images run unmodified: the conformance suite (MIT), Inji Certify and Inji Verify (Apache-2.0 at the imported commits,
+MPL-2.0 on their `master` branches; either allows running them unmodified), PostgreSQL, MongoDB, nginx, MinIO
+(AGPL-3.0, run as a separate program), Temurin, Python.

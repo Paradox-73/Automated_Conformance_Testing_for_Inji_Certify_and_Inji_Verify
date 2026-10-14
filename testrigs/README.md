@@ -12,8 +12,8 @@ in `upstream-patches/` as patch series.
 
 | Path | Purpose | Licence | Status |
 |---|---|---|---|
-| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs and one `pom.xml` line |
-| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs and one `pom.xml` line |
+| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
+| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
 | `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MIT | done |
 | `pom.xml` | Maven aggregator for the three projects | MIT | done |
 | `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MIT | done (2026-10-14) |

@@ -8,7 +8,7 @@ stock `EmailableReport`, uploaded to MinIO like any other rig report. Library de
 
 | Rig | Added | Row ids |
 |---|---|---|
-| Inji Certify (`testrigs/inji-certify-api-test`, upstream `203b143`) | `OpenIDConformanceTest`, `ConformanceRigRunner`, `injicertifyConformanceMasterTestSuite.xml`, `injicertifyConformanceSuite.xml`, one `pom.xml` line | `TC_OIDF_CERTIFY_01` to `_15` |
+| Inji Certify (`testrigs/inji-certify-api-test`, upstream `203b143`) | `OpenIDConformanceTest`, `ConformanceRigRunner`, `injicertifyConformanceMasterTestSuite.xml`, `injicertifyConformanceSuite.xml`, one `pom.xml` dependency line (and the duplicate javadoc plugin merged) | `TC_OIDF_CERTIFY_01` to `_15` |
 | Inji Verify (`testrigs/inji-verify-api-test`, upstream `6a6ab3b`) | the same four files and line (WP-11), and the upload settings call | `TC_OIDF_VERIFY_01` to `_11` |
 
 `OpenIDConformanceTest` has the shape of the rigs' other scripts (`ITest`, a `testcaselist` data provider,
