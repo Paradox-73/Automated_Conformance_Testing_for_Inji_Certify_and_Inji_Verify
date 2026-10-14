@@ -27,7 +27,9 @@ MinIO, writes the HTML report, stops the stack, and exits with the gate's code.
 Measured on 2026-10-14 from a fresh clone on a Windows 11 laptop with no JDK, with the images already pulled and
 another team's stack in the same Docker VM: the first command took 250 s, the second 728 s, exit 0
 ([timings](docs/evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)). On GitHub's hosted runner, with no
-image cache, the prepare step took 231 s and 239 s (run 38572816013).
+image cache, the prepare step took 231 s and 239 s (run 38572816013). With the Docker VM otherwise idle,
+`./run-full-stack-conformance.sh` alone (both steps) took 392 s at commit `073479b`, exit 0
+([evidence](docs/evidence/2026-10-14-20261014T141827Z-5e24aa/)).
 
 One component: `./run-conformance.sh --component certify|verify`; `--help` lists every option. Full guide:
 [docs/README.md](docs/README.md).

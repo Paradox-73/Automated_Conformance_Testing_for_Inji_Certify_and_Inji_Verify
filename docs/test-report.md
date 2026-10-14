@@ -23,11 +23,11 @@ Images as pinned in `docker-compose.yml` at the time of each run; each manifest 
 
 | Suite | Language | Tests | Result (2026-10-14) |
 |---|---|---|---|
-| `runner/tests` (pytest) | Python | 460 | all passed |
+| `runner/tests` (pytest) | Python | 462 | all passed |
 | `compose/pki/test_generate.py` (unittest) | Python | 19 | all passed |
 | `docs/tools/test_check_docs.py` (unittest) | Python | 11 | all passed |
 | `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 52 | 0 failures, 0 errors |
-| `scripts/tests/test-*.sh` (TAP) | bash | 86 cases in 5 scripts, plus the PKI script | all ok |
+| `scripts/tests/test-*.sh` (TAP) | bash | 88 cases in 5 scripts, plus the PKI script | all ok |
 
 `bash scripts/check.sh all` result: see [Repository checks and local CI](#repository-checks-and-local-ci).
 
@@ -53,6 +53,7 @@ the runner and testrig containers come on top.
 | TC-14 | verifier x509_san_dns template | `20261013T222732Z-0cc34f` | 86 s | 0 | 0 regressions, 10 known gaps, 0 stale, 1 not applicable |
 | TC-15 | `--combined --runner-only --track haip` | `20261013T222452Z-1865df` | 86 s | 0 | not gating; 63 + 11 modules, all regressions ([readiness](certification-readiness.md)) |
 | TC-19 | `./run-full-stack-conformance.sh --no-prepare` from a fresh clone, Windows 11 (with testrigs and MinIO) | `20261014T133851Z-c99cce` | 728 s | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` ([timings](evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)) |
+| TC-19 (final) | `./run-full-stack-conformance.sh` (prepare with the images present, then the run) at `073479b` with the `1.0.x` Certify image, Windows 11 with the Docker VM idle | `20261014T141827Z-5e24aa` | 392 s | 0 | the same verdicts and rig reports ([evidence](evidence/2026-10-14-20261014T141827Z-5e24aa/)) |
 | TC-19 (macOS) | the same in the working clone | `20261013T222910Z-f08c5b` | not recorded | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` |
 | TC-20 | `bash demo/demo.sh --regression --runner-only` | `20261013T223652Z-34a7ff` (before), `20261013T223845Z-e3ac63` (regression) | 99 s + 97 s | 0 | before 0, regression 1, diff 16 with 3 changed modules, "demo ok" |
 
@@ -139,8 +140,7 @@ Both gates passed in every run: certify `0 regressions, 9 known gaps, 0 stale, 3
 | Date | OS | Docker | What | Duration | Outcome |
 |---|---|---|---|---|---|
 | 2026-10-04 | Windows 11, Git Bash | Docker Desktop 29.7.2 | the team's setup per CONTRIBUTING.md | | checks and the WP-06 verifier module ran ([STATUS.md](STATUS.md)) |
-| 2026-10-14 | macOS 15.6.1 | Docker Desktop 28.3.0, 4 GiB | clone of `nikunj/ps01-finish` at `e85a9fb`, `--prepare-only`, `--no-prepare`, `demo.sh --regression` | 3 min | not completed: the laptop's disk filled up while the clone built its own 2.1 GB testrig image (`--prepare-only` exit 3, "Out of diskspace"); the later steps found no healthy stack. Not a harness defect, but the fresh-clone check is still open: rerun it with about 10 GB free |
-
+| 2026-10-14 | macOS 15.6.1 | Docker Desktop 28.3.0, 4 GiB | clone of `nikunj/ps01-finish` at `e85a9fb`, `--prepare-only`, `--no-prepare`, `demo.sh --regression` | 3 min | not completed: the laptop's disk filled up while the clone built its own 2.1 GB testrig image (`--prepare-only` exit 3, "Out of diskspace"); the later steps found no healthy stack. Not a harness defect; the next row is the rerun |
 | 2026-10-14 | Windows 11, Git Bash, no JDK | Docker Desktop 29.7.2, 7792 MiB, shared with another stack | clone of `ps01-finish` at `5ec802c`, `--prepare-only`, `--no-prepare` | 250 s + 728 s | passed, exit 0; images were already pulled ([evidence](evidence/2026-10-14-20261014T133851Z-c99cce/fresh-clone.txt)) |
 
 The same commands passed in the working clone on 2026-10-14 (TC-03, TC-19, TC-20). A fresh clone on Linux and macOS,

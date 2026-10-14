@@ -56,14 +56,16 @@ bash scripts/dc.sh --profile '*' down -v
 - `testrigs/build.sh` without `--image` builds the jars on the host instead: with the host's Maven on JDK 21 or
   newer, else in the Maven image with the checkout bind-mounted, which is slow on Windows and macOS.
 - `testrigs/run-testrig.sh certify|verify --results FILE | --invoke` runs the rig in that image on the compose
-  network as the calling user; with MinIO running it uploads to `automationtests/<module>/`.
+  network as the compose services' user (`harness_container_user`); with MinIO running it uploads to
+  `automationtests/<module>/`.
 - `./run-conformance.sh` (without `--runner-only`) runs the consume mode for each component after the runner and
   copies the report to `<run>/testrig/<component>/`.
 
 Image build measured 2026-10-14 on Windows 11 without a host JDK (Docker Desktop, 8 GB VM, 12 CPUs, shared with
 another team's Inji stack): first build 648 s, of which Maven 541 s; a rebuild with `--no-cache` and the Maven cache
 mount kept took 926 s while that stack's three Java services used about 6 CPUs, so the time is bounded by CPU in
-the Docker VM (compiling and shading two 390 MB jars), not by downloads. Before the jars moved into the image, the
+the Docker VM (compiling and shading two 390 MB jars), not by downloads. With the Docker VM otherwise idle, the same
+rebuild of the Maven stage took 186 s and the whole image 269 s. Before the jars moved into the image, the
 bind-mounted Maven container on the same machine was still in the Certify rig's `jar` step after 60 minutes.
 
 Measured 2026-10-14 (host Maven, warm cache): jars in 95 s; Certify rig in invoke mode exit 0,
