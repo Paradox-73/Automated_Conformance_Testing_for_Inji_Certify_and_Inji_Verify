@@ -9,14 +9,16 @@
 #   bash testrigs/run-testrig.sh certify|verify --invoke [--out DIR]         the rig starts the runner itself
 #
 # --results FILE   results.json below $HARNESS_RUN_DIR/reports (run-conformance.sh passes <run>/<component>/results.json)
-# --invoke         the rig runs "inji-conformance run --component <c>" against the live stack (invoke mode)
+# --invoke         the rig runs "inji-conformance run --component <c> --target <env.endpoint>" itself (invoke
+#                  mode); Inji Verify's API is below /v1/verify, so its target is <env.endpoint>/v1/verify
 # --out DIR        report folder (default $HARNESS_RUN_DIR/testrig/<module>-<UTC time>); report.txt there names the
 #                  report file and its MinIO object key
 #
 # Upload: when the MinIO service of the reports profile is running, the rig's stock EmailableReport uploads the
 # report to the bucket automationtests (s3-host http://minio:9000, user MINIO_ROOT_USER, password MINIO_ROOT_PASSWORD
 # from $HARNESS_RUN_DIR/env.local). Otherwise upload is off. TESTRIG_IMAGE picks the image (default
-# ps01-harness/testrig:local, built by "bash testrigs/build.sh --image").
+# ps01-harness/testrig:local, built by "bash testrigs/build.sh --image"). TESTRIG_ENDPOINT overrides the rig's
+# env.endpoint (default https://certify.inji.test:18450 or https://verify.inji.test:18451, the compose services).
 
 set -euo pipefail
 
@@ -27,12 +29,12 @@ source "$SCRIPT_DIR/../scripts/lib/common.sh"
 readonly IMAGE=${TESTRIG_IMAGE:-ps01-harness/testrig:local}
 readonly NETWORK=${HARNESS_COMPOSE_PROJECT}_default
 
-usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; }
 
 component=${1:-}
 case $component in
-  certify) module=injicertify endpoint=https://certify.inji.test:18450 ;;
-  verify) module=injiverify endpoint=https://verify.inji.test:18451 ;;
+  certify) module=injicertify endpoint=${TESTRIG_ENDPOINT:-https://certify.inji.test:18450} api_path= ;;
+  verify) module=injiverify endpoint=${TESTRIG_ENDPOINT:-https://verify.inji.test:18451} api_path=/v1/verify ;;
   -h | --help) usage && exit 0 ;;
   *) usage >&2 && exit 2 ;;
 esac
@@ -72,7 +74,8 @@ if [[ $mode == consume ]]; then
   java_props+=(-Dconformance.results.file="/reports/${results#"$reports"/}")
 else
   mounts+=(-v "$(harness_native_path "$(harness_run_dir pki)"):/pki:ro" -v "$(harness_native_path "$reports"):/reports")
-  java_props+=("-Dconformance.runner.command=inji-conformance run --component {component} --out {out}"
+  # {target} is the rig's env.endpoint (ConformanceSettings), so the runner tests what the rig is configured for.
+  java_props+=("-Dconformance.runner.command=inji-conformance run --component {component} --target {target}$api_path --out {out}"
     -Dconformance.runner.out="/reports/testrig-invoke-$component-$(date -u +%Y%m%dT%H%M%SZ)")
 fi
 

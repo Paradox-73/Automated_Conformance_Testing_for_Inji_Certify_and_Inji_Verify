@@ -17,6 +17,13 @@ stock `EmailableReport`, uploaded to MinIO like any other rig report. Library de
 `-Dconformance.runner.command=`). The stock `InjiTestRunner` also runs the conformance suite file and reports one
 Ignored row when neither is set, so normal rig runs stay green.
 
+In invoke mode the runner tests the system the rig is configured for: `run-testrig.sh` passes the command
+`inji-conformance run --component {component} --target {target}... --out {out}`, and the bridge fills `{target}` with
+the rig's `env.endpoint` (`ConformanceSettings`). Inji Verify's API is below `/v1/verify`, so the Verify command
+appends that path. `TESTRIG_ENDPOINT` sets `env.endpoint`; the default is the compose service
+(`https://certify.inji.test:18450`, `https://verify.inji.test:18451`). `./run-conformance.sh` uses consume mode,
+because its runner step has already run the plan; invoke mode would run the same plan a second time.
+
 `ConformanceRigRunner` runs only the conformance suite and exits 0, 1 (a failing row) or 2 (the rig could not run).
 The Certify runner leaves out what the stock runner does before any test and that needs a full MOSIP deployment:
 health checker, Keycloak users, OTP listener and setup, partner setup, database cleanup.
