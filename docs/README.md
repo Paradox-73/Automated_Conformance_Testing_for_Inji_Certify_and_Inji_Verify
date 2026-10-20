@@ -6,6 +6,7 @@ below carries the date it was last run; on 2026-10-14 that was macOS 15.6.1 on A
 Windows and in bash on Linux; every measured run is in [test-report.md](test-report.md).
 
 Every other document is listed in the [top-level README](../README.md#documentation).
+The interfaces (commands, exit codes, result files, HTTP calls, workflow inputs) are on one page: [api.md](api.md).
 
 ## 1. Prerequisites
 

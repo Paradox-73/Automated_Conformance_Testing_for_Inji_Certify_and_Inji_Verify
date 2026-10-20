@@ -52,6 +52,7 @@ Results on 2026-10-14 ([test report](docs/test-report.md)): Inji Verify 11 of 11
 |---|---|
 | [docs/README.md](docs/README.md) | install and run, step by step |
 | [docs/architecture.md](docs/architecture.md) | components, network, sequence diagrams, design decisions |
+| [docs/api.md](docs/api.md) | API reference: commands, exit codes, result files, HTTP calls, workflow inputs |
 | [docs/handoffs.md](docs/handoffs.md), [docs/api-automation.md](docs/api-automation.md) | how the suite's waiting steps are answered; every API call |
 | [docs/benchmark.md](docs/benchmark.md) | expected failures, verdicts and the gate |
 | [docs/testrig-integration.md](docs/testrig-integration.md) | the TestNG rows in the Inji api-testrigs and the S3 upload |
