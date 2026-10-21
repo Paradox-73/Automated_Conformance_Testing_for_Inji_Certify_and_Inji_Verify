@@ -7,6 +7,7 @@ Windows and in bash on Linux; every measured run is in [test-report.md](test-rep
 
 Every other document is listed in the [top-level README](../README.md#documentation).
 The interfaces (commands, exit codes, result files, HTTP calls, workflow inputs) are on one page: [api.md](api.md).
+How accessible the HTML report is, and how that was checked: [accessibility.md](accessibility.md).
 
 ## 1. Prerequisites
 

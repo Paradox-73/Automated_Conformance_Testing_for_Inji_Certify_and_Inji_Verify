@@ -46,6 +46,8 @@ Results on 2026-10-14 ([test report](docs/test-report.md)): Inji Verify 11 of 11
 15 modules complete with 3 passed, 9 known gaps and 3 not applicable; ten Inji gaps written up as
 [issue drafts](docs/findings/README.md); HAIP readiness in [docs/certification-readiness.md](docs/certification-readiness.md).
 
+The HTML report passes an automated accessibility check (axe-core, 0 violations, light and dark themes, keyboard reachable); what was checked and what was not is in [docs/accessibility.md](docs/accessibility.md).
+
 ## Documentation
 
 | Document | For |

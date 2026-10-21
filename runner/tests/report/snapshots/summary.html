@@ -88,6 +88,7 @@ h2 { font-size: 1.2rem; margin: 32px 0 12px; }
 h3 { font-size: 1.05rem; margin: 0; }
 section > h3 { margin: 20px 0 8px; }
 h4 { font-size: 0.95rem; margin: 16px 0 4px; }
+.detail-row h3 { font-size: 0.95rem; margin: 16px 0 4px; }
 .muted { color: var(--muted); }
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
@@ -162,7 +163,11 @@ td.num, th.num { text-align: right; white-space: nowrap; }
   border: 0; background: none; padding: 0; color: var(--link); text-align: left; font-weight: 600;
   display: inline-flex; gap: 6px; align-items: baseline; overflow-wrap: anywhere;
 }
-.toggle .chevron { display: inline-block; transition: transform 0.15s; }
+.toggle .chevron {
+  display: inline-block; width: 0; height: 0; flex: none; align-self: center;
+  border-style: solid; border-width: 0.3em 0 0.3em 0.5em; border-color: transparent transparent transparent currentColor;
+  transition: transform 0.15s;
+}
 .toggle[aria-expanded="true"] .chevron { transform: rotate(90deg); }
 tr.detail-row > td { background: var(--surface); padding: 4px 16px 16px 40px; }
 .js tr.detail-row[hidden] { display: none; }
@@ -197,16 +202,16 @@ footer p { margin: 4px 0; }
 <body>
 <a class="skip-link" href="#modules">Skip to the module table</a>
 <svg class="visually-hidden" aria-hidden="true">
-  <symbol id="i-conforms" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.4 8.3l2.4 2.5 4.8-5.3" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-gap" viewBox="0 0 16 16"><path d="M8 .8l7.6 14H.4z" fill="currentColor"/><path d="M8 5.6v4.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="12.4" r="1" fill="#fff"/></symbol>
-  <symbol id="i-regression" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.2 5.2l5.6 5.6M10.8 5.2l-5.6 5.6" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></symbol>
-  <symbol id="i-na" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
-  <symbol id="i-stale" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="4" fill="currentColor"/><path d="M8 3.8V8l3 2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-added" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="currentColor"/><path d="M8 4v8M4 8h8" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-conforms" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.4 8.3l2.4 2.5 4.8-5.3" fill="none" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gap" viewBox="0 0 16 16"><path d="M8 .8l7.6 14H.4z" fill="currentColor"/><path d="M8 5.6v4.6" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="12.4" r="1" style="fill:var(--bg)"/></symbol>
+  <symbol id="i-regression" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.2 5.2l5.6 5.6M10.8 5.2l-5.6 5.6" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-na" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8h7" style="stroke:var(--bg)" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-stale" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="4" fill="currentColor"/><path d="M8 3.8V8l3 2" fill="none" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-added" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="currentColor"/><path d="M8 4v8M4 8h8" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="i-removed" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 8h8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
-  <symbol id="i-changed" viewBox="0 0 16 16"><path d="M8 .6l7.4 7.4L8 15.4.6 8z" fill="currentColor"/><path d="M5.3 8h5.4M8.6 5.9 10.7 8l-2.1 2.1" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-passed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M4.8 8.1l2.2 2.3 4.2-4.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-failed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-changed" viewBox="0 0 16 16"><path d="M8 .6l7.4 7.4L8 15.4.6 8z" fill="currentColor"/><path d="M5.3 8h5.4M8.6 5.9 10.7 8l-2.1 2.1" fill="none" style="stroke:var(--bg)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-passed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M4.8 8.1l2.2 2.3 4.2-4.6" fill="none" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-failed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-none" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 8h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
 </svg>
 
@@ -354,7 +359,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unknown-credential-configuration</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unknown-credential-configuration</button>
             </th>
             <td><code>FAILED</code></td>
             <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
@@ -365,17 +370,17 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details">
             <td colspan="7">
-              <h4>Failing conditions</h4>
+              <h3>Failing conditions</h3>
               <ul>
                 <li><code>VCIValidateCredentialErrorResponse</code> · FAILURE · block "Verify Credential Endpoint Response" · listed in the benchmark<br>Expected error &#39;unknown_credential_configuration&#39;, got &#39;invalid_credential_request&#39;<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3.1</span>                </li>
               </ul>
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected failure of <code>VCIValidateCredentialErrorResponse</code> · owner inji · spec OID4VCI-1FINAL-8.3.1 · issue draft <code>docs/findings/certify-unknown-credential-configuration-error.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: an unknown credential_configuration_id is answered with a generic error code instead of unknown_credential_configuration.</blockquote>
                 </li>
               </ul>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 262 ms · 2026-10-04 19:23:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -386,7 +391,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-method-post-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-request-uri-method-post</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-method-post-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-request-uri-method-post</button>
             </th>
             <td><code>FAILED</code></td>
             <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
@@ -397,17 +402,17 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-method-post-details">
             <td colspan="7">
-              <h4>Failing conditions</h4>
+              <h3>Failing conditions</h3>
               <ul>
                 <li><code>PostToRequestUriAndExtractRequestObject</code> · FAILURE · block "Authorization endpoint" · listed in the benchmark<br>POST to request_uri returned HTTP 405<br><span class="muted">Requirements: OID4VP-1FINAL-5.10</span>                </li>
               </ul>
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected failure of <code>PostToRequestUriAndExtractRequestObject</code> · owner inji · spec OID4VP-1FINAL-5.10 · issue draft <code>docs/findings/verify-request-uri-method-post.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: the request_uri endpoint answers only GET, so a wallet POST with wallet_nonce is refused.</blockquote>
                 </li>
               </ul>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 149 ms · 2026-10-04 19:33:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -432,7 +437,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -443,7 +448,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 222 ms · 2026-10-04 19:13:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -454,7 +459,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-additional-requests</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-additional-requests</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -465,7 +470,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 226 ms · 2026-10-04 19:14:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -476,7 +481,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-multiple-clients</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-multiple-clients</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -487,7 +492,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 230 ms · 2026-10-04 19:15:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -498,7 +503,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-happy-flow-skip-notification</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-skip-notification</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -509,7 +514,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 234 ms · 2026-10-04 19:16:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -520,7 +525,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-nonce</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-nonce</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -531,7 +536,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 242 ms · 2026-10-04 19:18:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -542,7 +547,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -553,7 +558,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 246 ms · 2026-10-04 19:19:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -564,7 +569,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-missing-proof</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-missing-proof</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -575,7 +580,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 254 ms · 2026-10-04 19:21:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -586,7 +591,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unknown-credential-identifier</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unknown-credential-identifier</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -597,7 +602,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 266 ms · 2026-10-04 19:24:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -608,7 +613,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-on-access-token-in-query</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-on-access-token-in-query</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -619,7 +624,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 270 ms · 2026-10-04 19:25:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -630,7 +635,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-happy-flow-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-happy-flow</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-happy-flow-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-happy-flow</button>
             </th>
             <td><code>REVIEW</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -641,9 +646,9 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-happy-flow-details">
             <td colspan="7">
-<p>The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it.</p>              <h4>Review</h4>
+<p>The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it.</p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 143 ms · 2026-10-04 19:31:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
                 <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:31:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
@@ -655,7 +660,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-minimal-cnf-jwk</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-minimal-cnf-jwk</button>
             </th>
             <td><code>REVIEW</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -666,9 +671,9 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details">
             <td colspan="7">
-              <h4>Review</h4>
+              <h3>Review</h3>
               <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 146 ms · 2026-10-04 19:32:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
                 <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:32:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
@@ -680,7 +685,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-request-uri-fetched-twice</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-request-uri-fetched-twice</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -691,7 +696,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 152 ms · 2026-10-04 19:34:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -702,7 +707,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-signature</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-signature</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -713,7 +718,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 155 ms · 2026-10-04 19:35:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -724,7 +729,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-credential-signature</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-credential-signature</button>
             </th>
             <td><code>REVIEW</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -735,9 +740,9 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details">
             <td colspan="7">
-              <h4>Review</h4>
+              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 158 ms · 2026-10-04 19:36:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
                 <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:36:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
@@ -749,7 +754,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-sd-hash</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-sd-hash</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -760,7 +765,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 161 ms · 2026-10-04 19:37:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -771,7 +776,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-nonce</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-nonce</button>
             </th>
             <td><code>REVIEW</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -782,9 +787,9 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details">
             <td colspan="7">
-              <h4>Review</h4>
+              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 164 ms · 2026-10-04 19:38:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
                 <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:38:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
@@ -796,7 +801,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-invalid-kb-jwt-aud</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-aud</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -807,7 +812,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 167 ms · 2026-10-04 19:39:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -818,7 +823,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-kb-jwt-iat-in-past</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-kb-jwt-iat-in-past</button>
             </th>
             <td><code>REVIEW</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -829,9 +834,9 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details">
             <td colspan="7">
-              <h4>Review</h4>
+              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 170 ms · 2026-10-04 19:40:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
                 <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 95 ms · 2026-10-04 19:40:09 UTC<br><span class="muted">PNG of Inji Verify&#39;s vp-result uploaded to the suite</span>                </li>
@@ -843,7 +848,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>verify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vp-1final-verifier-kb-jwt-iat-in-future</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-kb-jwt-iat-in-future</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
@@ -854,7 +859,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details">
             <td colspan="7">
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 173 ms · 2026-10-04 19:41:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -865,7 +870,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-metadata-test-signed</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-metadata-test-signed</button>
             </th>
             <td><code>SKIPPED</code></td>
             <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
@@ -876,7 +881,7 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details">
             <td colspan="7">
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.2 · issue draft <code>docs/findings/certify-signed-metadata.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: signed credential issuer metadata is optional and is not published.</blockquote>
@@ -889,7 +894,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-batch-issuance-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-batch-issuance</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-batch-issuance-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-batch-issuance</button>
             </th>
             <td><code>SKIPPED</code></td>
             <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
@@ -900,13 +905,13 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-batch-issuance-details">
             <td colspan="7">
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.4 · issue draft <code>docs/findings/certify-batch-issuance.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: the issuer metadata has no batch_credential_issuance, so the suite skips the batch module.</blockquote>
                 </li>
               </ul>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 238 ms · 2026-10-04 19:17:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -917,7 +922,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</button>
             </th>
             <td><code>SKIPPED</code></td>
             <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
@@ -928,13 +933,13 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details">
             <td colspan="7">
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-F.1 · issue draft <code>docs/findings/certify-key-attestation.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: the credential configuration does not require key attestation, so there is nothing to send an invalid one to.</blockquote>
                 </li>
               </ul>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 250 ms · 2026-10-04 19:20:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -945,7 +950,7 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details"><span class="chevron" aria-hidden="true">&#9656;</span>oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm</button>
             </th>
             <td><code>SKIPPED</code></td>
             <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
@@ -956,13 +961,13 @@ footer p { margin: 4px 0; }
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details">
             <td colspan="7">
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-8.2 · issue draft <code>docs/findings/certify-credential-encryption.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: credential response encryption is not offered, so the suite skips the unsupported-algorithm module.</blockquote>
                 </li>
               </ul>
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 258 ms · 2026-10-04 19:22:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>

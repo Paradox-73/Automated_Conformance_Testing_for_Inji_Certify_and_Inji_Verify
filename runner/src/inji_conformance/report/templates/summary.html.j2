@@ -130,7 +130,7 @@
             <td>{{ row.component }}</td>
             <th scope="row" class="module-name">
               {% if row.has_details %}
-              <button type="button" class="toggle" aria-expanded="true" aria-controls="{{ row.anchor }}-details"><span class="chevron" aria-hidden="true">&#9656;</span>{{ row.module.name }}</button>
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="{{ row.anchor }}-details"><span class="chevron" aria-hidden="true"></span>{{ row.module.name }}</button>
               {% else %}
               {{ row.module.name }}
               {% endif %}
@@ -151,7 +151,7 @@
               {% if row.module.description %}<p>{{ row.module.description }}</p>{% endif %}
               {% if row.module.verdict_reason %}<p><strong>Why this verdict:</strong> {{ row.module.verdict_reason }}</p>{% endif %}
               {% if row.failures %}
-              <h4>Failing conditions</h4>
+              <h3>Failing conditions</h3>
               <ul>
                 {% for view in row.failures %}
                 {% set failure = view.failure %}
@@ -163,7 +163,7 @@
               </ul>
               {% endif %}
               {% if row.benchmark %}
-              <h4>Benchmark entries</h4>
+              <h3>Benchmark entries</h3>
               <ul>
                 {% for view in row.benchmark %}
                 {% set ref = view.ref %}
@@ -174,11 +174,11 @@
               </ul>
               {% endif %}
               {% if row.review %}
-              <h4>Review</h4>
+              <h3>Review</h3>
               <p>Inji Verify showed <strong>{{ row.review.observed.value }}</strong>; the module expects <strong>{{ row.review.expected.value }}</strong>.{% if row.evidence_href %} <a href="{{ row.evidence_href }}">Evidence image</a>{% elif row.review.evidence %} Evidence image not in this folder.{% else %} No evidence image was made.{% endif %}</p>
               {% endif %}
               {% if row.handoffs %}
-              <h4>Handoffs</h4>
+              <h3>Handoffs</h3>
               <ul>
                 {% for handoff in row.handoffs %}
                 <li>{{ HANDOFF_LABELS.get(handoff.kind.value, handoff.kind.value) }}{% if handoff.http_status is not none %} · HTTP {{ handoff.http_status }}{% endif %} · {{ "%.0f" | format(handoff.duration_ms) }} ms{% if handoff.at %} · {{ format_time(handoff.at) }}{% endif %}
