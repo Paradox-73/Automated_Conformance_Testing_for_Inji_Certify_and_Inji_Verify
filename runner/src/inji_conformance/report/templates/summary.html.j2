@@ -34,7 +34,9 @@
       {% endfor %}
     </dl>
     {% if header.images %}
-    <h3>Images</h3>
+    {# Folded so the component cards and the module table are on the first screen; open it for the digests. #}
+    <details class="images">
+    <summary>Images: {{ plural(header.images | length, "container") }}, with registry digest and source commit</summary>
     <div class="table-wrap">
       <table>
         <caption class="visually-hidden">Container images of the run, with registry digest and source commit label</caption>
@@ -46,6 +48,7 @@
         </tbody>
       </table>
     </div>
+    </details>
     {% endif %}
   </section>
 

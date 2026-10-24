@@ -87,6 +87,7 @@ h1 { font-size: 1.6rem; margin: 0; }
 h2 { font-size: 1.2rem; margin: 32px 0 12px; }
 h3 { font-size: 1.05rem; margin: 0; }
 section > h3 { margin: 20px 0 8px; }
+.images > summary { margin: 20px 0 8px; font-weight: 600; cursor: pointer; }
 h4 { font-size: 0.95rem; margin: 16px 0 4px; }
 .detail-row h3 { font-size: 0.95rem; margin: 16px 0 4px; }
 .muted { color: var(--muted); }
@@ -255,7 +256,8 @@ footer p { margin: 4px 0; }
       <dt>Host python</dt>
       <dd>3.12.10</dd>
     </dl>
-    <h3>Images</h3>
+    <details class="images">
+    <summary>Images: 3 containers, with registry digest and source commit</summary>
     <div class="table-wrap">
       <table>
         <caption class="visually-hidden">Container images of the run, with registry digest and source commit label</caption>
@@ -267,6 +269,7 @@ footer p { margin: 4px 0; }
         </tbody>
       </table>
     </div>
+    </details>
   </section>
 
   <section aria-labelledby="compare-heading" class="compare">
