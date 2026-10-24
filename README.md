@@ -1,19 +1,22 @@
 # Inji conformance harness
 
-![conformance badge of the run of 2026-10-14](docs/evidence/2026-10-14-20261014T133851Z-c99cce/report/badge.svg)
+![conformance badge of the run of 2026-10-24](docs/evidence/2026-10-24-20261024T185916Z-f3a694/report/badge.svg)
 
 Automated OpenID conformance testing of [Inji Certify](https://github.com/inji/inji-certify) (credential issuer)
 and [Inji Verify](https://github.com/inji/inji-verify) (verifier) against the
 [OpenID Foundation conformance suite](https://gitlab.com/openid/conformance-suite), with no person in the loop.
 MOSIP Decode 2026, problem statement 01, team Badmosip.
 
-The badge is from the fresh-clone full-stack run of 2026-10-14 (run `20261014T133851Z-c99cce` at commit `5ec802c`,
-both components with the api-testrigs; [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/)).
+The badge is from the full-stack run of 2026-10-24 (run `20261024T185916Z-f3a694` at commit `3a54828`, both components
+with the api-testrigs; [evidence](docs/evidence/2026-10-24-20261024T185916Z-f3a694/)). The fresh-clone run of 2026-10-14
+(`20261014T133851Z-c99cce`) stays in [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/).
 
 ## Judge's path
 
-1. Open the report of the headline run in a browser from your clone (GitHub shows HTML files as source):
-   [summary.html](docs/evidence/2026-10-14-20261014T133851Z-c99cce/report/summary.html). It has one row per suite
+1. Open the report of the headline run in a browser, with no clone: once GitHub Pages is on, the
+   [hosted report](https://paradox-73.github.io/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/report/).
+   Offline, open [summary.html](docs/evidence/2026-10-24-20261024T185916Z-f3a694/report/summary.html) from your clone
+   (GitHub shows HTML files as source). It has one row per suite
    module, the gate per component and the image digests.
 2. Read what was run and measured: [docs/test-report.md](docs/test-report.md). Where each deliverable of the problem
    statement and the submission guidelines lives: [docs/submission-checklist.md](docs/submission-checklist.md).

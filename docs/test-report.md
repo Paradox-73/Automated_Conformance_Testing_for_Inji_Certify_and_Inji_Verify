@@ -2,7 +2,7 @@
 
 What was run, when, on which commit and with what result. Every run id below has its evidence (manifest, results,
 `report/summary.md`, badge) in `docs/evidence/<date>-<run id>/`; dates in run ids and folder names are UTC, the runs
-took place on 2026-10-14 IST. The HTML report is kept for the README's run `20261014T133851Z-c99cce` only;
+took place on 2026-10-14 IST. The HTML report is kept for the README's run `20261024T185916Z-f3a694` (full stack at `3a54828`, both gates passed) and for `20261014T133851Z-c99cce` only;
 `inji-conformance report --run docs/evidence/<folder> --out <dir>` rebuilds it for any other run from its
 `results.json` (the suite's exports are never committed, so its export links stay empty). Test case definitions: [test-cases.md](test-cases.md).
 
@@ -146,6 +146,8 @@ Hosted runs of `.github/workflows/full-stack-conformance.yml` on branch `ps01-fi
 | [39225469292](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39225469292) | `11966b9` | weekly `schedule` on `main`: the same five jobs | all green; full-stack 7 min 3 s |
 | [39429680714](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39429680714) | `c06c746` | push to `main`: checks, conformance (certify, verify), combined | all green |
 | [39569242806](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39569242806) | `c901391` | push to `main` | checks failed: `runner/tests/report/test_report_accessibility.py` was committed with CRLF line endings; fixed by converting the file to LF |
+| [40114910137](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/40114910137) | `3a54828` | push to `main` (docs only) | all green in 9 min 13 s |
+| [40129239219](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/40129239219) | `5aedd0b` | push to `main` (docs only) | all green in 10 min 6 s |
 
 Both gates passed in every run that reached them: certify `0 regressions, 9 known gaps, 0 stale, 3 not applicable`, verify
 `0 regressions, 0 known gaps, 0 stale`. The `workflow_call` path has not run from an Inji repository yet
