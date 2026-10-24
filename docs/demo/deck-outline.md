@@ -27,4 +27,4 @@ The slides of `PS01-Inji-Conformance-Harness.pptx`, 13 slides. Every number on a
     Linux; the findings are drafts.
 12. **Roadmap**: file the findings, add the caller workflow to Inji release pipelines, close the HAIP gaps,
     self-certification.
-13. **Team**: Kanav, Ivan, Sodhi, Nikunj; the repository link.
+13. **Team**: Kanav Bhardwaj, Ivan Bhargava, Nikunj Mahajan, Ishaan Sodhi, Harsh Modi; the repository link.

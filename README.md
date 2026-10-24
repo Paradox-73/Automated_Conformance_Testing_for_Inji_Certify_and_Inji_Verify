@@ -96,10 +96,11 @@ and documentation; one `PASS`, `FAIL` or `SKIP` line each, exit 1 on any failure
 
 | Member | GitHub | Main work |
 |---|---|---|
-| Kanav | [Paradox-73](https://github.com/Paradox-73) | compose stack, results contract, runner, verifier handoffs, TestNG bridge, report and diff |
-| Nikunj | [nikunj169](https://github.com/nikunj169) | benchmark gate, api-testrig integration, CI workflow, findings and docs |
-| Ivan | [Ivan825](https://github.com/Ivan825) | Inji Certify issuer path: seeding, credential offer handoff, issuer plan |
-| Ishaan Sodhi | Ishaan Sodhi (commit author) | Inji Verify schema fix, `dc.sh` profiles, PKI tests |
+| Kanav Bhardwaj | [Paradox-73](https://github.com/Paradox-73) | compose stack, results contract, runner, verifier handoffs, TestNG bridge, report and diff |
+| Nikunj Mahajan | [nikunj169](https://github.com/nikunj169) | benchmark gate, api-testrig integration, CI workflow, findings and docs |
+| Ivan Bhargava | [Ivan825](https://github.com/Ivan825) | Inji Certify issuer path: seeding, credential offer handoff, issuer plan |
+| Ishaan Sodhi | - | Inji Verify schema fix, `dc.sh` profiles, PKI tests |
+| Harsh Modi | - | team member |
 
 ## Licences and imported code
 
