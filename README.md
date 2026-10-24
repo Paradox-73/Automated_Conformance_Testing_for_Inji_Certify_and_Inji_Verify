@@ -10,6 +10,20 @@ MOSIP Decode 2026, problem statement 01, team Badmosip.
 The badge is from the fresh-clone full-stack run of 2026-10-14 (run `20261014T133851Z-c99cce` at commit `5ec802c`,
 both components with the api-testrigs; [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/)).
 
+## Judge's path
+
+1. Open the report of the headline run in a browser from your clone (GitHub shows HTML files as source):
+   [summary.html](docs/evidence/2026-10-14-20261014T133851Z-c99cce/report/summary.html). It has one row per suite
+   module, the gate per component and the image digests.
+2. Read what was run and measured: [docs/test-report.md](docs/test-report.md). Where each deliverable of the problem
+   statement and the submission guidelines lives: [docs/submission-checklist.md](docs/submission-checklist.md).
+3. Without Docker: `bash scripts/check.sh runner docs` (ruff, 465 pytest tests, schema examples, docs links). It took
+   24 s on our Windows laptop once the Python virtual environment existed; the first run also creates it.
+4. With Docker: `./run-full-stack-conformance.sh --prepare-only` once, then
+   `./run-conformance.sh --component verify --runner-only` (about 80 s) and
+   `bash demo/demo.sh --regression --runner-only` (about 200 s; the gate fails on purpose and names the three
+   broken modules).
+
 ## Quick start
 
 Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. From a clean clone:
@@ -77,6 +91,15 @@ bash scripts/check.sh all
 
 Line endings, secrets, shellcheck and shell tests, runner (ruff, pytest), testrigs (Maven), workflows (actionlint)
 and documentation; one `PASS`, `FAIL` or `SKIP` line each, exit 1 on any failure.
+
+## Team Badmosip
+
+| Member | GitHub | Main work |
+|---|---|---|
+| Kanav | [Paradox-73](https://github.com/Paradox-73) | compose stack, results contract, runner, verifier handoffs, TestNG bridge, report and diff |
+| Nikunj | [nikunj169](https://github.com/nikunj169) | benchmark gate, api-testrig integration, CI workflow, findings and docs |
+| Ivan | [Ivan825](https://github.com/Ivan825) | Inji Certify issuer path: seeding, credential offer handoff, issuer plan |
+| Ishaan Sodhi | Ishaan Sodhi (commit author) | Inji Verify schema fix, `dc.sh` profiles, PKI tests |
 
 ## Licences and imported code
 

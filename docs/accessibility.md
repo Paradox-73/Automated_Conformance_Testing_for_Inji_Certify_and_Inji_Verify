@@ -11,6 +11,11 @@ Automated check with axe-core 4.14.0: 0 violations and 0 items needing manual re
 in the light and the dark theme, with scripts on. Rules run: WCAG 2.0 A and AA, WCAG 2.1 A and AA, WCAG 2.2 AA, and the
 axe best-practice rules.
 
+Rerun on 2026-10-22 after the image list was folded into a `<details>` element, with axe-core 4.10.3 in Chrome
+155.0.8059.85 (default rule set): 0 violations and 0 items needing review on the fixture `summary.html` and `diff.html`
+and on `summary.html` rebuilt from the run `20261014T133851Z-c99cce` in `docs/evidence/`, light and dark. Tab reached
+63 of 63 controls on each `summary.html` (the 62 below plus the image list's summary) and 1 of 1 on `diff.html`.
+
 ## What we checked
 
 | Check | How | Result |
@@ -21,7 +26,7 @@ axe best-practice rules.
 | Colour is never the only signal | Each verdict and gate is an icon of its own shape followed by the verdict as a word. The icon's inner mark uses the page background colour, so it keeps the same contrast as the text beside it in both themes. | by design; checked in the markup |
 | Text alternatives | The one image (the badge) has `alt="Badge of this run"`. Icons are `aria-hidden` because the verdict word beside them is read. Links to a module's log or export carry the module name in visually hidden text. | passes |
 | Structure | `lang="en"`, one `h1`, no skipped heading level, every table has a caption and `scope` on every header cell, a skip link to the module table, a live region for the filter count. | passes |
-| Without script | Details, filters and the theme button depend on script. With script off, every row and detail stays visible and the controls stay hidden. | page is complete |
+| Without script | Details, filters and the theme button depend on script. With script off, every row and detail stays visible and the controls stay hidden. The image list is a native `<details>` element and opens without script. | page is complete |
 
 ## Problems found and fixed
 

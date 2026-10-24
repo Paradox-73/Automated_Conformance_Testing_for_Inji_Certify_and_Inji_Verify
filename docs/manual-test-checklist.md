@@ -30,7 +30,9 @@ The api-testrig reports end in `T-15_P-3_S-0_F-0_I-3_KI-9.html` (Inji Certify) a
 
 ## MT-01 to MT-03: fresh clone and one-command run, per operating system
 
-Do these on three machines: MT-01 on Linux, MT-02 on macOS, MT-03 on Windows 11 with Git Bash.
+Do these on three machines: MT-01 on Linux, MT-02 on macOS, MT-03 on Windows 11 with Git Bash. The workflow's
+full-stack job already runs `./run-full-stack-conformance.sh` from scratch on GitHub's Linux runner (runs 38610806188
+and 39225469292 in [test-report.md](test-report.md#github-actions)); MT-01 adds a person's own Linux machine and clone.
 
 1. Clone into an empty folder with
    `git clone -c core.longpaths=true https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git harness`,

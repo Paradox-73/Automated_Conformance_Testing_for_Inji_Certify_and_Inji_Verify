@@ -23,9 +23,9 @@ Images as pinned in `docker-compose.yml` at the time of each run; each manifest 
 
 ## Unit and component tests
 
-| Suite | Language | Tests | Result (2026-10-14) |
+| Suite | Language | Tests | Result (2026-10-14 unless dated) |
 |---|---|---|---|
-| `runner/tests` (pytest) | Python | 462 | all passed |
+| `runner/tests` (pytest) | Python | 465 | all passed (2026-10-22) |
 | `compose/pki/test_generate.py` (unittest) | Python | 19 | all passed |
 | `docs/tools/test_check_docs.py` (unittest) | Python | 11 | all passed |
 | `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 52 | 0 failures, 0 errors |
@@ -47,6 +47,7 @@ the runner and testrig containers come on top.
 | TC-03 | `./run-full-stack-conformance.sh --no-prepare --runner-only` (twice) | `20261013T212258Z-3eb7f6`, `20261013T212759Z-0a2ad5` | 285 s, 443 s | 0, 0 | both components as above |
 | TC-04 (R1) | `inji-conformance diff` of the two TC-03 runs | | | 0 | 26 modules unchanged |
 | TC-05 (R5) | `./run-conformance.sh --combined --runner-only --serial`, then `diff` against TC-19 | `20261013T223353Z-14700b` | 166 s | 0; diff 0 | same verdicts as parallel |
+| TC-05 (8 GiB) | `./run-conformance.sh --combined --runner-only`, with and without `--serial`, alternating, Windows 11, Docker 7792 MiB and 12 CPUs, no other stack running, 2026-10-22 at `c901391` | serial `20261022T083702Z-c752a3`, `20261022T084258Z-019225`; parallel `20261022T084053Z-6f9b65`, `20261022T084542Z-8315fc` | serial 222 s, 156 s; parallel 117 s, 98 s | 0 in all four | same verdicts as TC-01 and TC-02 in all four |
 | TC-06 (R2) | Inji Verify stopped after the first handoff, `--timeout-minutes 5` | `20261013T221457Z-54242c` | 341 s | 4 | 11 regressions ("handoff not delivered", "never started"); no container left |
 | TC-07 (R3) | suite server restarted during the issuer plan | `20261013T222050Z-26ba8a` | 108 s | 0 | same as TC-02; 13 failed responder polls in `notes` |
 | TC-08 (R4) | `HARNESS_COMPOSE_FILES=demo/regression.compose.yml`, Certify | `20261013T221238Z-b9fc52` | 83 s | 1 | 3 regressions, named with their conditions |
@@ -59,10 +60,13 @@ the runner and testrig containers come on top.
 | TC-19 (macOS) | the same in the working clone | `20261013T222910Z-f08c5b` | not recorded | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` |
 | TC-20 | `bash demo/demo.sh --regression --runner-only` | `20261013T223652Z-34a7ff` (before), `20261013T223845Z-e3ac63` (regression) | 99 s + 97 s | 0 | before 0, regression 1, diff 16 with 3 changed modules, "demo ok" |
 
-Parallel against serial: on this 4 GiB VM the parallel runner-only runs (TC-03) took longer than the serial one
-(TC-05), because both plans and both Inji components compete for two cores and 4 GiB; the plans themselves ran
-114 s and 130 s side by side. The CI runners and machines with more memory are expected to gain from `--combined`;
-that has not been measured yet.
+Parallel against serial: on the 4 GiB VM the parallel runner-only runs (TC-03) took longer than the serial one
+(TC-05), because both plans and both Inji components compete for two cores and 4 GiB. With 7792 MiB and 12 CPUs
+(TC-05, 8 GiB) parallel is faster: the plans took 39 s and 31 s side by side against 101 s and 81 s one after the
+other (`wall_time_s` in each manifest), and the whole command 117 s and 98 s against 222 s and 156 s. The first
+serial run is the slowest because it was the first start of the stack that day. In the second pair, both warm, the
+plans ran 2.6 times faster and the command 1.6 times faster in parallel. In the three later runs, stack start, report
+and teardown took 67 s to 75 s in either mode.
 
 Gate checks without a stack: TC-10, `inji-conformance gate` on the certify results of TC-02 with the
 `fail-unknown-credential-identifier` entry removed from a copy of the benchmark, exited 1 and printed `regression:
@@ -130,7 +134,7 @@ configuration's private keys; the workflow and `ci-local.sh` now drop the whole 
 
 ## GitHub Actions
 
-Hosted runs of `.github/workflows/full-stack-conformance.yml` on branch `ps01-finish`, all on 2026-10-14
+Hosted runs of `.github/workflows/full-stack-conformance.yml` on branch `ps01-finish` (2026-10-14) and on `main`
 ([ci.md](ci.md#status-of-the-real-runs) has the history before these):
 
 | Run | Commit | Jobs | Result |
@@ -138,8 +142,12 @@ Hosted runs of `.github/workflows/full-stack-conformance.yml` on branch `ps01-fi
 | [38567545466](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38567545466) | `bfbf62c` | checks, conformance (certify, verify), combined | all green; the first green hosted run |
 | [38572816013](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38572816013) | `b10f4b2` | the same, with the testrig jars built in the image and the explicit harness checkout | all green; prepare 231 s and 239 s with no image cache, verify run 126 s |
 | [38574676932](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38574676932) | `fd3a38b` | the same plus full-stack (enabled on push for this one run) | all green; full-stack prepare 238 s, run 190 s, exit 0 |
+| [38610806188](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/38610806188) | `fc308f5` | `workflow_dispatch` on `main`: checks, conformance (certify, verify), full-stack, combined | all green; full-stack job 7 min 41 s on a fresh hosted Linux runner |
+| [39225469292](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39225469292) | `11966b9` | weekly `schedule` on `main`: the same five jobs | all green; full-stack 7 min 3 s |
+| [39429680714](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39429680714) | `c06c746` | push to `main`: checks, conformance (certify, verify), combined | all green |
+| [39569242806](https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/actions/runs/39569242806) | `c901391` | push to `main` | checks failed: `runner/tests/report/test_report_accessibility.py` was committed with CRLF line endings; fixed by converting the file to LF |
 
-Both gates passed in every run: certify `0 regressions, 9 known gaps, 0 stale, 3 not applicable`, verify
+Both gates passed in every run that reached them: certify `0 regressions, 9 known gaps, 0 stale, 3 not applicable`, verify
 `0 regressions, 0 known gaps, 0 stale`. The `workflow_call` path has not run from an Inji repository yet
 ([manual-test-checklist.md](manual-test-checklist.md), MT-12).
 
