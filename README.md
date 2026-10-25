@@ -1,28 +1,30 @@
 # Inji conformance harness
 
-![conformance badge of the run of 2026-10-24](docs/evidence/2026-10-24-20261024T185916Z-f3a694/report/badge.svg)
+![conformance badge of the run of 2026-10-25](docs/evidence/2026-10-25-20261025T105006Z-5fd632/report/badge.svg)
 
 Automated OpenID conformance testing of [Inji Certify](https://github.com/inji/inji-certify) (credential issuer)
 and [Inji Verify](https://github.com/inji/inji-verify) (verifier) against the
 [OpenID Foundation conformance suite](https://gitlab.com/openid/conformance-suite), with no person in the loop.
 MOSIP Decode 2026, problem statement 01, team Badmosip.
 
-The badge is from the full-stack run of 2026-10-24 (run `20261024T185916Z-f3a694` at commit `3a54828`, both components
-with the api-testrigs; [evidence](docs/evidence/2026-10-24-20261024T185916Z-f3a694/)). The fresh-clone run of 2026-10-14
+The badge is from the full-stack run of 2026-10-25 (run `20261025T105006Z-5fd632` at commit `e70e94d`, both components
+with the api-testrigs; [evidence](docs/evidence/2026-10-25-20261025T105006Z-5fd632/)). "patched" on the badge means the harness's TLS proxy adds the
+`authorization_endpoint` that Inji Certify's metadata lacks ([finding](docs/findings/certify-as-metadata-authorization-endpoint.md));
+`CERTIFY_AS_METADATA=as-is` runs Certify as served, where 13 of 15 issuer modules stop at the first check. The fresh-clone run of 2026-10-14
 (`20261014T133851Z-c99cce`) stays in [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/).
 
 **Demo video:** https://youtu.be/ER4DFlzwMs0
 
 ## Judge's path
 
-1. Open the report of the headline run in a browser, with no clone: once GitHub Pages is on, the
+1. Open the report of the headline run in a browser, with no clone: the
    [hosted report](https://paradox-73.github.io/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/report/).
-   Offline, open [summary.html](docs/evidence/2026-10-24-20261024T185916Z-f3a694/report/summary.html) from your clone
+   Offline, open [summary.html](docs/evidence/2026-10-25-20261025T105006Z-5fd632/report/summary.html) from your clone
    (GitHub shows HTML files as source). It has one row per suite
    module, the gate per component and the image digests.
 2. Read what was run and measured: [docs/test-report.md](docs/test-report.md). Where each deliverable of the problem
    statement and the submission guidelines lives: [docs/submission-checklist.md](docs/submission-checklist.md).
-3. Without Docker: `bash scripts/check.sh runner docs` (ruff, 465 pytest tests, schema examples, docs links). It took
+3. Without Docker: `bash scripts/check.sh runner docs` (ruff, 472 pytest tests, schema examples, docs links). It took
    24 s on our Windows laptop once the Python virtual environment existed; the first run also creates it.
 4. With Docker: `./run-full-stack-conformance.sh --prepare-only` once, then
    `./run-conformance.sh --component verify --runner-only` (about 80 s) and
@@ -41,7 +43,8 @@ Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. From a clean clone:
 
 The second command starts the stack, runs the OpenID4VCI 1.0 issuer plan against Inji Certify and the OpenID4VP 1.0
 verifier plan against Inji Verify in parallel, adds the results to both Inji api-testrigs and uploads their reports to
-MinIO, writes the HTML report, stops the stack, and exits with the gate's code.
+MinIO, writes the HTML report, stops the stack, and exits with the gate's code. Plain `docker compose up` does not work: `scripts/dc.sh` generates the passwords the
+compose file needs, so use `bash scripts/dc.sh` in its place.
 
 From a fresh clone on a Windows 11 laptop the two commands took 250 s and 728 s; with the Docker VM otherwise idle,
 `./run-full-stack-conformance.sh` alone took 392 s. Every run with its evidence: [docs/test-report.md](docs/test-report.md).
@@ -61,8 +64,10 @@ One component: `./run-conformance.sh --component certify|verify`; `--help` lists
 | Run diff: which modules changed | `inji-conformance diff` |
 | GitHub Actions workflow for pushes, releases, a weekly run and Inji release pipelines | `.github/workflows/full-stack-conformance.yml` |
 
-Results on 2026-10-14 ([test report](docs/test-report.md)): Inji Verify 11 of 11 modules conform; Inji Certify all
-15 modules complete with 3 passed, 9 known gaps and 3 not applicable; ten Inji gaps written up as
+Results on 2026-10-25 ([test report](docs/test-report.md)): Inji Verify 11 of 11 modules conform, 7 of them judged
+from Inji Verify's API verdict (the suite asks for a screenshot; the runner draws one from that verdict, and the UI is
+not checked, see [docs/handoffs.md](docs/handoffs.md)); Inji Certify all 15 modules complete with 3 passed, 9 known
+gaps and 3 not applicable, with the metadata workaround above; ten Inji gaps written up as
 [issue drafts](docs/findings/README.md); HAIP readiness in [docs/certification-readiness.md](docs/certification-readiness.md).
 
 The HTML report passes an automated accessibility check (axe-core, 0 violations, light and dark themes, keyboard reachable); what was checked and what was not is in [docs/accessibility.md](docs/accessibility.md).

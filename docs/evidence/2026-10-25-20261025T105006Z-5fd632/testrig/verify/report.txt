@@ -1,0 +1,3 @@
+testrig injiverify exit code 0
+report /e/Projects/MOSIP/PS01/inji-conformance-harness/run/reports/full-2026-10-25/testrig/verify/mosip-inji-conformance-injiverify-conformance-2026-10-25_10-53-full-report_T-11_P-11_S-0_F-0_I-0_KI-0.html
+minio  automationtests/injiverify/mosip-inji-conformance-injiverify-conformance-2026-10-25_10-53-full-report_T-11_P-11_S-0_F-0_I-0_KI-0.html

@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="inji-conformance 0.1.0">
+<title>Inji conformance report · 20261025T105006Z-5fd632</title>
+<style>
+/*
+ * Style sheet of summary.html and diff.html, copied inline into each page.
+ *
+ * Colours are tokens with a light set and a dark set. Every text token reaches a contrast ratio of at least 4.5:1
+ * (WCAG 2.1 AA) on the page and card backgrounds of its theme; runner/tests/report/test_html.py reads the tokens
+ * from this file and checks it. The page follows the system theme unless the theme button set data-theme on <html>.
+ */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f6f8fa;
+  --text: #1f2328;
+  --muted: #59636e;
+  --border: #c8d1da;
+  --link: #0757c2;
+  --focus: #0757c2;
+  --conforms: #1a7f37;
+  --gap: #8a5300;
+  --regression: #c4261d;
+  --na: #59636e;
+  --stale: #7339c4;
+  --code-bg: #eef1f4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d1117;
+    --surface: #161b22;
+    --text: #e6edf3;
+    --muted: #9ea7b3;
+    --border: #3d444d;
+    --link: #58a6ff;
+    --focus: #58a6ff;
+    --conforms: #3fb950;
+    --gap: #d29922;
+    --regression: #ff7b72;
+    --na: #9ea7b3;
+    --stale: #bc8cff;
+    --code-bg: #212830;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --muted: #9ea7b3;
+  --border: #3d444d;
+  --link: #58a6ff;
+  --focus: #58a6ff;
+  --conforms: #3fb950;
+  --gap: #d29922;
+  --regression: #ff7b72;
+  --na: #9ea7b3;
+  --stale: #bc8cff;
+  --code-bg: #212830;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+main, .page-header > div, footer { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+code, .mono { font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; font-size: 0.9em; }
+code { background: var(--code-bg); padding: 0 4px; border-radius: 4px; overflow-wrap: anywhere; }
+h1 { font-size: 1.6rem; margin: 0; }
+h2 { font-size: 1.2rem; margin: 32px 0 12px; }
+h3 { font-size: 1.05rem; margin: 0; }
+section > h3 { margin: 20px 0 8px; }
+.images > summary { margin: 20px 0 8px; font-weight: 600; cursor: pointer; }
+h4 { font-size: 0.95rem; margin: 16px 0 4px; }
+.detail-row h3 { font-size: 0.95rem; margin: 16px 0 4px; }
+.muted { color: var(--muted); }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link { position: absolute; left: 8px; top: -48px; background: var(--bg); padding: 8px; z-index: 10; }
+.skip-link:focus { top: 8px; }
+
+/* Header */
+.page-header { border-bottom: 1px solid var(--border); background: var(--surface); padding: 20px 0; }
+.page-header > div { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+.page-header p { margin: 4px 0 0; }
+.header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.badge-link img { display: block; height: 20px; }
+button {
+  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 12px; cursor: pointer;
+}
+
+/* Status: an icon of a distinct shape plus the word, coloured by the same token. */
+.icon { width: 1em; height: 1em; vertical-align: -0.15em; flex: none; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
+.status-conforms, .gate-passed { color: var(--conforms); }
+.status-gap { color: var(--gap); }
+.status-regression, .gate-failed { color: var(--regression); }
+.status-na, .gate-none, .gate-info { color: var(--na); }
+.status-stale { color: var(--stale); }
+.status-added { color: var(--link); }
+.status-removed, .status-changed { color: var(--text); }
+.gate { font-size: 1.1rem; border: 2px solid currentColor; border-radius: 8px; padding: 4px 12px; }
+
+/* Facts and tables */
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--border); }
+thead th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+tbody th { font-weight: 600; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+
+/* Summary strip and component cards */
+.totals { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; margin: 0 0 12px; list-style: none; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 16px; }
+.card p { margin: 4px 0; }
+.counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.counts li { display: flex; flex-direction: column; gap: 2px; }
+.counts .count { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.counts .status { font-size: 0.8rem; white-space: normal; }
+
+/* Comparison box */
+.compare { margin-top: 24px; border-left: 4px solid var(--link); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+.compare ul { margin: 8px 0 0; padding-left: 20px; }
+.workarounds { margin-top: 16px; border-left: 4px solid var(--gap); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+.workarounds h2 { margin-top: 0; }
+.workarounds h2 .icon { color: var(--gap); margin-right: 6px; }
+.workarounds ul { margin: 8px 0 0; padding-left: 20px; }
+
+/* Filters */
+.filters { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 0 0 8px; }
+.filters legend { font-weight: 600; padding: 0 4px; }
+.filters label { display: inline-flex; gap: 6px; align-items: center; }
+.filter-field { display: flex; flex-direction: column; gap: 4px; }
+.filter-field input[type="search"], .filter-field select {
+  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px;
+}
+.verdict-filter { display: flex; flex-wrap: wrap; gap: 4px 16px; border: 0; padding: 0; margin: 0; }
+.verdict-filter legend { padding: 0; margin-bottom: 4px; font-weight: 400; color: var(--muted); }
+#shown { margin: 4px 0 12px; color: var(--muted); }
+
+/* Module table */
+.module-name { font-weight: 600; overflow-wrap: anywhere; }
+.toggle {
+  border: 0; background: none; padding: 0; color: var(--link); text-align: left; font-weight: 600;
+  display: inline-flex; gap: 6px; align-items: baseline; overflow-wrap: anywhere;
+}
+.toggle .chevron {
+  display: inline-block; width: 0; height: 0; flex: none; align-self: center;
+  border-style: solid; border-width: 0.3em 0 0.3em 0.5em; border-color: transparent transparent transparent currentColor;
+  transition: transform 0.15s;
+}
+.toggle[aria-expanded="true"] .chevron { transform: rotate(90deg); }
+tr.detail-row > td { background: var(--surface); padding: 4px 16px 16px 40px; }
+.js tr.detail-row[hidden] { display: none; }
+.detail-row ul { margin: 4px 0; padding-left: 20px; }
+.detail-row li { margin: 2px 0; }
+.detail-row blockquote { margin: 4px 0; padding-left: 12px; border-left: 3px solid var(--border); }
+.links { display: flex; gap: 12px; white-space: nowrap; }
+.empty-state { padding: 24px; text-align: center; color: var(--muted); }
+
+/* Diff page */
+.conditions { margin: 0; padding: 0; list-style: none; }
+.conditions .plus::before { content: "+ "; font-weight: 700; }
+.conditions .minus::before { content: "\2212 "; font-weight: 700; }
+
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px; padding-top: 12px; padding-bottom: 32px; }
+footer p { margin: 4px 0; }
+
+@media (max-width: 720px) {
+  .counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .facts { grid-template-columns: 1fr; }
+  .facts dd { margin-bottom: 8px; }
+}
+
+@media print {
+  .filters, #theme-toggle, .skip-link { display: none; }
+  .js tr.detail-row[hidden] { display: table-row; }
+}
+
+</style>
+</head>
+
+<body>
+<a class="skip-link" href="#modules">Skip to the module table</a>
+<svg class="visually-hidden" aria-hidden="true">
+  <symbol id="i-conforms" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.4 8.3l2.4 2.5 4.8-5.3" fill="none" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gap" viewBox="0 0 16 16"><path d="M8 .8l7.6 14H.4z" fill="currentColor"/><path d="M8 5.6v4.6" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="12.4" r="1" style="fill:var(--bg)"/></symbol>
+  <symbol id="i-regression" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.2 5.2l5.6 5.6M10.8 5.2l-5.6 5.6" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-na" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8h7" style="stroke:var(--bg)" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-stale" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="4" fill="currentColor"/><path d="M8 3.8V8l3 2" fill="none" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-added" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="currentColor"/><path d="M8 4v8M4 8h8" style="stroke:var(--bg)" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-removed" viewBox="0 0 16 16"><rect x=".5" y=".5" width="15" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 8h8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-changed" viewBox="0 0 16 16"><path d="M8 .6l7.4 7.4L8 15.4.6 8z" fill="currentColor"/><path d="M5.3 8h5.4M8.6 5.9 10.7 8l-2.1 2.1" fill="none" style="stroke:var(--bg)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-passed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M4.8 8.1l2.2 2.3 4.2-4.6" fill="none" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-failed" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="currentColor"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" style="stroke:var(--bg)" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-none" viewBox="0 0 16 16"><path d="M8 .5l6.5 2.4v4.6c0 4-2.8 6.9-6.5 8-3.7-1.1-6.5-4-6.5-8V2.9z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 8h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="page-header">
+  <div>
+    <div>
+      <h1>Inji conformance report</h1>
+      <p>Combined run <code>20261025T105006Z-5fd632</code> · track gate · 2026-10-25 10:51:18 UTC to 2026-10-25 10:51:53 UTC (35.0 s)</p>
+    </div>
+    <div class="header-actions">
+      <span class="status gate-passed gate"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed with 1 workaround</span>
+      <a class="badge-link" href="badge.svg"><img src="badge.svg" alt="Badge of this run"></a>
+      <button type="button" id="theme-toggle" hidden>Theme: auto</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section aria-labelledby="workarounds-heading" class="workarounds">
+    <h2 id="workarounds-heading"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Workarounds applied: 1</h2>
+    <p>The harness changed what Inji publishes so the plan could run. The gate result holds only with these changes.</p>
+    <ul>
+      <li><strong>certify</strong> <code>certify-as-metadata-authorization-endpoint</code>: The TLS proxy changed Inji Certify&#39;s OAuth authorization server metadata: authorization_endpoint added by the TLS proxy<br>
+        Covers the Inji finding <code>docs/findings/certify-as-metadata-authorization-endpoint.md</code>. Turn it off with <code>CERTIFY_AS_METADATA=as-is</code>.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="run-heading">
+    <h2 id="run-heading">Run</h2>
+    <ul class="totals" aria-label="Verdicts of all 26 modules">
+      <li><strong>26 modules</strong></li>
+      <li><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span> 14</li>
+      <li><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span> 9</li>
+      <li><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span> 0</li>
+      <li><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span> 3</li>
+      <li><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span> 0</li>
+    </ul>
+    <dl class="facts">
+      <dt>Harness commit</dt>
+      <dd><code>e70e94d1f372 (uncommitted changes)</code></dd>
+      <dt>Runner</dt>
+      <dd>inji-conformance 0.1.0</dd>
+      <dt>Suite</dt>
+      <dd>5.3.1 at https://localhost.emobix.co.uk:18443</dd>
+      <dt>Plans</dt>
+      <dd>in parallel</dd>
+      <dt>Command</dt>
+      <dd><code>./run-full-stack-conformance.sh --combined --out full-2026-10-25</code></dd>
+      <dt>Host os</dt>
+      <dd>Windows (Git Bash, 3.6.9-b4195d69.x86_64)</dd>
+      <dt>Host python</dt>
+      <dd>3.12.15</dd>
+    </dl>
+    <details class="images">
+    <summary>Images: 10 containers, with registry digest and source commit</summary>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Container images of the run, with registry digest and source commit label</caption>
+        <thead><tr><th scope="col">Service</th><th scope="col">Image</th><th scope="col">Digest</th><th scope="col">Commit</th></tr></thead>
+        <tbody>
+          <tr><td>suite-nginx</td><td><code>registry.gitlab.com/openid/conformance-suite/nginx:release-v5.3.1@sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105</code></td><td><code>sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>certify</td><td><code>injistackqa/inji-certify-with-plugins:1.0.x@sha256:2c72a78cd3c54d9bfdaf58489123cd78aa3f7d12108fdf4546fc28591b593c24</code></td><td><code>sha256:2c72a78cd3c54d9bfdaf58489123cd78aa3f7d12108fdf4546fc28591b593c24</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>verify-service</td><td><code>injistackqa/inji-verify-service:1.0.x@sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef</code></td><td><code>sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>suite-server</td><td><code>registry.gitlab.com/openid/conformance-suite:release-v5.3.1@sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70</code></td><td><code>sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>tls-proxy</td><td><code>nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94</code></td><td><code>sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>verify-db</td><td><code>postgres:13@sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068</code></td><td><code>sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>certify-db</td><td><code>postgres:15@sha256:724292da1f2e50bdccfc3302ce75bbba7f4a6076701b588cc795fcac65683550</code></td><td><code>sha256:724292da1f2e50bdccfc3302ce75bbba7f4a6076701b588cc795fcac65683550</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>minio</td><td><code>pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372</code></td><td><code>sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372</code></td><td><code>d88f46ccee345a9c2fabe2d221d9a9e56bc11aec</code></td></tr>
+          <tr><td>suite-mongodb</td><td><code>mongo:6.0.13@sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070</code></td><td><code>sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070</code></td><td><code>not labelled</code></td></tr>
+          <tr><td>pki-init</td><td><code>python:3.12.15-slim@sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256</code></td><td><code>sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256</code></td><td><code>not labelled</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    </details>
+  </section>
+
+
+  <section aria-labelledby="components-heading">
+    <h2 id="components-heading">Components</h2>
+    <div class="cards">
+      <article class="card" aria-labelledby="card-certify">
+        <h3 id="card-certify">Inji Certify (issuer)</h3>
+        <p class="muted"><code>oid4vci-1_0-issuer-test-plan</code> · simple · private_key_jwt · sd_jwt_vc · vci · unsigned · dpop · issuer_initiated · plain · pre_authorization_code</p>
+        <ul class="counts" aria-label="Verdicts of Inji Certify">
+          <li><span class="count">3</span><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></li>
+          <li><span class="count">9</span><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></li>
+          <li><span class="count">0</span><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></li>
+          <li><span class="count">3</span><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></li>
+          <li><span class="count">0</span><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></li>
+        </ul>
+        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed with 1 workaround</span> · track gate</p>
+        <p>Target <code>https://certify.inji.test:18450</code>, commit <code>not recorded</code></p>
+        <p>Suite 5.3.1 · 15 modules · 33.0 s</p>
+        <p><span class="muted">Plan export not in this folder</span></p>
+      </article>
+      <article class="card" aria-labelledby="card-verify">
+        <h3 id="card-verify">Inji Verify (verifier)</h3>
+        <p class="muted"><code>oid4vp-1final-verifier-test-plan</code> · redirect_uri · sd_jwt_vc · url_query · direct_post · plain_vp</p>
+        <ul class="counts" aria-label="Verdicts of Inji Verify">
+          <li><span class="count">11</span><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></li>
+          <li><span class="count">0</span><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></li>
+          <li><span class="count">0</span><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></li>
+          <li><span class="count">0</span><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></li>
+          <li><span class="count">0</span><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></li>
+        </ul>
+        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span> · track gate</p>
+        <p>Target <code>https://verify.inji.test:18451/v1/verify</code>, commit <code>not recorded</code></p>
+        <p>Suite 5.3.1 · 11 modules · 35.0 s</p>
+        <p><span class="muted">Plan export not in this folder</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="modules">
+    <h2 id="modules" tabindex="-1">Modules</h2>
+    <fieldset id="filters" class="filters" hidden>
+      <legend>Filter modules</legend>
+      <div class="filter-field">
+        <label for="filter-component">Component</label>
+        <select id="filter-component">
+          <option value="">All components</option>
+          <option value="certify">certify</option>
+          <option value="verify">verify</option>
+        </select>
+      </div>
+      <fieldset class="verdict-filter">
+        <legend>Verdict</legend>
+        <label><input type="checkbox" name="verdict" value="regression" checked><span class="status status-regression"><svg class="icon" aria-hidden="true"><use href="#i-regression"/></svg>Regression</span></label>
+        <label><input type="checkbox" name="verdict" value="stale_benchmark" checked><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></label>
+        <label><input type="checkbox" name="verdict" value="known_gap" checked><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></label>
+        <label><input type="checkbox" name="verdict" value="conforms" checked><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></label>
+        <label><input type="checkbox" name="verdict" value="not_applicable" checked><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></label>
+      </fieldset>
+      <div class="filter-field">
+        <label for="filter-text">Search module or condition</label>
+        <input type="search" id="filter-text" autocomplete="off">
+      </div>
+    </fieldset>
+    <p id="shown" role="status" aria-live="polite">Showing 26 of 26 modules.</p>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Every test module of the run; regressions sort first. Use a module's button to show its failing conditions, benchmark entries and handoffs.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Component</th>
+            <th scope="col">Module</th>
+            <th scope="col">Suite result</th>
+            <th scope="col">Verdict</th>
+            <th scope="col">Failing conditions</th>
+            <th scope="col" class="num">Time</th>
+            <th scope="col">Links</th>
+          </tr>
+        </thead>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-metadata-test" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-metadata-test known gap vcicredentialissuermetadatavalidation checkforunexpectedparametersincredentialissuermetadata vcivalidateformatofcredentialconfigurationsinmetadata checkforunexpectedparametersinservermetadata">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-metadata-test</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>4 (all listed)</td>
+            <td class="num">1.6 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-vPiHAXvInfmOolY.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vPiHAXvInfmOolY</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>VCICredentialIssuerMetadataValidation</code> · FAILURE · block "Process Credential Issuer Metadata Response" · listed in the benchmark<br>Found invalid entries in OID4VCI Credential Issuer metadata input<br><span class="muted">Requirements: OID4VCI-1FINAL-12.2.3</span>                </li>
+                <li><code>CheckForUnexpectedParametersInCredentialIssuerMetadata</code> · WARNING · block "Process Credential Issuer Metadata Response" · listed in the benchmark<br>Unknown properties were found in the OID4VCI Credential Issuer metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the &#39;vci.allow_unexpected_credential_issuer_metadata_fields&#39; array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.<br><span class="muted">Requirements: OID4VCI-1FINAL-12.2.3</span>                </li>
+                <li><code>VCIValidateFormatOfCredentialConfigurationsInMetadata</code> · WARNING · block "Process Credential Issuer Metadata Response" · listed in the benchmark<br>Found credential configurations with unsupported formats<br><span class="muted">Requirements: OID4VCI-1FINALA-A.2, OID4VCI-1FINALA-A.3.1, OID4VCI-1FINALA-A.1</span>                </li>
+                <li><code>CheckForUnexpectedParametersInServerMetadata</code> · WARNING · block "Verify OAuth Authorization Server Metadata Response" · listed in the benchmark<br>Unknown properties were found in the OAuth Authorization Server metadata. This may indicate the sender has misunderstood the spec, or it may be using extensions the test suite is unaware of. If these are known extensions, add their names to the &#39;server.allow_unexpected_metadata_fields&#39; array in the test configuration to suppress this warning. If they are derived from a specification, please open an issue at https://gitlab.com/openid/conformance-suite/-/work_items/new (or, if you are unable to, email certification@oidf.org) so the test suite can be updated.<br><span class="muted">Requirements: OID4VCI-1FINAL-12.3, OID4VCI-1FINAL-12.2.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>VCICredentialIssuerMetadataValidation</code> · owner inji · spec OID4VCI-1FINAL-12.2.3 · issue draft <code>docs/findings/certify-metadata-null-display-values.md</code> · the listed problem happened in this run
+                  <blockquote>Inji Certify writes logo, background_color, background_image and text_color of credential_metadata.display as null when a credential configuration does not set them; the metadata schema allows a string or an object, not null (measured 2026-10-14).</blockquote>
+                </li>
+                <li>Expected failure of <code>CheckForUnexpectedParametersInCredentialIssuerMetadata</code> · owner inji · spec OID4VCI-1FINAL-12.2.3 · issue draft <code>docs/findings/certify-metadata-null-display-values.md</code> · the listed problem happened in this run
+                  <blockquote>Warning that follows the null display values: the suite then reports scope, cryptographic_binding_methods_supported and proof_types_supported of the SD-JWT configuration as unknown, together with credential_definition and credential_signing_alg_values_supported of the ldp_vc configuration FarmerCredential (measured 2026-10-14).</blockquote>
+                </li>
+                <li>Expected failure of <code>VCIValidateFormatOfCredentialConfigurationsInMetadata</code> · owner suite · spec OID4VCI-1FINALA-A.1 · issue draft <code>docs/suite-limitations.md</code> · the listed problem happened in this run
+                  <blockquote>The credential configuration FarmerCredential uses the ldp_vc format of Appendix A.1; suite release-v5.3.1 validates only SD-JWT VC and mdoc configurations and warns about every other format.</blockquote>
+                </li>
+                <li>Expected failure of <code>CheckForUnexpectedParametersInServerMetadata</code> · owner suite · spec OID4VCI-1FINAL-12.3 · issue draft <code>docs/suite-limitations.md</code> · the listed problem happened in this run
+                  <blockquote>Inji Certify publishes interactive_authorization_endpoint and require_interactive_authorization_request, which come from a later OpenID4VCI draft (interactive authorization); suite release-v5.3.1 does not know them and warns.</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-metadata-test-signed known gap ensurecontenttypeapplicationjwt vcidecodesignedcredentialissuermetadata">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-metadata-test-signed</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>2 (all listed)</td>
+            <td class="num">0.3 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-metadata-test-signed-UEkQfCaV2acmvaf.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test-signed</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=UEkQfCaV2acmvaf</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureContentTypeApplicationJwt</code> · FAILURE · block "Process Credential Issuer Metadata Response" · listed in the benchmark<br>Couldn&#39;t find content-type header in endpoint_response<br><span class="muted">Requirements: RFC8414-3.2</span>                </li>
+                <li><code>VCIDecodeSignedCredentialIssuerMetadata</code> · FAILURE · block "Process Credential Issuer Metadata Response" · listed in the benchmark<br>If present, a string is expected for credential_issuer_metadata_endpoint_response body but JsonNull was found<br><span class="muted">Requirements: OID4VCI-1FINAL-12.2.2</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureContentTypeApplicationJwt</code> · owner inji · spec OID4VCI-1FINAL-12.2.2 · issue draft <code>docs/findings/certify-signed-metadata.md</code> · the listed problem happened in this run
+                  <blockquote>Signed credential issuer metadata is optional and Inji Certify does not offer it: asked with Accept: application/jwt it answers the unsigned JSON document.</blockquote>
+                </li>
+                <li>Expected failure of <code>VCIDecodeSignedCredentialIssuerMetadata</code> · owner inji · spec OID4VCI-1FINAL-12.2.2 · issue draft <code>docs/findings/certify-signed-metadata.md</code> · the listed problem happened in this run
+                  <blockquote>Follows from the unsigned answer: there is no JWT to decode, so the suite stops the module (INTERRUPTED with result FAILED).</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-happy-flow known gap ensurehttpstatuscodeisanyof">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.9 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-yA6XeutHRgOIgsm.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=yA6XeutHRgOIgsm</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureHttpStatusCodeIsAnyOf</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>resource endpoint returned an unexpected http status<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureHttpStatusCodeIsAnyOf</code> · owner inji · spec OID4VCI-1FINAL-8.2 · issue draft <code>docs/findings/certify-credential-request-unknown-parameters.md</code> · the listed problem happened in this run
+                  <blockquote>The happy flow adds a parameter with a random name to the credential request to check that the issuer ignores it; Inji Certify answers HTTP 400 invalid_request &#34;Unrecognized field ... in request&#34; instead of issuing.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 206 ms · 2026-10-25 10:51:23 UTC<br><span class="muted">offer 1: Inji Certify offer 9561d989-966e-430a-8620-380922dcaaf7 (with tx_code) delivered by reference; suite answered in 152 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 980 ms · 2026-10-25 10:51:24 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;testId&#34;:&#34;yA6XeutHRgOIgsm&#34;}                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-happy-flow-additional-requests known gap ensurehttpstatuscodeisanyof">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-additional-requests</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.8 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-additional-requests-fl8FiYtjC33Fem3.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-additional-requests</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=fl8FiYtjC33Fem3</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureHttpStatusCodeIsAnyOf</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>resource endpoint returned an unexpected http status<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureHttpStatusCodeIsAnyOf</code> · owner inji · spec OID4VCI-1FINALA-F.1 · issue draft <code>docs/findings/certify-proof-iss-rejected.md</code> · the listed problem happened in this run
+                  <blockquote>The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (&#34;JWT iss claim has value inji-conformance-wallet, must be&#34; empty) and answers HTTP 400 invalid_proof.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 76 ms · 2026-10-25 10:51:26 UTC<br><span class="muted">offer 1: Inji Certify offer 827d4ddf-da68-4cb7-8a54-c28c9853bff3 (with tx_code) delivered by reference; suite answered in 58 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 620 ms · 2026-10-25 10:51:27 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;testId&#34;:&#34;fl8FiYtjC33Fem3&#34;}                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-happy-flow-multiple-clients known gap ensurehttpstatuscodeisanyof">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-multiple-clients</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.4 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-multiple-clients-MqbMpn8Fbn7uih5.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-multiple-clients</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=MqbMpn8Fbn7uih5</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureHttpStatusCodeIsAnyOf</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>resource endpoint returned an unexpected http status<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureHttpStatusCodeIsAnyOf</code> · owner inji · spec OID4VCI-1FINALA-F.1 · issue draft <code>docs/findings/certify-proof-iss-rejected.md</code> · the listed problem happened in this run
+                  <blockquote>The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (&#34;JWT iss claim has value inji-conformance-wallet, must be&#34; empty) and answers HTTP 400 invalid_proof.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 59 ms · 2026-10-25 10:51:29 UTC<br><span class="muted">offer 1: Inji Certify offer e93f8378-b85c-4340-a6b5-d732d47565ab (with tx_code) delivered by reference; suite answered in 43 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 201 ms · 2026-10-25 10:51:30 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;testId&#34;:&#34;MqbMpn8Fbn7uih5&#34;}                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-happy-flow-skip-notification known gap ensurehttpstatuscodeisanyof">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-happy-flow-skip-notification</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.5 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-happy-flow-skip-notification-BMvenuZ76STZb8y.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-skip-notification</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=BMvenuZ76STZb8y</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureHttpStatusCodeIsAnyOf</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>resource endpoint returned an unexpected http status<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureHttpStatusCodeIsAnyOf</code> · owner inji · spec OID4VCI-1FINALA-F.1 · issue draft <code>docs/findings/certify-proof-iss-rejected.md</code> · the listed problem happened in this run
+                  <blockquote>The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (&#34;JWT iss claim has value inji-conformance-wallet, must be&#34; empty) and answers HTTP 400 invalid_proof.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 63 ms · 2026-10-25 10:51:31 UTC<br><span class="muted">offer 1: Inji Certify offer 4e73f970-3c0e-40da-94fd-be2bd595a05e (with tx_code) delivered by reference; suite answered in 45 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 238 ms · 2026-10-25 10:51:32 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;testId&#34;:&#34;BMvenuZ76STZb8y&#34;}                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-fail-unknown-credential-configuration known gap vcivalidatecredentialerrorresponse">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unknown-credential-configuration</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.3 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-configuration-reH6n6NKL013l84.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=reH6n6NKL013l84</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>VCIValidateCredentialErrorResponse</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>Expected error code not found in credential error response: unknown_credential_configuration<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3.1</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>VCIValidateCredentialErrorResponse</code> · owner inji · spec OID4VCI-1FINAL-8.3.1 · issue draft <code>docs/findings/certify-credential-error-codes.md</code> · the listed problem happened in this run
+                  <blockquote>An unknown credential_configuration_id is answered with error invalid_credential_request instead of unknown_credential_configuration.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 84 ms · 2026-10-25 10:51:41 UTC<br><span class="muted">offer 1: Inji Certify offer 018a1f48-f89c-43a6-96f2-090927c6f8fb (with tx_code) delivered by reference; suite answered in 64 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 157 ms · 2026-10-25 10:51:42 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: VCIValidateCredentialErrorResponse: Expected error code not found in credential error response: unknown_credential_configuration&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;VCIValidateCredentialErrorResponse: Expected error code not found in credenti                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-fail-unknown-credential-identifier known gap vcivalidatecredentialerrorresponse">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unknown-credential-identifier</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.4 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unknown-credential-identifier-23xyRNfQVAZXNan.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-identifier</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=23xyRNfQVAZXNan</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>VCIValidateCredentialErrorResponse</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>Non-standard credential error response error code found: invalid_request<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3.1</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>VCIValidateCredentialErrorResponse</code> · owner inji · spec OID4VCI-1FINAL-8.3.1 · issue draft <code>docs/findings/certify-credential-error-codes.md</code> · the listed problem happened in this run
+                  <blockquote>A credential request with credential_identifier is answered with error invalid_request (&#34;Unrecognized field &#39;credential_identifier&#39; in request&#34;) instead of unknown_credential_identifier: Inji Certify does not accept the parameter at all.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 61 ms · 2026-10-25 10:51:43 UTC<br><span class="muted">offer 1: Inji Certify offer b8e63070-9163-4d1f-82e8-4abfad040b85 (with tx_code) delivered by reference; suite answered in 46 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 168 ms · 2026-10-25 10:51:45 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: VCIValidateCredentialErrorResponse: Non-standard credential error response error code found: invalid_request&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;VCIValidateCredentialErrorResponse: Non-standard credential error response error code found: inva                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query" data-component="certify" data-verdict="known_gap" data-search="certify oid4vci-1_0-issuer-fail-on-access-token-in-query known gap ensurehttpstatuscodeisanyof">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-on-access-token-in-query</button>
+            </th>
+            <td><code>FAILED</code></td>
+            <td><span class="status status-gap"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Known gap</span></td>
+            <td>1 (all listed)</td>
+            <td class="num">2.3 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-on-access-token-in-query-WdRVcujLvwJaq97.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-on-access-token-in-query</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=WdRVcujLvwJaq97</code></p>              <h3>Failing conditions</h3>
+              <ul>
+                <li><code>EnsureHttpStatusCodeIsAnyOf</code> · FAILURE · block " Verify Credential Endpoint Response" · listed in the benchmark<br>resource endpoint returned an unexpected http status<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3</span>                </li>
+              </ul>
+              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected failure of <code>EnsureHttpStatusCodeIsAnyOf</code> · owner inji · spec OID4VCI-1FINALA-F.1 · issue draft <code>docs/findings/certify-proof-iss-rejected.md</code> · the listed problem happened in this run
+                  <blockquote>The suite authenticates at the token endpoint (private_key_jwt) and so puts its client_id in the iss claim of the key proof, as Appendix F.1 asks; Inji Certify rejects every proof with an iss claim (&#34;JWT iss claim has value inji-conformance-wallet, must be&#34; empty) and answers HTTP 400 invalid_proof.</blockquote>
+                </li>
+              </ul>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 46 ms · 2026-10-25 10:51:46 UTC<br><span class="muted">offer 1: Inji Certify offer 7b7b4ca9-9d5d-4a9d-ab59-aa4a051d4fd5 (with tx_code) delivered by reference; suite answered in 33 ms</span>                </li>
+                <li>Transaction code entered · HTTP 400 · 116 ms · 2026-10-25 10:51:47 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span><br><strong>Error:</strong> {&#34;error&#34;:&#34;net.openid.conformance.condition.ConditionError: EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;error_description&#34;:null,&#34;cause&#34;:&#34;EnsureHttpStatusCodeIsAnyOf: resource endpoint returned an unexpected http status&#34;,&#34;testId&#34;:&#34;WdRVcujLvwJaq97&#34;}                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-invalid-nonce conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-nonce</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">2.2 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-nonce-0HEnHKTtuseduj6.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-nonce</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=0HEnHKTtuseduj6</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 55 ms · 2026-10-25 10:51:34 UTC<br><span class="muted">offer 1: Inji Certify offer 8b09504e-8d30-4973-abbc-b74138d2ac13 (with tx_code) delivered by reference; suite answered in 40 ms</span>                </li>
+                <li>Transaction code entered · HTTP 200 · 199 ms · 2026-10-25 10:51:35 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">2.4 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-gz0hSPWOUL5jUZT.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=gz0hSPWOUL5jUZT</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 58 ms · 2026-10-25 10:51:36 UTC<br><span class="muted">offer 1: Inji Certify offer 6f1b0dc9-384f-4224-8950-bed2ab1870f8 (with tx_code) delivered by reference; suite answered in 44 ms</span>                </li>
+                <li>Transaction code entered · HTTP 200 · 206 ms · 2026-10-25 10:51:37 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-fail-missing-proof conforms">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-missing-proof</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">2.3 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-missing-proof-Im4OeH8HSJMYyvj.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-missing-proof</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=Im4OeH8HSJMYyvj</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 55 ms · 2026-10-25 10:51:39 UTC<br><span class="muted">offer 1: Inji Certify offer af093d0f-176a-4457-b09b-940f67253b75 (with tx_code) delivered by reference; suite answered in 40 ms</span>                </li>
+                <li>Transaction code entered · HTTP 200 · 175 ms · 2026-10-25 10:51:40 UTC<br><span class="muted">transaction code of offer 1 delivered to tx_code_endpoint; the suite redeems the code and requests the credential within this call</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-happy-flow" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-happy-flow conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-happy-flow-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-happy-flow</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">5.4 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-happy-flow-OmxmrBNpdS0JILH.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-happy-flow-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=OmxmrBNpdS0JILH</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-happy-flow-OmxmrBNpdS0JILH.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 1694 ms · 2026-10-25 10:51:21 UTC<br><span class="muted">Inji Verify request req_cc8c54e8-ac9a-44ee-9636-9170320f0ffd (by value) delivered to authorization_endpoint; suite answered in 791 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 1384 ms · 2026-10-25 10:51:24 UTC<br><span class="muted">Inji Verify&#39;s verdict SUCCESS for txn_fb32f412-8d80-49ed-9300-caee0a635968 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-happy-flow-OmxmrBNpdS0JILH.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-minimal-cnf-jwk conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-minimal-cnf-jwk</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.9 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-minimal-cnf-jwk-dfSVjTobziUOyTB.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-minimal-cnf-jwk</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=dfSVjTobziUOyTB</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-minimal-cnf-jwk-dfSVjTobziUOyTB.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 131 ms · 2026-10-25 10:51:26 UTC<br><span class="muted">Inji Verify request req_7378570a-3902-469a-9731-3b5ed2de533e (by value) delivered to authorization_endpoint; suite answered in 114 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 79 ms · 2026-10-25 10:51:28 UTC<br><span class="muted">Inji Verify&#39;s verdict SUCCESS for txn_18d7ba2c-8713-4d70-8f75-68efcee36db2 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-minimal-cnf-jwk-dfSVjTobziUOyTB.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-request-uri-method-post" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-request-uri-method-post conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-method-post-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-request-uri-method-post</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.4 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-method-post-D3rK746eKdLorah.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-method-post-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=D3rK746eKdLorah</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-request-uri-method-post-D3rK746eKdLorah.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 115 ms · 2026-10-25 10:51:30 UTC<br><span class="muted">Inji Verify request req_e17ef611-d598-4748-b5ba-639e2b31231c (by value) delivered to authorization_endpoint; suite answered in 100 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 67 ms · 2026-10-25 10:51:31 UTC<br><span class="muted">Inji Verify&#39;s verdict SUCCESS for txn_733b04d2-7815-49dd-ae0a-58eeaaae89af uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-request-uri-method-post-D3rK746eKdLorah.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-request-uri-fetched-twice conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-request-uri-fetched-twice</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.3 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-request-uri-fetched-twice-TQ1XttNgCmN7lmf.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-fetched-twice</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=TQ1XttNgCmN7lmf</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-request-uri-fetched-twice-TQ1XttNgCmN7lmf.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 129 ms · 2026-10-25 10:51:33 UTC<br><span class="muted">Inji Verify request req_28979941-ef38-4633-9af0-ab689ae089d9 (by value) delivered to authorization_endpoint; suite answered in 111 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 81 ms · 2026-10-25 10:51:34 UTC<br><span class="muted">Inji Verify&#39;s verdict SUCCESS for txn_fac5529f-d02b-4aff-8d1d-4d1bb6e1fcb0 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-request-uri-fetched-twice-TQ1XttNgCmN7lmf.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-signature conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-signature</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.4 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-signature-7QKJBuBfQQWLsjE.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-signature</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=7QKJBuBfQQWLsjE</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-invalid-kb-jwt-signature-7QKJBuBfQQWLsjE.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 118 ms · 2026-10-25 10:51:37 UTC<br><span class="muted">Inji Verify request req_e43db589-d003-49ea-a447-41802a5f209b (by value) delivered to authorization_endpoint; suite answered in 99 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 82 ms · 2026-10-25 10:51:38 UTC<br><span class="muted">Inji Verify&#39;s verdict FAILED for txn_7fba47c2-7094-429d-83d3-15d51afc702a uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-kb-jwt-signature-7QKJBuBfQQWLsjE.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-credential-signature conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-credential-signature</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.5 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-invalid-credential-signature-sQbhBejYxmbLcvi.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-credential-signature</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=sQbhBejYxmbLcvi</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-invalid-credential-signature-sQbhBejYxmbLcvi.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 180 ms · 2026-10-25 10:51:40 UTC<br><span class="muted">Inji Verify request req_b7c67f94-d43a-46b9-a1a8-e4a8c8eb6ca1 (by value) delivered to authorization_endpoint; suite answered in 156 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 82 ms · 2026-10-25 10:51:41 UTC<br><span class="muted">Inji Verify&#39;s verdict FAILED for txn_9f89416b-10d9-4c04-be85-9ac55b617351 uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-credential-signature-sQbhBejYxmbLcvi.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-sd-hash conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-sd-hash</button>
+            </th>
+            <td><code>REVIEW</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">3.4 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-invalid-sd-hash-xZtJ8OQBJuIFSpN.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-sd-hash</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=xZtJ8OQBJuIFSpN</code></p>              <h3>Review</h3>
+              <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. <a href="../verify/evidence/oid4vp-1final-verifier-invalid-sd-hash-xZtJ8OQBJuIFSpN.png">Evidence image</a></p>
+              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 113 ms · 2026-10-25 10:51:43 UTC<br><span class="muted">Inji Verify request req_184cdf8c-945a-4325-91e3-01d182b18a8a (by value) delivered to authorization_endpoint; suite answered in 88 ms</span>                </li>
+                <li>Evidence of Inji Verify&#39;s verdict uploaded · HTTP 200 · 76 ms · 2026-10-25 10:51:45 UTC<br><span class="muted">Inji Verify&#39;s verdict FAILED for txn_9344ee57-0cc6-4061-97f5-e7f7cfbcc4dd uploaded into 1 placeholder(s) as verify/evidence/oid4vp-1final-verifier-invalid-sd-hash-xZtJ8OQBJuIFSpN.png</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-nonce conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-nonce</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">0.2 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-nonce-2Ay1o7XqUJ9rwwG.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-nonce</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=2Ay1o7XqUJ9rwwG</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 84 ms · 2026-10-25 10:51:47 UTC<br><span class="muted">Inji Verify request req_79d0797c-e0cc-4e79-992e-9ab4e591fedd (by value) delivered to authorization_endpoint; suite answered in 70 ms</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-invalid-kb-jwt-aud conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-invalid-kb-jwt-aud</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">1.2 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-invalid-kb-jwt-aud-QIO8By9HoffNH1N.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-aud</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=QIO8By9HoffNH1N</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 110 ms · 2026-10-25 10:51:48 UTC<br><span class="muted">Inji Verify request req_efa3d181-9cda-4f54-b6b8-a1772feb3abd (by value) delivered to authorization_endpoint; suite answered in 94 ms</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-kb-jwt-iat-in-past conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-kb-jwt-iat-in-past</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">1.2 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-past-HS3v0k1xRIFM0ta.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-past</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=HS3v0k1xRIFM0ta</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 139 ms · 2026-10-25 10:51:49 UTC<br><span class="muted">Inji Verify request req_b99367b9-09b1-4303-b056-ac0da56f99c3 (by value) delivered to authorization_endpoint; suite answered in 122 ms</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future" data-component="verify" data-verdict="conforms" data-search="verify oid4vp-1final-verifier-kb-jwt-iat-in-future conforms">
+          <tr>
+            <td>verify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details"><span class="chevron" aria-hidden="true"></span>oid4vp-1final-verifier-kb-jwt-iat-in-future</button>
+            </th>
+            <td><code>PASSED</code></td>
+            <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
+            <td>None</td>
+            <td class="num">1.2 s</td>
+            <td class="links">
+<a href="../verify/exports/html/test-log-oid4vp-1final-verifier-kb-jwt-iat-in-future-Pepfk3SDm0UkKjG.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-future</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details">
+            <td colspan="7">
+<p>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=Pepfk3SDm0UkKjG</code></p>              <h3>Handoffs</h3>
+              <ul>
+                <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 156 ms · 2026-10-25 10:51:50 UTC<br><span class="muted">Inji Verify request req_4234cb67-b208-4a2d-83d6-588a4e045cf4 (by value) delivered to authorization_endpoint; suite answered in 136 ms</span>                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-batch-issuance" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-batch-issuance not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-batch-issuance-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-batch-issuance</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">0.2 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-batch-issuance-hi1lG512nRVbOkY.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-batch-issuance</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-batch-issuance-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=hi1lG512nRVbOkY</code></p>              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.4 · issue draft <code>docs/findings/certify-optional-features.md</code> · the listed problem happened in this run
+                  <blockquote>The issuer metadata has no batch_credential_issuance, so the suite skips the batch module. Batch issuance is optional.</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-fail-invalid-key-attestation-signature not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">0.1 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-k6M2xzbZquVpXpr.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=k6M2xzbZquVpXpr</code></p>              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINALA-F.1 · issue draft <code>docs/findings/certify-optional-features.md</code> · the listed problem happened in this run
+                  <blockquote>The credential configuration does not ask for key attestations, so the suite has nothing to send an invalid one to.</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+        <tbody class="module" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm" data-component="certify" data-verdict="not_applicable" data-search="certify oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm not applicable">
+          <tr>
+            <td>certify</td>
+            <th scope="row" class="module-name">
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm</button>
+            </th>
+            <td><code>SKIPPED</code></td>
+            <td><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></td>
+            <td>None</td>
+            <td class="num">0.2 s</td>
+            <td class="links">
+<a href="../certify/exports/html/test-log-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-EpNbmBCSYvNkJzE.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm</span></a>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details">
+            <td colspan="7">
+<p>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=EpNbmBCSYvNkJzE</code></p>              <h3>Benchmark entries</h3>
+              <ul>
+                <li>Expected skip · owner inji · spec OID4VCI-1FINAL-8.2 · issue draft <code>docs/findings/certify-optional-features.md</code> · the listed problem happened in this run
+                  <blockquote>The issuer metadata has no credential_response_encryption, so the suite skips the unsupported-algorithm module. Response encryption is optional.</blockquote>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p id="no-match" class="empty-state" hidden>No module matches the filters.</p>
+  </section>
+</main>
+<footer>
+  <p>Generated by inji-conformance 0.1.0 on 2026-10-25 10:55:21 UTC from results contract v1.</p>
+  <p>The report never includes the rendered suite configuration or any key material; text taken from results files is filtered for private keys and credentials.</p>
+</footer>
+<script>
+// Script of summary.html and diff.html, copied inline into each page.
+//
+// Everything here is progressive: without script every row and every detail is visible, and the page is complete.
+// With script, details start closed behind their toggle buttons and the filters can hide rows.
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  root.classList.add("js");
+
+  // Theme: automatic (follow the system), light or dark. The choice is kept in local storage when the browser
+  // allows it; a page opened from a zip or with storage blocked still switches, it only forgets on reload.
+  var THEMES = ["auto", "light", "dark"];
+  var KEY = "inji-conformance-theme";
+  function readTheme() {
+    try { return localStorage.getItem(KEY) || "auto"; } catch (e) { return "auto"; }
+  }
+  function applyTheme(theme) {
+    if (theme === "auto") { root.removeAttribute("data-theme"); } else { root.setAttribute("data-theme", theme); }
+    var button = document.getElementById("theme-toggle");
+    if (button) { button.textContent = "Theme: " + theme; }
+  }
+  var theme = readTheme();
+  if (THEMES.indexOf(theme) < 0) { theme = "auto"; }
+  applyTheme(theme);
+  var themeButton = document.getElementById("theme-toggle");
+  if (themeButton) {
+    themeButton.hidden = false;
+    themeButton.addEventListener("click", function () {
+      theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+      try { localStorage.setItem(KEY, theme); } catch (e) { /* storage blocked: keep the choice for this view */ }
+      applyTheme(theme);
+    });
+  }
+
+  // Expandable module rows: a button in the module cell shows or hides the detail row below it.
+  function setOpen(button, open) {
+    var row = document.getElementById(button.getAttribute("aria-controls"));
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    if (row) { row.hidden = !open; }
+  }
+  var toggles = document.querySelectorAll("button.toggle");
+  Array.prototype.forEach.call(toggles, function (button) {
+    setOpen(button, false);
+    button.addEventListener("click", function () {
+      setOpen(button, button.getAttribute("aria-expanded") !== "true");
+    });
+  });
+  // A link to #m-<component>-<module> opens that module's details.
+  function openFromHash() {
+    if (!location.hash) { return; }
+    var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    var button = target && target.querySelector("button.toggle");
+    if (button) { setOpen(button, true); }
+  }
+  window.addEventListener("hashchange", openFromHash);
+  openFromHash();
+
+  // Filters: component, verdicts and free text. Each module is one <tbody> carrying data attributes.
+  var filters = document.getElementById("filters");
+  if (!filters) { return; }
+  filters.hidden = false;
+  var groups = document.querySelectorAll("tbody.module");
+  var componentSelect = document.getElementById("filter-component");
+  var search = document.getElementById("filter-text");
+  var verdictBoxes = filters.querySelectorAll("input[name='verdict']");
+  var shown = document.getElementById("shown");
+  var empty = document.getElementById("no-match");
+
+  function apply() {
+    var component = componentSelect ? componentSelect.value : "";
+    var text = search ? search.value.trim().toLowerCase() : "";
+    var verdicts = {};
+    Array.prototype.forEach.call(verdictBoxes, function (box) { verdicts[box.value] = box.checked; });
+    var count = 0;
+    Array.prototype.forEach.call(groups, function (group) {
+      var visible = (!component || group.getAttribute("data-component") === component) &&
+        verdicts[group.getAttribute("data-verdict")] !== false &&
+        (!text || group.getAttribute("data-search").indexOf(text) >= 0);
+      group.hidden = !visible;
+      if (visible) { count += 1; }
+    });
+    shown.textContent = "Showing " + count + " of " + groups.length + " modules.";
+    if (empty) { empty.hidden = count !== 0; }
+  }
+  filters.addEventListener("input", apply);
+  filters.addEventListener("change", apply);
+  apply();
+})();
+
+</script>
+</body>
+</html>

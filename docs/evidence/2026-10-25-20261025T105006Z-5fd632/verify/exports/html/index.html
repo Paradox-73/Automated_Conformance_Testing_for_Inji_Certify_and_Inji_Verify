@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Plan details</title>
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <style>
+        html{
+            box-sizing: border-box;
+        }
+        body{
+            font-family:sans-serif;
+            line-height:1.5em;
+            padding-left:30px;
+            padding-right:30px;
+            padding-top:2em;
+        }
+
+        #header{
+        }
+
+        #header th{
+            text-align:left;
+            padding-right: 16px;
+        }
+
+        #results{
+        }
+
+        table{
+        }
+
+        .testStatus-created {
+            background-color: #fcd9f6;
+            color: black;
+        }
+
+        .testStatus-configured {
+            background-color: #d3fffe;
+            color: black;
+        }
+
+        .testStatus-running {
+            background-color: #6d09e8;
+            color: white;
+        }
+
+        .testStatus-waiting {
+            background-color: #6ac4c2;
+            color: black;
+        }
+
+        .testStatus-interrupted {
+            background-color: #b70018;
+            color: white;
+        }
+
+        .testStatus-finished {
+            background-color: #383647;
+            color: white;
+        }
+
+        .testStatus-unknown {
+            background-color: #dedada;
+            color: #6d6a6a;
+        }
+
+        .testResult-passed {
+            background-color: #40e809;
+            color: black;
+        }
+
+        .testResult-warning {
+            background-color: #d88602;
+            color: white;
+        }
+
+        .testResult-failed {
+            background-color: red;
+            color: white;
+        }
+
+        .testResult-review {
+            background-color: #6ac4c2;
+            color: black;
+        }
+
+        .testResult-skipped {
+            background-color: #d88602;
+            color: white;
+        }
+
+        .testResult-unknown {
+            background-color: #dedada;
+            color: #6d6a6a;
+        }
+        .result-success {
+            background-color: #00cc00;
+        }
+
+        .result-failure {
+            background-color: #cc0000;
+        }
+
+        .result-warning {
+            background-color: #d88602;
+        }
+
+        .result-review {
+            background-color: #00ccff;
+        }
+
+        .result-interrupted {
+            background-color: #ddbb88;
+        }
+
+        .result-finished {
+            background-color: #383647;
+        }
+
+        .result-info {
+            background-color: #e2bfce;
+        }
+
+        .result-skipped {
+            background-color: #d88602;
+        }
+
+        .result-default {
+            background-color: #00cc00;
+        }
+        .rounded-pill{
+            background-color: rgba(0.5, 0.5, 0.5, 0.5);
+            border-top-left-radius: 0.25em;
+            border-top-right-radius: 0.25em;
+            border-bottom-right-radius: 0.25em;
+            border-bottom-left-radius: 0.25em;
+            padding-left:0.4em;
+            padding-right:0.4em;
+            padding-top:0.1em;
+            padding-bottom:0.1em;
+            font-size:0.8em;
+        }
+        .badge{
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+            display: inline;
+            font-size: 0.8em;
+            font-weight: 700;
+            line-height: 1.2em;
+            padding-bottom: 3.6px;
+            padding-left: 7.2px;
+            padding-right: 7.2px;
+            padding-top: 2.4px;
+            text-align: center;
+            vertical-align: baseline;
+            white-space: no-wrap;
+        }
+        .info{
+            background-color: rgb(226, 191, 206);
+        }
+        .success{
+            background-color: rgb(0, 204, 0);
+        }
+        .failure{
+            background-color: rgb(204, 0, 0);
+            color:#fff;
+        }
+        .interrupted{
+            background-color: rgb(221, 187, 136);
+            color:#fff;
+        }
+        .warning{
+            background-color: rgb(216, 134, 2);
+            color:#fff;
+        }
+        .failed{
+            background-color: rgb(0, 0, 0);
+            color:#fff;
+        }
+        .review{
+            background-color: rgb(0, 204, 255);
+            color:#fff;
+        }
+        .incoming{
+            background-color:rgb(91, 192, 222);
+        }
+        .outgoing{
+            background-color:rgb(91, 192, 222);
+        }
+        .finished{
+            background-color: rgb(56, 54, 71);
+            color:#fff;
+        }
+        .passed{
+            background-color: #40e809;
+            color: #000;
+        }
+        #tests-list{
+
+        }
+        #tests-list tr:hover{
+            background-color:#eee;
+        }
+        #tests-list th{
+            text-align:left;
+            background-color:#f2f2f2;
+            border:1px solid #eee;
+            border-collapse:collapse;
+            padding-left:0.2em;
+            padding-right:0.2em;
+            padding-top:0.2em;
+            padding-bottom:0.2em;
+        }
+        #tests-list td{
+            border:1px solid #eee;
+            border-collapse:collapse;
+            padding-left:0.3em;
+            padding-right:0.3em;
+            padding-top:0.3em;
+            padding-bottom:0.3em;
+        }
+        #moreinfomsg{
+            border:1px solid #eee;
+            padding-left:0.5em;
+            padding-right:0.5em;
+            padding-top:0.5em;
+            padding-bottom:0.5em;
+            margin-left:0.5em;
+            margin-right:0.5em;
+            margin-top:0.5em;
+            margin-bottom:0.5em;
+            background-color:#f3f3f3;
+        }
+    </style>
+</head>
+<body>
+<h1>
+Test Plan Details
+</h1>
+<div id="header">
+    <table>
+        <tr>
+            <th>Plan Name</th>
+            <td>oid4vp-1final-verifier-test-plan</td>
+        </tr>
+        <tr>
+            <th>Variant</th>
+            <td>credential_format=sd_jwt_vc, client_id_prefix=redirect_uri, request_method=url_query, vp_profile=plain_vp, response_mode=direct_post</td>
+        </tr>
+        <tr>
+            <th>Plan ID</th>
+            <td>
+                <span>LETSWTxKKRfmI</span>
+                <a target="_blank" href="https://localhost.emobix.co.uk:18443/plan-detail.html?public=true&amp;plan=LETSWTxKKRfmI">https://localhost.emobix.co.uk:18443/plan-detail.html?public=true&amp;plan=LETSWTxKKRfmI</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>Inji Verify at https://verify.inji.test:18451/v1/verify, harness run 20261025T105006Z-5fd632</td>
+        </tr>
+        <span>
+        <tr>
+            <th>Certification Profile</th>
+            <td>[]</td>
+        </tr>
+        </span>
+        <tr>
+            <th>Version</th>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <th>Started</th>
+            <td>2026-10-25T10:51:20.424010499Z</td>
+        </tr>
+        <tr>
+            <th>Owner</th>
+            <td>developer https://developer.com</td>
+        </tr>
+        <tr>
+            <th>Exported From</th>
+            <td>https://localhost.emobix.co.uk:18443</td>
+        </tr>
+        <tr>
+            <th>Exported By</th>
+            <td>developer https://developer.com</td>
+        </tr>
+        <tr>
+            <th>Suite Version</th>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <th>Exported</th>
+            <td>2026-10-25 10:51:51 (UTC)</td>
+        </tr>
+    </table>
+</div>
+<div id="moreinfomsg">
+    These test results were generated by the OpenID Foundation conformance suite.
+    By themselves, they are not proof that a deployment is conformant nor that it
+    meets the requirements for certification. For a list of certified deployments,
+    see <a href="https://openid.net/certification/" target="_blank">https://openid.net/certification/</a>
+    - to be added to this list follow
+    the <a href="https://openid.net/certification/instructions/" target="_blank">certification instructions</a>.
+</div>
+
+<h1>Test Results</h1>
+<table cellspacing="0" cellpadding="1" id="tests-list">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Result</th>
+            <th>Test Name</th>
+            <th>Test Id</th>
+            <th>Test Version</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-happy-flow-OmxmrBNpdS0JILH.html">oid4vp-1final-verifier-happy-flow</a>
+            </td>
+            <td>OmxmrBNpdS0JILH</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-minimal-cnf-jwk-dfSVjTobziUOyTB.html">oid4vp-1final-verifier-minimal-cnf-jwk</a>
+            </td>
+            <td>dfSVjTobziUOyTB</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-request-uri-method-post-D3rK746eKdLorah.html">oid4vp-1final-verifier-request-uri-method-post</a>
+            </td>
+            <td>D3rK746eKdLorah</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-request-uri-fetched-twice-TQ1XttNgCmN7lmf.html">oid4vp-1final-verifier-request-uri-fetched-twice</a>
+            </td>
+            <td>TQ1XttNgCmN7lmf</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-invalid-kb-jwt-signature-7QKJBuBfQQWLsjE.html">oid4vp-1final-verifier-invalid-kb-jwt-signature</a>
+            </td>
+            <td>7QKJBuBfQQWLsjE</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-invalid-credential-signature-sQbhBejYxmbLcvi.html">oid4vp-1final-verifier-invalid-credential-signature</a>
+            </td>
+            <td>sQbhBejYxmbLcvi</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-review">REVIEW</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-invalid-sd-hash-xZtJ8OQBJuIFSpN.html">oid4vp-1final-verifier-invalid-sd-hash</a>
+            </td>
+            <td>xZtJ8OQBJuIFSpN</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-passed">PASSED</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-invalid-kb-jwt-nonce-2Ay1o7XqUJ9rwwG.html">oid4vp-1final-verifier-invalid-kb-jwt-nonce</a>
+            </td>
+            <td>2Ay1o7XqUJ9rwwG</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-passed">PASSED</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-invalid-kb-jwt-aud-QIO8By9HoffNH1N.html">oid4vp-1final-verifier-invalid-kb-jwt-aud</a>
+            </td>
+            <td>QIO8By9HoffNH1N</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-passed">PASSED</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-kb-jwt-iat-in-past-HS3v0k1xRIFM0ta.html">oid4vp-1final-verifier-kb-jwt-iat-in-past</a>
+            </td>
+            <td>HS3v0k1xRIFM0ta</td>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="label testStatus-finished">FINISHED</span>
+            </td>
+            <td>
+                <span class="label testResult-passed">PASSED</span>
+            </td>
+            <td>
+                <a href="test-log-oid4vp-1final-verifier-kb-jwt-iat-in-future-Pepfk3SDm0UkKjG.html">oid4vp-1final-verifier-kb-jwt-iat-in-future</a>
+            </td>
+            <td>Pepfk3SDm0UkKjG</td>
+            <td>5.3.1</td>
+        </tr>
+    </tbody>
+</table>
+<p> </p>
+</body>
+</html>

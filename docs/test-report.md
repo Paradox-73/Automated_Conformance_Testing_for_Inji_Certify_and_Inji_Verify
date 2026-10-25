@@ -2,7 +2,7 @@
 
 What was run, when, on which commit and with what result. Every run id below has its evidence (manifest, results,
 `report/summary.md`, badge) in `docs/evidence/<date>-<run id>/`; dates in run ids and folder names are UTC, the runs
-took place on 2026-10-14 IST. The HTML report is kept for the README's run `20261024T185916Z-f3a694` (full stack at `3a54828`, both gates passed) and for `20261014T133851Z-c99cce` only;
+took place on 2026-10-14 IST. The HTML report is kept for the README's run `20261025T105006Z-5fd632` (full stack at `e70e94d`, both gates passed; its folder also holds the redacted suite export pages, so every link in its report resolves), for `20261024T185916Z-f3a694` and for `20261014T133851Z-c99cce` only;
 `inji-conformance report --run docs/evidence/<folder> --out <dir>` rebuilds it for any other run from its
 `results.json` (the suite's exports are never committed, so its export links stay empty). Test case definitions: [test-cases.md](test-cases.md).
 
@@ -25,11 +25,11 @@ Images as pinned in `docker-compose.yml` at the time of each run; each manifest 
 
 | Suite | Language | Tests | Result (2026-10-14 unless dated) |
 |---|---|---|---|
-| `runner/tests` (pytest) | Python | 465 | all passed (2026-10-22) |
+| `runner/tests` (pytest) | Python | 472 | all passed (2026-10-25) |
 | `compose/pki/test_generate.py` (unittest) | Python | 19 | all passed |
 | `docs/tools/test_check_docs.py` (unittest) | Python | 11 | all passed |
-| `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 52 | 0 failures, 0 errors |
-| `scripts/tests/test-*.sh` (TAP) | bash | 88 cases in 5 scripts, plus the PKI script | all ok |
+| `testrigs/apitest-commons-conformance` (JUnit 5, `mvn verify`) | Java | 54 | 0 failures, 0 errors (2026-10-25, `maven:3.9-eclipse-temurin-21`) |
+| `scripts/tests/test-*.sh` (TAP) | bash | 101 cases in 6 scripts, plus the PKI script | all ok (2026-10-25) |
 
 `bash scripts/check.sh all` result: see [Repository checks and local CI](#repository-checks-and-local-ci).
 
@@ -59,6 +59,8 @@ the runner and testrig containers come on top.
 | TC-19 (final) | `./run-full-stack-conformance.sh` (prepare with the images present, then the run) at `073479b` with the `1.0.x` Certify image, Windows 11 with the Docker VM idle | `20261014T141827Z-5e24aa` | 392 s | 0 | the same verdicts and rig reports ([evidence](evidence/2026-10-14-20261014T141827Z-5e24aa/)) |
 | TC-19 (macOS) | the same in the working clone | `20261013T222910Z-f08c5b` | not recorded | 0 | both gates passed; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to `automationtests/injicertify/` and `automationtests/injiverify/` |
 | TC-20 | `bash demo/demo.sh --regression --runner-only` | `20261013T223652Z-34a7ff` (before), `20261013T223845Z-e3ac63` (regression) | 99 s + 97 s | 0 | before 0, regression 1, diff 16 with 3 changed modules, "demo ok" |
+| TC-19 (2026-10-25) | `./run-full-stack-conformance.sh --no-prepare` at `e70e94d` (after the maintainer-review fixes: compose project `inji-conformance`, workaround recorded, redacted export pages), Windows 11 | `20261025T105006Z-5fd632` | 221 s | 0 | both gates passed, certify "with 1 workaround"; rig reports `T-15_P-3_S-0_F-0_I-3_KI-9` and `T-11_P-11_S-0_F-0_I-0_KI-0` uploaded to MinIO ([evidence](evidence/2026-10-25-20261025T105006Z-5fd632/)) |
+| TC-20 (2026-10-25) | `bash demo/demo.sh --regression --runner-only` at `e70e94d` | `20261025T105438Z-68b2e2` (before), `20261025T105611Z-5d0671` (regression) | 86 s + 85 s | 0 | before 0, regression 1, diff 16 with 3 changed modules, "demo ok" |
 
 Parallel against serial: on the 4 GiB VM the parallel runner-only runs (TC-03) took longer than the serial one
 (TC-05), because both plans and both Inji components compete for two cores and 4 GiB. With 7792 MiB and 12 CPUs

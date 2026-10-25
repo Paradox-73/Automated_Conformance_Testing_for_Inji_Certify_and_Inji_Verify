@@ -1,0 +1,3928 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Test detail</title>
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <style>
+        html{
+            box-sizing: border-box;
+        }
+        body{
+            font-family:sans-serif;
+            line-height:1.5em;
+            padding-left:30px;
+            padding-right:30px;
+            padding-top:2em;
+            min-width:700px;
+        }
+        pre{
+            margin-top:0px;
+            margin-bottom:0px;
+            margin-left:0px;
+            font-family: sans-serif;
+        }
+        #header{
+        }
+        #header th{
+            text-align:left;
+        }
+        #results{
+            overflow-x:auto;
+        }
+        table{
+            width:100%;
+        }
+        .log-item{
+            width:100%;
+            margin-bottom:0;
+            padding-bottom:1em;
+            padding-top:1em;
+            border-top:1px solid #ccc;
+            line-height:1.7em;
+        }
+        .log-item:hover{
+            background-color: #ebf6fa;
+        }
+        .row{
+            padding-top:0.2em;
+            padding-left:0.2em;
+            padding-bottom:0.2em;
+            padding-right:0.2em;
+        }
+         .col-1{
+            width:10%;
+            min-width:100px;
+            vertical-align: top;
+            font-size:0.90em;
+         }
+         .col-2{
+            width:10%;
+            min-width:100px;
+            vertical-align: top;
+            padding-left:20px;
+         }
+         .col-3{
+             vertical-align: top;
+         }
+         .labelCollection{
+
+         }
+         .labelCollection span{
+            border:1px;
+         }
+
+        .wrapLongStrings{
+            white-space:pre-wrap;
+        }
+        .collapse:not(.show) {
+            display:none;
+        }
+        .label{
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+            display: inline;
+            font-size: 0.8em;
+            font-weight: 700;
+            line-height: 1.2em;
+            padding-bottom: 3.6px;
+            padding-left: 7.2px;
+            padding-right: 7.2px;
+            padding-top: 2.4px;
+            text-align: center;
+            vertical-align: baseline;
+            white-space: no-wrap;
+        }
+        .label-info{
+            background-color: #5bc0de;
+        }
+        /* text-with-an-underline look for failure summary links, matching the interactive UI */
+        a.failure-link, a.failure-link:visited{
+            color: inherit;
+            text-decoration-line: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 2px;
+            text-decoration-color: #999;
+        }
+        a.failure-link:hover{
+            color: #0b5ed7;
+        }
+        .testStatus-created {
+            background-color: #fcd9f6;
+            color: black;
+        }
+
+        .testStatus-configured {
+            background-color: #d3fffe;
+            color: black;
+        }
+
+        .testStatus-running {
+            background-color: #6d09e8;
+            color: white;
+        }
+
+        .testStatus-waiting {
+            background-color: #6ac4c2;
+            color: black;
+        }
+
+        .testStatus-interrupted {
+            background-color: #b70018;
+            color: white;
+        }
+
+        .testStatus-finished {
+            background-color: #383647;
+            color: white;
+        }
+
+        .testStatus-unknown {
+            background-color: #dedada;
+            color: #6d6a6a;
+        }
+
+        .testResult-passed {
+            background-color: #40e809;
+            color: black;
+        }
+
+        .testResult-warning {
+            background-color: #d88602;
+            color: white;
+        }
+
+        .testResult-failed {
+            background-color: red;
+            color: white;
+        }
+
+        .testResult-review {
+            background-color: #6ac4c2;
+            color: black;
+        }
+
+        .testResult-skipped {
+            background-color: #d88602;
+            color: white;
+        }
+
+        .testResult-unknown {
+            background-color: #dedada;
+            color: #6d6a6a;
+        }
+        .result-success {
+            background-color: #00cc00;
+        }
+
+        .result-failure {
+            background-color: #cc0000;
+        }
+
+        .result-warning {
+            background-color: #d88602;
+        }
+
+        .result-review {
+            background-color: #00ccff;
+        }
+
+        .result-interrupted {
+            background-color: #ddbb88;
+        }
+
+        .result-finished {
+            background-color: #383647;
+        }
+
+        .result-info {
+            background-color: #e2bfce;
+        }
+
+        .result-skipped {
+            background-color: #d88602;
+        }
+
+        .result-default {
+            background-color: #00cc00;
+        }
+        .rounded-pill{
+            background-color: rgba(0.5, 0.5, 0.5, 0.5);
+            border-top-left-radius: 0.25em;
+            border-top-right-radius: 0.25em;
+            border-bottom-right-radius: 0.25em;
+            border-bottom-left-radius: 0.25em;
+            padding-left:0.4em;
+            padding-right:0.4em;
+            padding-top:0.1em;
+            padding-bottom:0.1em;
+            font-size:0.85em;
+        }
+        .requirement{
+            border:1px solid #ccc;
+            padding-left:0.3em;
+            padding-right:0.3em;
+            padding-top:0.2em;
+            padding-bottom:0.2em;
+            display:inline-block;
+            background-color: rgb(119, 119, 119);
+            color:#fff;
+            font-size:0.7em;
+            font-weight:normal;
+            text-decoration:none;
+        }
+        .log-http{
+        }
+        .more{
+            background-color:#fff;
+        }
+        .more-btn{
+        }
+        a.more-btn{
+            font-size:0.85em;
+            background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(224, 224, 224) 100%);
+            border:1px solid rgb(204, 204, 204);
+            padding-left: 0.4em;
+            padding-right: 0.4em;
+            padding-top:0.3em;
+            padding-bottom:0.3em;
+            color:rgb(51, 51, 51);
+            text-decoration: none;
+        }
+        .more-row{
+            border:1px solid #eee;
+            width:100%;
+        }
+        .more-key{
+            text-align:right;
+            vertical-align: top;
+            background-color: #edf2f4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+            padding-right:3px;
+        }
+        td.more-key{
+            width:15%;
+        }
+        .more-value{
+            vertical-align: top;
+            background-color: #f1f1f1;
+            padding-left:3px;
+            font-size:0.9em;
+        }
+        .more-text{
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .more-jwt{
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .more-json{
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .log-msg{
+        }
+        .log-src{
+            font-family: monospace;
+        }
+        .prettyprint{
+         }
+         .lang-javascript{
+         }
+         .block-title{
+            font-size:1.15em;
+            color:#fff;
+            padding-left:0.25em;
+            padding-right:0.25em;
+            padding-bottom:0.25em;
+            padding-top:0.25em;
+         }
+        .log-entry-title{
+        }
+        ul.stacktrace{
+            margin-top:3px;
+            margin-left:3px;
+        }
+        .stacktrace li{
+            list-style-type:none;
+            margin-top:2px;
+            margin-bottom:2px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .p-1{
+            padding:0.1em 0.1em 0.1em 0.1em;
+        }
+        .test-summary{
+            background-color: rgb(217, 237, 247);
+            border: 1px solid rgb(221, 221, 221);
+            padding-top:0.3em;
+            padding-left:0.3em;
+            padding-right:0.3em;
+            padding-bottom:0.3em;
+        }
+        #fixedtoplink{
+            position:fixed;
+            bottom:30px;
+            right:30px;
+            background-color:#999;
+            color:#fff;
+            opacity: 0.8;
+            padding-top:0.3em;
+            padding-left:0.3em;
+            padding-right:0.3em;
+            padding-bottom:0.3em;
+            font-size:0.85em;
+            text-decoration:none;
+        }
+
+        .review-img{
+            max-height: 50vh;
+            display: block;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+    </style>
+    <script>
+        function moreClicked(itemid){
+            var moreelem = document.getElementById('more_' + itemid);
+            if(moreelem.className.includes('collapse')){
+                moreelem.className='more';
+            }
+            else{
+                moreelem.className='more collapse';
+            }
+        }
+
+        function expandMores() {
+            var mores = document.querySelectorAll('.more');
+            for(var i in mores){
+                var moreelem = mores[i];
+                if(moreelem.className){
+                    moreelem.className='more';
+                }
+            }
+        }
+
+        function collapseMores(){
+            var mores = document.querySelectorAll('.more');
+            for(var i in mores){
+                var moreelem = mores[i];
+                if(moreelem.className){
+                    moreelem.className='more collapse';
+                }
+            }
+        }
+
+    </script>
+</head>
+<body>
+<h1>
+Test Summary
+</h1>
+<div  id="header">
+    <table style="width:auto;">
+        <tr>
+            <th>Test Name</th>
+            <td>oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</td>
+        </tr>
+        <tr>
+            <th>Variant</th>
+            <td>client_auth_type=private_key_jwt, sender_constrain=dpop, credential_format=sd_jwt_vc, vci_authorization_code_flow_variant=issuer_initiated, authorization_request_type=simple, fapi_request_method=unsigned, grant_management=disabled, vci_grant_type=pre_authorization_code, vci_credential_encryption=plain, fapi_profile=vci</td>
+        </tr>
+        <tr>
+            <th>Test ID</th>
+            <td>
+                <span>k6M2xzbZquVpXpr</span>
+                <a target="_blank" href="https://localhost.emobix.co.uk:18443/log-detail.html?public=true&amp;log=k6M2xzbZquVpXpr">https://localhost.emobix.co.uk:18443/log-detail.html?public=true&amp;log=k6M2xzbZquVpXpr</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>2026-10-25T10:51:37.990142386Z</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</td>
+        </tr>
+        <tr>
+            <th>Test Version</th>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <th>Test Owner</th>
+            <td>developer https://developer.com</td>
+        </tr>
+        <tr>
+            <th>Plan ID</th>
+            <td>
+                <span>jXpGxL82JHRcr</span>
+                <a target="_blank" href="https://localhost.emobix.co.uk:18443/plan-detail.html?public=true&amp;plan=jXpGxL82JHRcr">https://localhost.emobix.co.uk:18443/plan-detail.html?public=true&amp;plan=jXpGxL82JHRcr</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Exported From</th>
+            <td>https://localhost.emobix.co.uk:18443</td>
+        </tr>
+        <tr>
+            <th>Exported By</th>
+            <td>developer https://developer.com</td>
+        </tr>
+        <tr>
+            <th>Suite Version</th>
+            <td>5.3.1</td>
+        </tr>
+        <tr>
+            <th>Exported</th>
+            <td>2026-10-25 10:51:48 (UTC)</td>
+        </tr>
+    </table>
+    <div class="test-summary">This test case checks for proper error handling when a key attestation with an invalid signature is submitted. The test sends a credential request with a key attestation JWT where the signature has been modified to be invalid. The issuer must reject this request with an invalid_proof error. Note: This test only runs when key attestation is required by the credential configuration. If key attestation is not required, the test will be skipped.</div>
+    <hr>
+    <table>
+        <tr>
+            <td align="center">
+                Status:
+                <span class="label testStatus-finished">FINISHED</span>
+
+                Result:
+                <span class="label testResult-skipped">SKIPPED</span>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <span class="label result-success">SUCCESS <span class="badge rounded-pill">15</span></span>
+
+                <span class="label result-failure">FAILURE <span class="badge rounded-pill">0</span></span>
+
+                <span class="label result-warning">WARNING <span class="badge rounded-pill">0</span></span>
+
+                <span class="label result-review">REVIEW <span class="badge rounded-pill">0</span></span>
+
+                <span class="label result-info">INFO <span class="badge rounded-pill">1</span></span>
+            </td>
+        </tr>
+        
+    </table>
+    <hr>
+</div>
+
+<h1 id="testresultsheader">Test Results</h1>
+<a href="javascript:expandMores()">Expand All</a>
+<a href="javascript:collapseMores()">Collapse All</a>
+<div>All times are UTC</div>
+<div id="results">
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-uhlwwbc6sicoiWJhjMzmt5bw8O7DfRPB">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:37</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-uhlwwbc6sicoiWJhjMzmt5bw8O7DfRPB&#39;)">(8) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-info">INFO</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">TEST-RUNNER</div>
+                <div class="log-msg">Test instance k6M2xzbZquVpXpr created</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-uhlwwbc6sicoiWJhjMzmt5bw8O7DfRPB">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">baseUrl</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://localhost.emobix.co.uk:18443/test/a/inji-certify-20261025T105006Z-5fd632</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">variant</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;client_auth_type&quot;: &quot;private_key_jwt&quot;,
+  &quot;sender_constrain&quot;: &quot;dpop&quot;,
+  &quot;credential_format&quot;: &quot;sd_jwt_vc&quot;,
+  &quot;vci_authorization_code_flow_variant&quot;: &quot;issuer_initiated&quot;,
+  &quot;authorization_request_type&quot;: &quot;simple&quot;,
+  &quot;fapi_request_method&quot;: &quot;unsigned&quot;,
+  &quot;grant_management&quot;: &quot;disabled&quot;,
+  &quot;vci_grant_type&quot;: &quot;pre_authorization_code&quot;,
+  &quot;vci_credential_encryption&quot;: &quot;plain&quot;,
+  &quot;fapi_profile&quot;: &quot;vci&quot;
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">alias</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">inji-certify-20261025T105006Z-5fd632</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">description</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">planId</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">jXpGxL82JHRcr</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">config</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;alias&quot;: &quot;inji-certify-20261025T105006Z-5fd632&quot;,
+  &quot;description&quot;: &quot;Inji Certify at https://certify.inji.test:18450, harness run 20261025T105006Z-5fd632&quot;,
+  &quot;vci&quot;: {
+    &quot;credential_issuer_url&quot;: &quot;https://certify.inji.test:18450&quot;,
+    &quot;credential_configuration_id&quot;: &quot;InjiConformanceSdJwtVc&quot;
+  },
+  &quot;client&quot;: {
+    &quot;client_id&quot;: &quot;inji-conformance-wallet&quot;,
+    &quot;jwks&quot;: {
+      &quot;keys&quot;: [
+        {
+          &quot;kty&quot;: &quot;EC&quot;,
+          &quot;crv&quot;: &quot;P-256&quot;,
+          &quot;x&quot;: &quot;g4FqtyPhsjxuJJJcNOj5W9dofTUXrGFs_xNxgtQcsUc&quot;,
+          &quot;y&quot;: &quot;0nIFPYwpKBfSmZxVWDgAGMtMM_KGZHhrxac4VOm0Q3g&quot;,
+          &quot;kid&quot;: &quot;client-jwks-nKan7YkJF5zK43nq&quot;,
+          &quot;use&quot;: &quot;sig&quot;,
+          &quot;alg&quot;: &quot;ES256&quot;,
+          &quot;d&quot;: &quot;[redacted]&quot;
+        }
+      ]
+    }
+  },
+  &quot;client2&quot;: {
+    &quot;client_id&quot;: &quot;inji-conformance-wallet-2&quot;,
+    &quot;jwks&quot;: {
+      &quot;keys&quot;: [
+        {
+          &quot;kty&quot;: &quot;EC&quot;,
+          &quot;crv&quot;: &quot;P-256&quot;,
+          &quot;x&quot;: &quot;KKgcSR2zui37e2QYDyfRptB1vo777PcVxtcBO9MXePw&quot;,
+          &quot;y&quot;: &quot;PyfyUu2o0Ss6mxKvqox2VTOPZpfOcJLy2fXZ6iBIXKc&quot;,
+          &quot;kid&quot;: &quot;client2-jwks-G-EFxS0_LNLHN2Hq&quot;,
+          &quot;use&quot;: &quot;sig&quot;,
+          &quot;alg&quot;: &quot;ES256&quot;,
+          &quot;d&quot;: &quot;[redacted]&quot;
+        }
+      ]
+    }
+  },
+  &quot;mtls&quot;: {
+    &quot;cert&quot;: &quot;-----BEGIN CERTIFICATE-----\nMIICDTCCAbKgAwIBAgIQE37oJ9JA88uiqti8V0V4tDAKBggqhkjOPQQDAjBOMSEw\nHwYDVQQKDBhpbmppLWNvbmZvcm1hbmNlLWhhcm5lc3MxKTAnBgNVBAMMIGluamkt\nY29uZm9ybWFuY2UtaGFybmVzcyB0ZXN0IENBMB4XDTI2MTAxOTE1MjExMFoXDTI3\nMTEyMDE1MjExMFowSzEhMB8GA1UECgwYaW5qaS1jb25mb3JtYW5jZS1oYXJuZXNz\nMSYwJAYDVQQDDB1jb25mb3JtYW5jZSBzdWl0ZSB0ZXN0IGNsaWVudDBZMBMGByqG\nSM49AgEGCCqGSM49AwEHA0IABL6vupLbU120ywYZOV2Y/cqhakdzL3gqmYGr2PTu\nqzc3hHdXDR/k1nRkWOa2IyZqlMBUZriPezle+5Ray4bapLyjdTBzMB0GA1UdDgQW\nBBTyVbDehpAyZO+lXOp77PttfGWxZTAfBgNVHSMEGDAWgBR428Kp1Df25u35RVHN\ninXczjZ1kDAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAK\nBggrBgEFBQcDAjAKBggqhkjOPQQDAgNJADBGAiEA3yrarBfWO/DKdyXK6P7EnT32\nKWTPJ2he4tVvjrNC8LcCIQDPi2x4VoPVP2+6YCDxWdOjO8yJSAlPuqo9PdWDhTqi\nQg\u003d\u003d\n-----END CERTIFICATE-----\n&quot;,
+    &quot;key&quot;: &quot;-----[redacted] PRIVATE KEY-----\n&quot;
+  },
+  &quot;mtls2&quot;: {
+    &quot;cert&quot;: &quot;-----BEGIN CERTIFICATE-----\nMIICDTCCAbKgAwIBAgIQE37oJ9JA88uiqti8V0V4tDAKBggqhkjOPQQDAjBOMSEw\nHwYDVQQKDBhpbmppLWNvbmZvcm1hbmNlLWhhcm5lc3MxKTAnBgNVBAMMIGluamkt\nY29uZm9ybWFuY2UtaGFybmVzcyB0ZXN0IENBMB4XDTI2MTAxOTE1MjExMFoXDTI3\nMTEyMDE1MjExMFowSzEhMB8GA1UECgwYaW5qaS1jb25mb3JtYW5jZS1oYXJuZXNz\nMSYwJAYDVQQDDB1jb25mb3JtYW5jZSBzdWl0ZSB0ZXN0IGNsaWVudDBZMBMGByqG\nSM49AgEGCCqGSM49AwEHA0IABL6vupLbU120ywYZOV2Y/cqhakdzL3gqmYGr2PTu\nqzc3hHdXDR/k1nRkWOa2IyZqlMBUZriPezle+5Ray4bapLyjdTBzMB0GA1UdDgQW\nBBTyVbDehpAyZO+lXOp77PttfGWxZTAfBgNVHSMEGDAWgBR428Kp1Df25u35RVHN\ninXczjZ1kDAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAK\nBggrBgEFBQcDAjAKBggqhkjOPQQDAgNJADBGAiEA3yrarBfWO/DKdyXK6P7EnT32\nKWTPJ2he4tVvjrNC8LcCIQDPi2x4VoPVP2+6YCDxWdOjO8yJSAlPuqo9PdWDhTqi\nQg\u003d\u003d\n-----END CERTIFICATE-----\n&quot;,
+    &quot;key&quot;: &quot;-----[redacted] PRIVATE KEY-----\n&quot;
+  }
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">baseMtlsUrl</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://localhost.emobix.co.uk:18444/test-mtls/a/inji-certify-20261025T105006Z-5fd632</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">testName</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-vOHP0AZG8bXbsMmcNv3sn5Sln1QBz5bq">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:37</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-vOHP0AZG8bXbsMmcNv3sn5Sln1QBz5bq&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">CreateRedirectUri</div>
+                <div class="log-msg">Created redirect URI</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-vOHP0AZG8bXbsMmcNv3sn5Sln1QBz5bq">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">redirect_uri</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://localhost.emobix.co.uk:18443/test/a/inji-certify-20261025T105006Z-5fd632/callback</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-OLEKT60PoZprVjG3GEPAIIHHr3jLDhbm">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:37</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-OLEKT60PoZprVjG3GEPAIIHHr3jLDhbm&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.2">OID4VCI-1FINAL-12.2.2</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGetDynamicCredentialIssuerMetadata</div>
+                <div class="log-msg">Using credential issuer metadata endpoint</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-OLEKT60PoZprVjG3GEPAIIHHr3jLDhbm">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">credential_issuer_metadata_endpoint_url</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/openid-credential-issuer</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-3XeBzZj2tfBIcGAxOqo4k2oRVZTF17Hm">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-3XeBzZj2tfBIcGAxOqo4k2oRVZTF17Hm&#39;)">(4) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                <span class="log-http">
+                        
+                        
+                        
+                        
+                        
+                        
+                </span>
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGetDynamicCredentialIssuerMetadata</div>
+                <div class="log-msg">HTTP request</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-3XeBzZj2tfBIcGAxOqo4k2oRVZTF17Hm">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">request_uri</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/openid-credential-issuer</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_method</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">GET</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_headers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;application/json&quot;,
+  &quot;Accept-Language&quot;: &quot;en, en-gb;q\u003d0.9, de;q\u003d0.8, fr;q\u003d0.7, *;q\u003d0.5&quot;,
+  &quot;Content-Length&quot;: &quot;0&quot;
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_body</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text"></pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-8yEl8ySbouPyrsvrsFnxVHuUpkhviR6b">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-8yEl8ySbouPyrsvrsFnxVHuUpkhviR6b&#39;)">(4) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                <span class="log-http">
+                        
+                        <span class="label bg-info">RESPONSE</span>
+                        
+                        
+                        
+                        
+                </span>
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGetDynamicCredentialIssuerMetadata</div>
+                <div class="log-msg">HTTP response</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-8yEl8ySbouPyrsvrsFnxVHuUpkhviR6b">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">response_status_code</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">200 OK</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_status_text</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text"></pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_headers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx/1.30.5&quot;,
+  &quot;date&quot;: &quot;Sun, 25 Oct 2026 10:51:38 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json&quot;,
+  &quot;transfer-encoding&quot;: &quot;chunked&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;vary&quot;: [
+    &quot;Origin&quot;,
+    &quot;Access-Control-Request-Method&quot;,
+    &quot;Access-Control-Request-Headers&quot;
+  ],
+  &quot;x-content-type-options&quot;: &quot;nosniff&quot;,
+  &quot;x-xss-protection&quot;: &quot;0&quot;,
+  &quot;cache-control&quot;: &quot;no-cache, no-store, max-age\u003d0, must-revalidate&quot;,
+  &quot;pragma&quot;: &quot;no-cache&quot;,
+  &quot;expires&quot;: &quot;0&quot;,
+  &quot;x-frame-options&quot;: &quot;DENY&quot;
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_body</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">{&quot;display&quot;:[{&quot;name&quot;:&quot;Farmer Issuer&quot;,&quot;locale&quot;:&quot;en&quot;}],&quot;credential_issuer&quot;:&quot;https://certify.inji.test:18450&quot;,&quot;authorization_servers&quot;:[&quot;https://certify.inji.test:18450&quot;],&quot;credential_endpoint&quot;:&quot;https://certify.inji.test:18450/v1/certify/issuance/credential&quot;,&quot;nonce_endpoint&quot;:&quot;https://certify.inji.test:18450/v1/certify/nonce&quot;,&quot;credential_configurations_supported&quot;:{&quot;InjiConformanceSdJwtVc&quot;:{&quot;format&quot;:&quot;dc+sd-jwt&quot;,&quot;scope&quot;:&quot;inji_conformance_sd_jwt_vc&quot;,&quot;vct&quot;:&quot;urn:inji-conformance:vct:farmer:1&quot;,&quot;cryptographic_binding_methods_supported&quot;:[&quot;did:jwk&quot;,&quot;did:key&quot;],&quot;credential_signing_alg_values_supported&quot;:[&quot;ES256&quot;],&quot;proof_types_supported&quot;:{&quot;jwt&quot;:{&quot;proof_signing_alg_values_supported&quot;:[&quot;RS256&quot;,&quot;PS256&quot;,&quot;ES256&quot;,&quot;EdDSA&quot;]}},&quot;credential_metadata&quot;:{&quot;display&quot;:[{&quot;logo&quot;:null,&quot;name&quot;:&quot;Inji conformance test credential (SD-JWT VC)&quot;,&quot;locale&quot;:&quot;en&quot;,&quot;text_color&quot;:null,&quot;background_color&quot;:null,&quot;background_image&quot;:null}],&quot;claims&quot;:[{&quot;path&quot;:[&quot;gender&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Gender&quot;,&quot;locale&quot;:&quot;en&quot;}]},{&quot;path&quot;:[&quot;fullName&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Full name&quot;,&quot;locale&quot;:&quot;en&quot;}]},{&quot;path&quot;:[&quot;dateOfBirth&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Date of birth&quot;,&quot;locale&quot;:&quot;en&quot;}]}]}},&quot;FarmerCredential&quot;:{&quot;format&quot;:&quot;ldp_vc&quot;,&quot;scope&quot;:&quot;mock_identity_vc_ldp&quot;,&quot;cryptographic_binding_methods_supported&quot;:[&quot;did:jwk&quot;],&quot;credential_signing_alg_values_supported&quot;:[&quot;EdDSA&quot;],&quot;proof_types_supported&quot;:{&quot;jwt&quot;:{&quot;proof_signing_alg_values_supported&quot;:[&quot;RS256&quot;,&quot;ES256&quot;]}},&quot;credential_definition&quot;:{&quot;type&quot;:[&quot;FarmerCredential&quot;,&quot;VerifiableCredential&quot;],&quot;@context&quot;:[&quot;https://www.w3.org/2018/credentials/v1&quot;]},&quot;credential_metadata&quot;:{&quot;display&quot;:[{&quot;logo&quot;:{&quot;uri&quot;:&quot;https://mosip.github.io/inji-config/logos/agro-vertias-logo.png&quot;,&quot;alt_text&quot;:&quot;Farmer Credential Logo&quot;},&quot;name&quot;:&quot;Farmer Verifiable Credential&quot;,&quot;locale&quot;:&quot;en&quot;,&quot;text_color&quot;:&quot;#FFFFFF&quot;,&quot;background_color&quot;:&quot;#12107c&quot;,&quot;background_image&quot;:{&quot;uri&quot;:&quot;https://mosip.github.io/inji-config/logos/agro-vertias-logo.png&quot;}}],&quot;claims&quot;:[{&quot;path&quot;:[&quot;phone&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Phone Number&quot;,&quot;locale&quot;:&quot;en&quot;}]},{&quot;path&quot;:[&quot;gender&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Gender&quot;,&quot;locale&quot;:&quot;en&quot;}]},{&quot;path&quot;:[&quot;fullName&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Full Name&quot;,&quot;locale&quot;:&quot;en&quot;}]},{&quot;path&quot;:[&quot;dateOfBirth&quot;],&quot;display&quot;:[{&quot;name&quot;:&quot;Date of Birth&quot;,&quot;locale&quot;:&quot;en&quot;}]}]}}}}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-jm7HTJ878ovV19g39TFqYeMdBbRk0nqm">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-jm7HTJ878ovV19g39TFqYeMdBbRk0nqm&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.2">OID4VCI-1FINAL-12.2.2</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGetDynamicCredentialIssuerMetadata</div>
+                <div class="log-msg">Credential issuer metadata response indicates unsigned metadata</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-jm7HTJ878ovV19g39TFqYeMdBbRk0nqm">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">contentType</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">application/json</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-P6O126Y8Bqc4TfGO3NDw5ReJTxSTanRv">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-P6O126Y8Bqc4TfGO3NDw5ReJTxSTanRv&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.2">OID4VCI-1FINAL-12.2.2</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGetDynamicCredentialIssuerMetadata</div>
+                <div class="log-msg">Fetched credential issuer metadata from https://certify.inji.test:18450/.well-known/openid-credential-issuer</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-P6O126Y8Bqc4TfGO3NDw5ReJTxSTanRv">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">contentType</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">application/json</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">status</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">200</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-3oh3nGAk7Xo64XYFitBPAOyLyNqJVoDN">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-3oh3nGAk7Xo64XYFitBPAOyLyNqJVoDN&#39;)">(6) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.2">OID4VCI-1FINAL-12.2.2</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIParseCredentialIssuerMetadata</div>
+                <div class="log-msg">Successfully parsed credential issuer metadata</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-3oh3nGAk7Xo64XYFitBPAOyLyNqJVoDN">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">display</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  {
+    &quot;name&quot;: &quot;Farmer Issuer&quot;,
+    &quot;locale&quot;: &quot;en&quot;
+  }
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">credential_issuer</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_servers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;https://certify.inji.test:18450&quot;
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">credential_endpoint</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/v1/certify/issuance/credential</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">nonce_endpoint</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/v1/certify/nonce</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">credential_configurations_supported</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;InjiConformanceSdJwtVc&quot;: {
+    &quot;format&quot;: &quot;dc+sd-jwt&quot;,
+    &quot;scope&quot;: &quot;inji_conformance_sd_jwt_vc&quot;,
+    &quot;vct&quot;: &quot;urn:inji-conformance:vct:farmer:1&quot;,
+    &quot;cryptographic_binding_methods_supported&quot;: [
+      &quot;did:jwk&quot;,
+      &quot;did:key&quot;
+    ],
+    &quot;credential_signing_alg_values_supported&quot;: [
+      &quot;ES256&quot;
+    ],
+    &quot;proof_types_supported&quot;: {
+      &quot;jwt&quot;: {
+        &quot;proof_signing_alg_values_supported&quot;: [
+          &quot;RS256&quot;,
+          &quot;PS256&quot;,
+          &quot;ES256&quot;,
+          &quot;EdDSA&quot;
+        ]
+      }
+    },
+    &quot;credential_metadata&quot;: {
+      &quot;display&quot;: [
+        {
+          &quot;logo&quot;: null,
+          &quot;name&quot;: &quot;Inji conformance test credential (SD-JWT VC)&quot;,
+          &quot;locale&quot;: &quot;en&quot;,
+          &quot;text_color&quot;: null,
+          &quot;background_color&quot;: null,
+          &quot;background_image&quot;: null
+        }
+      ],
+      &quot;claims&quot;: [
+        {
+          &quot;path&quot;: [
+            &quot;gender&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Gender&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        },
+        {
+          &quot;path&quot;: [
+            &quot;fullName&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Full name&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        },
+        {
+          &quot;path&quot;: [
+            &quot;dateOfBirth&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Date of birth&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        }
+      ]
+    }
+  },
+  &quot;FarmerCredential&quot;: {
+    &quot;format&quot;: &quot;ldp_vc&quot;,
+    &quot;scope&quot;: &quot;mock_identity_vc_ldp&quot;,
+    &quot;cryptographic_binding_methods_supported&quot;: [
+      &quot;did:jwk&quot;
+    ],
+    &quot;credential_signing_alg_values_supported&quot;: [
+      &quot;EdDSA&quot;
+    ],
+    &quot;proof_types_supported&quot;: {
+      &quot;jwt&quot;: {
+        &quot;proof_signing_alg_values_supported&quot;: [
+          &quot;RS256&quot;,
+          &quot;ES256&quot;
+        ]
+      }
+    },
+    &quot;credential_definition&quot;: {
+      &quot;type&quot;: [
+        &quot;FarmerCredential&quot;,
+        &quot;VerifiableCredential&quot;
+      ],
+      &quot;@context&quot;: [
+        &quot;https://www.w3.org/2018/credentials/v1&quot;
+      ]
+    },
+    &quot;credential_metadata&quot;: {
+      &quot;display&quot;: [
+        {
+          &quot;logo&quot;: {
+            &quot;uri&quot;: &quot;https://mosip.github.io/inji-config/logos/agro-vertias-logo.png&quot;,
+            &quot;alt_text&quot;: &quot;Farmer Credential Logo&quot;
+          },
+          &quot;name&quot;: &quot;Farmer Verifiable Credential&quot;,
+          &quot;locale&quot;: &quot;en&quot;,
+          &quot;text_color&quot;: &quot;#FFFFFF&quot;,
+          &quot;background_color&quot;: &quot;#12107c&quot;,
+          &quot;background_image&quot;: {
+            &quot;uri&quot;: &quot;https://mosip.github.io/inji-config/logos/agro-vertias-logo.png&quot;
+          }
+        }
+      ],
+      &quot;claims&quot;: [
+        {
+          &quot;path&quot;: [
+            &quot;phone&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Phone Number&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        },
+        {
+          &quot;path&quot;: [
+            &quot;gender&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Gender&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        },
+        {
+          &quot;path&quot;: [
+            &quot;fullName&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Full Name&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        },
+        {
+          &quot;path&quot;: [
+            &quot;dateOfBirth&quot;
+          ],
+          &quot;display&quot;: [
+            {
+              &quot;name&quot;: &quot;Date of Birth&quot;,
+              &quot;locale&quot;: &quot;en&quot;
+            }
+          ]
+        }
+      ]
+    }
+  }
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-20TghXyAZcSaNk62CcbzIGkgmcqxCPcq">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-20TghXyAZcSaNk62CcbzIGkgmcqxCPcq&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIExtractTlsInfoFromCredentialIssuer</div>
+                <div class="log-msg">Extracted TLS configuration from credential issuer URL</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-20TghXyAZcSaNk62CcbzIGkgmcqxCPcq">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">tls</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;testHost&quot;: &quot;certify.inji.test&quot;,
+  &quot;testPort&quot;: 18450
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-C9ifoNWNRVfk7WugE6wOrEP2wwZ9MQ4F">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-C9ifoNWNRVfk7WugE6wOrEP2wwZ9MQ4F&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc8414#section-3.1">RFC8414-3.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">Found explicit authorization_servers list with 1 entries.</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-C9ifoNWNRVfk7WugE6wOrEP2wwZ9MQ4F">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_servers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;https://certify.inji.test:18450&quot;
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-UYfbOfPpw2U3xYHC0nqud4XxVz6tPqJ7">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-UYfbOfPpw2U3xYHC0nqud4XxVz6tPqJ7&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc8414#section-3.1">RFC8414-3.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">Derived authorization server 0 metadata endpoint URL from OAuth authorization server issuer.</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-UYfbOfPpw2U3xYHC0nqud4XxVz6tPqJ7">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_metadata_url</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/oauth-authorization-server</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_issuer</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-KYIDvwegwIGkKuadLUxFu7apH2XvmA5D">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-KYIDvwegwIGkKuadLUxFu7apH2XvmA5D&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc8414#section-3.1">RFC8414-3.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">Fetching metadata from authorization server: 0</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-KYIDvwegwIGkKuadLUxFu7apH2XvmA5D">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_metadata_url</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/oauth-authorization-server</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_issuer</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-lFgCJZjrj3EQxceW1HIYQRRGGypG7LEz">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-lFgCJZjrj3EQxceW1HIYQRRGGypG7LEz&#39;)">(4) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                <span class="log-http">
+                        
+                        
+                        
+                        
+                        
+                        
+                </span>
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">HTTP request</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-lFgCJZjrj3EQxceW1HIYQRRGGypG7LEz">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">request_uri</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/oauth-authorization-server</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_method</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">GET</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_headers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;text/plain, application/json, application/yaml, application/*+json, */*&quot;,
+  &quot;Content-Length&quot;: &quot;0&quot;
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">request_body</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text"></pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-6tEKSYtWBcWZgam78t8qaytD0ek2ArYK">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-6tEKSYtWBcWZgam78t8qaytD0ek2ArYK&#39;)">(4) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                <span class="log-http">
+                        
+                        <span class="label bg-info">RESPONSE</span>
+                        
+                        
+                        
+                        
+                </span>
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">HTTP response</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-6tEKSYtWBcWZgam78t8qaytD0ek2ArYK">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">response_status_code</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">200 OK</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_status_text</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text"></pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_headers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx/1.30.5&quot;,
+  &quot;date&quot;: &quot;Sun, 25 Oct 2026 10:51:38 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json&quot;,
+  &quot;transfer-encoding&quot;: &quot;chunked&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;vary&quot;: [
+    &quot;Origin&quot;,
+    &quot;Access-Control-Request-Method&quot;,
+    &quot;Access-Control-Request-Headers&quot;
+  ],
+  &quot;x-content-type-options&quot;: &quot;nosniff&quot;,
+  &quot;x-xss-protection&quot;: &quot;0&quot;,
+  &quot;cache-control&quot;: &quot;no-cache, no-store, max-age\u003d0, must-revalidate&quot;,
+  &quot;pragma&quot;: &quot;no-cache&quot;,
+  &quot;expires&quot;: &quot;0&quot;,
+  &quot;x-frame-options&quot;: &quot;DENY&quot;,
+  &quot;x-harness-shim&quot;: &quot;authorization_endpoint added by the TLS proxy&quot;
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">response_body</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">{&quot;issuer&quot;:&quot;https://certify.inji.test:18450&quot;,&quot;authorization_endpoint&quot;:&quot;https://certify.inji.test:18450/v1/certify/oauth/authorize&quot;,&quot;token_endpoint&quot;:&quot;https://certify.inji.test:18450/v1/certify/oauth/token&quot;,&quot;jwks_uri&quot;:&quot;https://certify.inji.test:18450/v1/certify/.well-known/jwks.json&quot;,&quot;grant_types_supported&quot;:[&quot;authorization_code&quot;,&quot;urn:ietf:params:oauth:grant-type:pre-authorized_code&quot;],&quot;response_types_supported&quot;:[&quot;code&quot;],&quot;code_challenge_methods_supported&quot;:[&quot;S256&quot;],&quot;interactive_authorization_endpoint&quot;:&quot;https://certify.inji.test:18450/v1/certify/oauth/iae&quot;,&quot;require_interactive_authorization_request&quot;:true}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-YIL5PQ7lqP4S4btPTsheXYHYxjXjYd5j">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-YIL5PQ7lqP4S4btPTsheXYHYxjXjYd5j&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc8414#section-3.1">RFC8414-3.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">Fetched metadata from authorization server: 0</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-YIL5PQ7lqP4S4btPTsheXYHYxjXjYd5j">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_metadata_url</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/.well-known/oauth-authorization-server</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_issuer</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-eXU2CbiLMFmlcQbcWBiPKvtIT18GFviP">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-eXU2CbiLMFmlcQbcWBiPKvtIT18GFviP&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc8414#section-3.1">RFC8414-3.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIFetchOAuthorizationServerMetadata</div>
+                <div class="log-msg">Fetched authorization server metadata from single server</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-eXU2CbiLMFmlcQbcWBiPKvtIT18GFviP">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_metadata_list</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  {
+    &quot;issuer&quot;: &quot;https://certify.inji.test:18450&quot;,
+    &quot;authorization_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/authorize&quot;,
+    &quot;token_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/token&quot;,
+    &quot;jwks_uri&quot;: &quot;https://certify.inji.test:18450/v1/certify/.well-known/jwks.json&quot;,
+    &quot;grant_types_supported&quot;: [
+      &quot;authorization_code&quot;,
+      &quot;urn:ietf:params:oauth:grant-type:pre-authorized_code&quot;
+    ],
+    &quot;response_types_supported&quot;: [
+      &quot;code&quot;
+    ],
+    &quot;code_challenge_methods_supported&quot;: [
+      &quot;S256&quot;
+    ],
+    &quot;interactive_authorization_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/iae&quot;,
+    &quot;require_interactive_authorization_request&quot;: true
+  }
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-JS1AP1QhxOfzLptMUmN1gvHBIEtiwycO">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-JS1AP1QhxOfzLptMUmN1gvHBIEtiwycO&#39;)">(4) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#section-12.2.3">OID4VCI-1FINAL-12.2.3</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCISelectOAuthorizationServer</div>
+                <div class="log-msg">Select authorization server metadata</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-JS1AP1QhxOfzLptMUmN1gvHBIEtiwycO">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">available_authorization_servers</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;https://certify.inji.test:18450&quot;
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">authorization_server_metadata</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;issuer&quot;: &quot;https://certify.inji.test:18450&quot;,
+  &quot;authorization_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/authorize&quot;,
+  &quot;token_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/token&quot;,
+  &quot;jwks_uri&quot;: &quot;https://certify.inji.test:18450/v1/certify/.well-known/jwks.json&quot;,
+  &quot;grant_types_supported&quot;: [
+    &quot;authorization_code&quot;,
+    &quot;urn:ietf:params:oauth:grant-type:pre-authorized_code&quot;
+  ],
+  &quot;response_types_supported&quot;: [
+    &quot;code&quot;
+  ],
+  &quot;code_challenge_methods_supported&quot;: [
+    &quot;S256&quot;
+  ],
+  &quot;interactive_authorization_endpoint&quot;: &quot;https://certify.inji.test:18450/v1/certify/oauth/iae&quot;,
+  &quot;require_interactive_authorization_request&quot;: true
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">selected_authorization_server</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">index</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">0</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-6ljmMrgGWaQSYNmZrkhhlcXFFnQQyaHt">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-6ljmMrgGWaQSYNmZrkhhlcXFFnQQyaHt&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">CheckServerConfiguration</div>
+                <div class="log-msg">Found required server configuration keys</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-6ljmMrgGWaQSYNmZrkhhlcXFFnQQyaHt">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">required</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;authorization_endpoint&quot;,
+  &quot;token_endpoint&quot;,
+  &quot;issuer&quot;
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-5mxf9t0RbGDhE2SYKmBMiqdI9haB2Sjj">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-5mxf9t0RbGDhE2SYKmBMiqdI9haB2Sjj&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">GetStaticClientConfiguration</div>
+                <div class="log-msg">Found a static client object</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-5mxf9t0RbGDhE2SYKmBMiqdI9haB2Sjj">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">client_id</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">inji-conformance-wallet</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">jwks</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;x&quot;: &quot;g4FqtyPhsjxuJJJcNOj5W9dofTUXrGFs_xNxgtQcsUc&quot;,
+      &quot;y&quot;: &quot;0nIFPYwpKBfSmZxVWDgAGMtMM_KGZHhrxac4VOm0Q3g&quot;,
+      &quot;kid&quot;: &quot;client-jwks-nKan7YkJF5zK43nq&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;alg&quot;: &quot;ES256&quot;,
+      &quot;d&quot;: &quot;[redacted]&quot;
+    }
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-ImqDP9rwLdlG7YhJNLpokYow7tB0Olrt">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGenerateClientJwksIfMissing</div>
+                <div class="log-msg">Client JWKS already present in configuration, skipping generation</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-ImqDP9rwLdlG7YhJNLpokYow7tB0Olrt">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-o0D02hCwqgX6yYAErMKCACgAstpSOQrG">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGenerateClientJwksIfMissing</div>
+                <div class="log-msg">Client2 JWKS already present in configuration, skipping generation</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-o0D02hCwqgX6yYAErMKCACgAstpSOQrG">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-axsXexbf60KQ3fnjqu8mK5pXmSEK2diz">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">RegisterCredentialTrustAnchor</div>
+                <div class="log-msg">No credential trust anchor configured, skipping registration</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-axsXexbf60KQ3fnjqu8mK5pXmSEK2diz">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-hZ4MuJYomn9pzIlNeAzf64JMB5OfbQeT">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">RegisterStatusListTrustAnchor</div>
+                <div class="log-msg">No status list trust anchor configured, skipping registration</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-hZ4MuJYomn9pzIlNeAzf64JMB5OfbQeT">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-4KkfZGhV4tyId035T6XrjkGjP2JUhg3Z">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-4KkfZGhV4tyId035T6XrjkGjP2JUhg3Z&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIAddCredentialConfigurationIdToEnv</div>
+                <div class="log-msg">Extracted credential_configuration_id from config</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-4KkfZGhV4tyId035T6XrjkGjP2JUhg3Z">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">vci_credential_configuration_id</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">InjiConformanceSdJwtVc</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-aK2TmwL1itxTzgyd98SGRKqbVlfolEIE">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-aK2TmwL1itxTzgyd98SGRKqbVlfolEIE&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIResolveRequestedCredentialConfiguration</div>
+                <div class="log-msg">Emitting credential_configuration for InjiConformanceSdJwtVc</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-aK2TmwL1itxTzgyd98SGRKqbVlfolEIE">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">credential_configuration</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;format&quot;: &quot;dc+sd-jwt&quot;,
+  &quot;scope&quot;: &quot;inji_conformance_sd_jwt_vc&quot;,
+  &quot;vct&quot;: &quot;urn:inji-conformance:vct:farmer:1&quot;,
+  &quot;cryptographic_binding_methods_supported&quot;: [
+    &quot;did:jwk&quot;,
+    &quot;did:key&quot;
+  ],
+  &quot;credential_signing_alg_values_supported&quot;: [
+    &quot;ES256&quot;
+  ],
+  &quot;proof_types_supported&quot;: {
+    &quot;jwt&quot;: {
+      &quot;proof_signing_alg_values_supported&quot;: [
+        &quot;RS256&quot;,
+        &quot;PS256&quot;,
+        &quot;ES256&quot;,
+        &quot;EdDSA&quot;
+      ]
+    }
+  },
+  &quot;credential_metadata&quot;: {
+    &quot;display&quot;: [
+      {
+        &quot;logo&quot;: null,
+        &quot;name&quot;: &quot;Inji conformance test credential (SD-JWT VC)&quot;,
+        &quot;locale&quot;: &quot;en&quot;,
+        &quot;text_color&quot;: null,
+        &quot;background_color&quot;: null,
+        &quot;background_image&quot;: null
+      }
+    ],
+    &quot;claims&quot;: [
+      {
+        &quot;path&quot;: [
+          &quot;gender&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Gender&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      },
+      {
+        &quot;path&quot;: [
+          &quot;fullName&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Full name&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      },
+      {
+        &quot;path&quot;: [
+          &quot;dateOfBirth&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Date of birth&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-VNWziGR4mzrgJl6j7yMQKV5nRNzPhQUA">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-VNWziGR4mzrgJl6j7yMQKV5nRNzPhQUA&#39;)">(3) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIEnsureResolvedCredentialConfigurationMatchesSelection</div>
+                <div class="log-msg">Format of the resolved credential configuration matches the expected format</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-VNWziGR4mzrgJl6j7yMQKV5nRNzPhQUA">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">expected_format</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">dc+sd-jwt</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">credential_configuration</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;format&quot;: &quot;dc+sd-jwt&quot;,
+  &quot;scope&quot;: &quot;inji_conformance_sd_jwt_vc&quot;,
+  &quot;vct&quot;: &quot;urn:inji-conformance:vct:farmer:1&quot;,
+  &quot;cryptographic_binding_methods_supported&quot;: [
+    &quot;did:jwk&quot;,
+    &quot;did:key&quot;
+  ],
+  &quot;credential_signing_alg_values_supported&quot;: [
+    &quot;ES256&quot;
+  ],
+  &quot;proof_types_supported&quot;: {
+    &quot;jwt&quot;: {
+      &quot;proof_signing_alg_values_supported&quot;: [
+        &quot;RS256&quot;,
+        &quot;PS256&quot;,
+        &quot;ES256&quot;,
+        &quot;EdDSA&quot;
+      ]
+    }
+  },
+  &quot;credential_metadata&quot;: {
+    &quot;display&quot;: [
+      {
+        &quot;logo&quot;: null,
+        &quot;name&quot;: &quot;Inji conformance test credential (SD-JWT VC)&quot;,
+        &quot;locale&quot;: &quot;en&quot;,
+        &quot;text_color&quot;: null,
+        &quot;background_color&quot;: null,
+        &quot;background_image&quot;: null
+      }
+    ],
+    &quot;claims&quot;: [
+      {
+        &quot;path&quot;: [
+          &quot;gender&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Gender&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      },
+      {
+        &quot;path&quot;: [
+          &quot;fullName&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Full name&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      },
+      {
+        &quot;path&quot;: [
+          &quot;dateOfBirth&quot;
+        ],
+        &quot;display&quot;: [
+          {
+            &quot;name&quot;: &quot;Date of birth&quot;,
+            &quot;locale&quot;: &quot;en&quot;
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">actual_format</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">dc+sd-jwt</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-Y0SRIPEJB3SS51yIomIUBJX8gkjbOJHC">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-Y0SRIPEJB3SS51yIomIUBJX8gkjbOJHC&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIDetermineCredentialConfigurationTransferMethod</div>
+                <div class="log-msg">Using credential scope value to reference credential_configuration_id</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-Y0SRIPEJB3SS51yIomIUBJX8gkjbOJHC">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">credential_configuration_id</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">InjiConformanceSdJwtVc</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">scope</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">inji_conformance_sd_jwt_vc</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-04WeSa0RX024zAVH3YX1es4ADlftDIXp">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-04WeSa0RX024zAVH3YX1es4ADlftDIXp&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIResolveCredentialProofTypeToUse</div>
+                <div class="log-msg">Selected test-required proof type jwt</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-04WeSa0RX024zAVH3YX1es4ADlftDIXp">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">required_proof_types</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">attestation,jwt</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">proof_type</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;proof_signing_alg_values_supported&quot;: [
+    &quot;RS256&quot;,
+    &quot;PS256&quot;,
+    &quot;ES256&quot;,
+    &quot;EdDSA&quot;
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-RNHsWGCieJq2EinFMB4UqRZg6lYj2d99">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-RNHsWGCieJq2EinFMB4UqRZg6lYj2d99&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCICheckKeyAttestationJwksIfKeyAttestationIsRequired</div>
+                <div class="log-msg">Skip checking Key Attestation JWKS: Key attestation not required for selected proof type jwt</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-RNHsWGCieJq2EinFMB4UqRZg6lYj2d99">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">proof_type</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;proof_signing_alg_values_supported&quot;: [
+    &quot;RS256&quot;,
+    &quot;PS256&quot;,
+    &quot;ES256&quot;,
+    &quot;EdDSA&quot;
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-YjPVDl7F84uvMo6SmV84r4mOnImmrdPD">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGenerateClientJwksIfMissing</div>
+                <div class="log-msg">Client JWKS already present in configuration, skipping generation</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-YjPVDl7F84uvMo6SmV84r4mOnImmrdPD">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-Ya5l8HgioK9QQq6Sj0XoXa33toO8pGwn">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIGenerateClientJwksIfMissing</div>
+                <div class="log-msg">Client2 JWKS already present in configuration, skipping generation</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-Ya5l8HgioK9QQq6Sj0XoXa33toO8pGwn">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-uUCzcFfs4rb0fcyFKxdcqFy33TUT5amK">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-uUCzcFfs4rb0fcyFKxdcqFy33TUT5amK&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-1.1">RFC7517-1.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIValidateClientJWKsPrivatePart</div>
+                <div class="log-msg">Validated 1 signing key(s) in client JWKS</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-uUCzcFfs4rb0fcyFKxdcqFy33TUT5amK">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">signing_key_count</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">1</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-5bQ6hQFV0GN4yLtLil8Dgu6SiKRjwGcm">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-1.1">RFC7517-1.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIValidateClientJWKsPrivatePart</div>
+                <div class="log-msg">Valid client JWKs for VCI: keys are valid JSON, contain the required fields, the private/public exponents match and are correctly encoded using unpadded base64url. Multiple signing keys are allowed for VCI attestation proof type.</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-5bQ6hQFV0GN4yLtLil8Dgu6SiKRjwGcm">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-El0ovTV1ZJfjZ46Y0Og3mNwZd9Tac6GY">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-El0ovTV1ZJfjZ46Y0Og3mNwZd9Tac6GY&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">ExtractJWKsFromStaticClientConfiguration</div>
+                <div class="log-msg">Extracted client JWK</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-El0ovTV1ZJfjZ46Y0Og3mNwZd9Tac6GY">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">client_jwks</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;x&quot;: &quot;g4FqtyPhsjxuJJJcNOj5W9dofTUXrGFs_xNxgtQcsUc&quot;,
+      &quot;y&quot;: &quot;0nIFPYwpKBfSmZxVWDgAGMtMM_KGZHhrxac4VOm0Q3g&quot;,
+      &quot;kid&quot;: &quot;client-jwks-nKan7YkJF5zK43nq&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;alg&quot;: &quot;ES256&quot;,
+      &quot;d&quot;: &quot;[redacted]&quot;
+    }
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">client_public_jwks</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;kid&quot;: &quot;client-jwks-nKan7YkJF5zK43nq&quot;,
+      &quot;x&quot;: &quot;g4FqtyPhsjxuJJJcNOj5W9dofTUXrGFs_xNxgtQcsUc&quot;,
+      &quot;y&quot;: &quot;0nIFPYwpKBfSmZxVWDgAGMtMM_KGZHhrxac4VOm0Q3g&quot;,
+      &quot;alg&quot;: &quot;ES256&quot;
+    }
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-ViuXEX8WrNUiRdhFEI9yZEh08tpKF7gc">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.10.1">OIDCC-10.1</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">CheckForKeyIdInClientJWKs</div>
+                <div class="log-msg">All keys contain kids</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-ViuXEX8WrNUiRdhFEI9yZEh08tpKF7gc">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-nSsqbGF70BMtN3tzmsfX17TjUXFEFNy4">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-nSsqbGF70BMtN3tzmsfX17TjUXFEFNy4&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-4.5">RFC7517-4.5</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">CheckDistinctKeyIdValueInClientJWKs</div>
+                <div class="log-msg">Distinct &#39;kid&#39; value in all keys of client_jwks</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-nSsqbGF70BMtN3tzmsfX17TjUXFEFNy4">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">see</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://bitbucket.org/openid/connect/issues/1127</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-eAiFv90UAfd8W2BS6KIrbA5IYo1dTlvZ">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-eAiFv90UAfd8W2BS6KIrbA5IYo1dTlvZ&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/fapi-security-profile-2_0-final.html#section-5.4">FAPI2-SP-FINAL-5.4</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">FAPI2CheckKeyAlgInClientJWKs</div>
+                <div class="log-msg">Keys in client JWKS all have permitted &#39;alg&#39;</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-eAiFv90UAfd8W2BS6KIrbA5IYo1dTlvZ">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">permitted</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;Ed25519&quot;,
+  &quot;EdDSA&quot;,
+  &quot;ES256&quot;,
+  &quot;PS256&quot;
+]</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-7SGCISiEbsF6zROGQEiJmmswq4Ryvolo">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-7SGCISiEbsF6zROGQEiJmmswq4Ryvolo&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    <a class="label requirement" target="_blank" href="https://openid.net/specs/fapi-security-profile-2_0-final.html#section-5.4.1-3">FAPI2-SP-FINAL-5.4.1-3</a><a class="label requirement" target="_blank" href="https://openid.net/specs/fapi-security-profile-2_0-final.html#section-5.4.1-2">FAPI2-SP-FINAL-5.4.1-2</a>
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">FAPI2FinalEnsureMinimumClientKeyLength</div>
+                <div class="log-msg">Validated minimum key lengths for client_jwks</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-7SGCISiEbsF6zROGQEiJmmswq4Ryvolo">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">client_jwks</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;x&quot;: &quot;g4FqtyPhsjxuJJJcNOj5W9dofTUXrGFs_xNxgtQcsUc&quot;,
+      &quot;y&quot;: &quot;0nIFPYwpKBfSmZxVWDgAGMtMM_KGZHhrxac4VOm0Q3g&quot;,
+      &quot;kid&quot;: &quot;client-jwks-nKan7YkJF5zK43nq&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;alg&quot;: &quot;ES256&quot;,
+      &quot;d&quot;: &quot;[redacted]&quot;
+    }
+  ]
+}</pre>
+                                    
+                                    
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-J1FaHBGBvPckC0wlVEry2LKUSNkhLYco">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-J1FaHBGBvPckC0wlVEry2LKUSNkhLYco&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">VCIResolveCredentialEndpointToUse</div>
+                <div class="log-msg">Use credential endpoint from credential issuer metadata</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-J1FaHBGBvPckC0wlVEry2LKUSNkhLYco">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">credential_endpoint</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/v1/certify/issuance/credential</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-EfuuDpLpG5Q1aJdpfDqm1aOxxgm20zbN">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-EfuuDpLpG5Q1aJdpfDqm1aOxxgm20zbN&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-success">SUCCESS</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">SetProtectedResourceUrlToSingleResourceEndpoint</div>
+                <div class="log-msg">Set protected resource URL</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-EfuuDpLpG5Q1aJdpfDqm1aOxxgm20zbN">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">protected_resource_url</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">https://certify.inji.test:18450/v1/certify/issuance/credential</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-yCHVILrqyTxfEAUW77Y2j5gsj03LHqaI">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</div>
+                <div class="log-msg">Setup Done</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-yCHVILrqyTxfEAUW77Y2j5gsj03LHqaI">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-iCZ3TaMIsmN8lDzudZMSkigfXdxdJIkH">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-skipped">SKIPPED</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</div>
+                <div class="log-msg">The test was skipped: This test requires key attestation. The selected credential configuration uses &#39;jwt&#39; proof type without key_attestations_required.</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-iCZ3TaMIsmN8lDzudZMSkigfXdxdJIkH">
+                    
+
+                    
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-UOUb269wK7QBvvPbaKrdNOR6wuPgzzzL">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-UOUb269wK7QBvvPbaKrdNOR6wuPgzzzL&#39;)">(1) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                <span class="label result-finished">FINISHED</span>
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">oid4vci-1_0-issuer-fail-invalid-key-attestation-signature</div>
+                <div class="log-msg">Test has run to completion</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-UOUb269wK7QBvvPbaKrdNOR6wuPgzzzL">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">testmodule_result</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">SKIPPED</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+    <div class="log-item">
+<table cellpadding="0" cellspacing="0" id="k6M2xzbZquVpXpr-3lmRzOK4N6ycpUfjN10XGbVbM0995Lxw">
+    
+    <tbody>
+        <tr class="log-entry-title">
+
+            <td class="col-1">
+                <span>2026-10-25 10:51:38</span>
+                <div>
+                    <a class="more-btn" href="javascript:moreClicked(&#39;k6M2xzbZquVpXpr-3lmRzOK4N6ycpUfjN10XGbVbM0995Lxw&#39;)">(2) More</a>
+                </div>
+            </td>
+
+            <td class="col-2 labelCollection">
+                
+
+                
+
+                
+                <div>
+                    
+                </div>
+            </td>
+
+            <td class="col-3">
+                <div class="log-src">TEST-RUNNER</div>
+                <div class="log-msg">Alias has now been claimed by another test</div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="3">
+                <div class="more" id="more_k6M2xzbZquVpXpr-3lmRzOK4N6ycpUfjN10XGbVbM0995Lxw">
+                    
+
+                    <table>
+                        <tr class="more-row">
+                            <td class="more-key">alias</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">inji-certify-20261025T105006Z-5fd632</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="more-row">
+                            <td class="more-key">new_test_id</td>
+                            <td class="more-value">
+                                <div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <pre class="more-text">Im4OeH8HSJMYyvj</pre>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+<a href="#testresultsheader" id="fixedtoplink">Test Results</a>
+</body>
+</html>

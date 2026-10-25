@@ -1,0 +1,12 @@
+[
+  {"service": "suite-nginx", "image": "registry.gitlab.com/openid/conformance-suite/nginx:release-v5.3.1@sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105", "digest": "sha256:6ea3f4b8854f1f3626c81350900962d9e5f86424791d8e72b378a26ee2f4c105"},
+  {"service": "certify", "image": "injistackqa/inji-certify-with-plugins:1.0.x@sha256:2c72a78cd3c54d9bfdaf58489123cd78aa3f7d12108fdf4546fc28591b593c24", "digest": "sha256:2c72a78cd3c54d9bfdaf58489123cd78aa3f7d12108fdf4546fc28591b593c24"},
+  {"service": "verify-service", "image": "injistackqa/inji-verify-service:1.0.x@sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef", "digest": "sha256:a9b81fd4a1b97ee8d78bde670634d1bf1bd880d128c08239c5cf25c927891eef"},
+  {"service": "suite-server", "image": "registry.gitlab.com/openid/conformance-suite:release-v5.3.1@sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70", "digest": "sha256:69495f453a920c262f66e5e72abd12501c33e05ce88051cddf300c00621a4d70"},
+  {"service": "tls-proxy", "image": "nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94", "digest": "sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94"},
+  {"service": "verify-db", "image": "postgres:13@sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068", "digest": "sha256:4689940c683801b4ab839ab3b0a0a3555a5fe425371422310944e89eca7d8068"},
+  {"service": "certify-db", "image": "postgres:15@sha256:724292da1f2e50bdccfc3302ce75bbba7f4a6076701b588cc795fcac65683550", "digest": "sha256:724292da1f2e50bdccfc3302ce75bbba7f4a6076701b588cc795fcac65683550"},
+  {"service": "minio", "image": "pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372", "digest": "sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372", "commit": "d88f46ccee345a9c2fabe2d221d9a9e56bc11aec"},
+  {"service": "suite-mongodb", "image": "mongo:6.0.13@sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070", "digest": "sha256:b415b12f638e2685d06c58ab7fb5943577c50fadec6d9340ef67d21aeac72070"},
+  {"service": "pki-init", "image": "python:3.12.15-slim@sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256", "digest": "sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256"}
+]
