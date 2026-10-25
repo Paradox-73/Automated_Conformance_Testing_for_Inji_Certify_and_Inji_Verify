@@ -11,6 +11,8 @@ The badge is from the full-stack run of 2026-10-24 (run `20261024T185916Z-f3a694
 with the api-testrigs; [evidence](docs/evidence/2026-10-24-20261024T185916Z-f3a694/)). The fresh-clone run of 2026-10-14
 (`20261014T133851Z-c99cce`) stays in [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/).
 
+**Demo video:** https://youtu.be/ER4DFlzwMs0
+
 ## Judge's path
 
 1. Open the report of the headline run in a browser, with no clone: once GitHub Pages is on, the

@@ -49,7 +49,7 @@ Every artefact the problem statement asks for, where it is, who owns it, and its
 |---|---|---|
 | Source code | this repository | done |
 | Working prototype or demo | `run-full-stack-conformance.sh`, `demo/demo.sh` (TC-20 in [test-report.md](test-report.md)) | done |
-| Pitch deck: problem, solution, technology stack, target audience, impact | `PS01-Inji-Conformance-Harness.pptx`, 13 slides, kept with the other artefacts outside the repository; outline in [demo/deck-outline.md](demo/deck-outline.md) | done; the demo-video link on slide 7 is still a placeholder |
+| Pitch deck: problem, solution, technology stack, target audience, impact | `PS01-Inji-Conformance-Harness.pptx`, 15 slides, kept with the other artefacts outside the repository; outline in [demo/deck-outline.md](demo/deck-outline.md) | done; slide 7 links the demo video (https://youtu.be/ER4DFlzwMs0) |
 | Video demo, 2 to 5 minutes | script in [demo/video-storyboard.md](demo/video-storyboard.md) | team: record and upload |
 | Design mockups, wireframes, user flow | [design/report-wireframe.svg](design/report-wireframe.svg), [diagrams/user-flow.svg](diagrams/user-flow.svg), screenshots in `docs/demo/screenshots/` | done |
 | Architecture diagram | [diagrams/components.svg](diagrams/components.svg), sequence diagrams in [architecture.md](architecture.md) | done |
@@ -66,7 +66,6 @@ Every artefact the problem statement asks for, where it is, who owns it, and its
 1. Run the manual checks in [manual-test-checklist.md](manual-test-checklist.md) (fresh clone on Linux and macOS,
    report review, video dry run) and record them with
    [manual-test-results-template.md](manual-test-results-template.md).
-2. Record the video from [demo/video-storyboard.md](demo/video-storyboard.md), upload it, and put its link on slide 7
-   of the deck.
+2. Demo video: recorded and uploaded at https://youtu.be/ER4DFlzwMs0 (also on slide 7 of the deck).
 3. Each member uploads a college or university ID; one member emails decode@mosip.io with the team name, the problem
    statement and the links.
