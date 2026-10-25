@@ -25,8 +25,8 @@ About 10 GB of free disk: the suite, Inji and database images take about 6 GB, t
 
 <!-- run 2026-10-14 -->
 ```bash
-git -c core.longpaths=true clone https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git ps01
-cd ps01
+git -c core.longpaths=true clone https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git inji-conformance-harness
+cd inji-conformance-harness
 ```
 
 Everything the harness writes at run time (passwords, keys, reports, logs) goes to `run/` in the clone, which git

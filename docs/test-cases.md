@@ -11,7 +11,7 @@ durations and evidence: [test-report.md](test-report.md).
 | TC-04 | Same verdicts on a rerun (R1) | `inji-conformance diff <TC-03 run 1> <TC-03 run 2>` | exit 0 |
 | TC-05 | Serial and parallel agree (R5) | `./run-conformance.sh --combined --runner-only --serial`, then `diff` against TC-19 | exit 0, diff exit 0 |
 | TC-06 | Inji Verify stopped mid-run (R2) | stop `verify-service` after the first handoff | the remaining modules are regressions ("handoff not delivered", "never started"), time limit exit 4, stack removed |
-| TC-07 | Suite restarted mid-run (R3) | `docker restart ps01-harness-suite-server-1` during the issuer plan | the run recovers or fails clearly |
+| TC-07 | Suite restarted mid-run (R3) | `docker restart inji-conformance-suite-server-1` during the issuer plan | the run recovers or fails clearly |
 | TC-08 | Configuration regression (R4) | `HARNESS_COMPOSE_FILES=demo/regression.compose.yml ./run-conformance.sh --component certify --runner-only` | exit 1, the gate names the module |
 | TC-09 | A harness port in use (R6) | hold 127.0.0.1:18451, then `./run-conformance.sh --component verify --runner-only` | preflight stops with the port, its service and how to find the holder |
 | TC-10 | Benchmark entry removed | `inji-conformance gate --run <TC-02>/certify --benchmark-dir <copy without one entry>` | exit 1, names module and condition |

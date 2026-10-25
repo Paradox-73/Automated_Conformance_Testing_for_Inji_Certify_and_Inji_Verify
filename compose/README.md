@@ -1,6 +1,6 @@
 # compose
 
-Assets for the root [`docker-compose.yml`](../docker-compose.yml): one Docker Compose project (`ps01-harness`) that
+Assets for the root [`docker-compose.yml`](../docker-compose.yml): one Docker Compose project (`inji-conformance`) that
 runs the OpenID Foundation conformance suite and the Inji systems under test side by side.
 
 ## Quick start
@@ -20,7 +20,7 @@ passwords and, on Windows, the path conversion. Arguments go to `docker compose`
 
 | What `dc.sh` adds | Why |
 |---|---|
-| `--project-name ps01-harness --file <repo>/docker-compose.yml` | Works from any folder. `HARNESS_COMPOSE_PROJECT` overrides the name; it must start with `ps01-`. |
+| `--project-name inji-conformance --file <repo>/docker-compose.yml` | Works from any folder. `HARNESS_COMPOSE_PROJECT` overrides the name; it must start with `inji-conformance`. |
 | `--env-file $HARNESS_RUN_DIR/env.local` | Created on first use with random passwords (32 hex characters each); later calls only append names that are missing, so a database keeps the password it was created with. Never in git. Delete it together with the volumes to get new passwords. |
 | Creates `$HARNESS_RUN_DIR/pki` and `$HARNESS_RUN_DIR/reports` | They are bind-mounted; created as the calling user so containers that run as that user can write them on Linux. |
 | `HARNESS_RUN_DIR` as a native path, Git Bash path rewriting off | Bind mounts work from Git Bash on Windows. |

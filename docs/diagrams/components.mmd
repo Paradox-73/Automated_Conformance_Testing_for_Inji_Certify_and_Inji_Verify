@@ -4,7 +4,7 @@ flowchart LR
     dc["scripts/dc.sh<br/>(docker compose)"]
     rep["$HARNESS_RUN_DIR/reports/&lt;run id&gt;<br/>results.json, manifest.json,<br/>summary.html, badge.svg"]
   end
-  subgraph net["Compose network ps01-harness_default"]
+  subgraph net["Compose network inji-conformance_default"]
     runner["runner<br/>inji-conformance<br/>+ run-test-plan.py"]
     suite["conformance suite<br/>suite-nginx :18443<br/>suite-server, MongoDB"]
     proxy["tls-proxy<br/>certify.inji.test:18450<br/>verify.inji.test:18451"]

@@ -19,7 +19,7 @@ in the loop. Diagrams are Mermaid sources in [diagrams/](diagrams/) with the ren
 | MinIO | `minio` (profile `reports`) | The S3 store the api-testrigs upload to (bucket `automationtests`) |
 | Entry scripts | `run-conformance.sh`, `run-full-stack-conformance.sh`, `scripts/dc.sh` | Preflight, compose, run, testrig step, report, teardown |
 
-Everything runs on one Docker network (`ps01-harness_default`). The `*.inji.test` names exist only there, so every
+Everything runs on one Docker network (`inji-conformance_default`). The `*.inji.test` names exist only there, so every
 caller of Inji (runner, testrig, `probe`) runs in a container. Host ports are bound to 127.0.0.1 only
 ([configuration.md](configuration.md)).
 

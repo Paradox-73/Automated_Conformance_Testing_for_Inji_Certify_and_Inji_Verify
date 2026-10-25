@@ -43,12 +43,12 @@ check "--help exits 0 and lists the profiles" "$?:$(grep -c 'Profiles: suite ver
 OUT_DIR=$WORK
 tab=$'\t'
 {
-  printf '1%sps01-harness-suite-server-1%s412.5MiB / 1.5GiB\n' "$tab" "$tab"
-  printf '2%sps01-harness-suite-server-1%s1.25GiB / 1.5GiB\n' "$tab" "$tab"
-  printf '1%sps01-harness-tls-proxy-1%s6144KiB / 128MiB\n' "$tab" "$tab"
-  printf '1%sps01-harness-probe-run-0a1b2c%s30MiB / 64MiB\n' "$tab" "$tab"
-  printf '1%sps01-harness-pki-init-1%s0B / 0B\n' "$tab" "$tab"
-  printf '2%sps01-harness-verify-db-1%s52428800B / 256MiB\n' "$tab" "$tab"
+  printf '1%sinji-conformance-suite-server-1%s412.5MiB / 1.5GiB\n' "$tab" "$tab"
+  printf '2%sinji-conformance-suite-server-1%s1.25GiB / 1.5GiB\n' "$tab" "$tab"
+  printf '1%sinji-conformance-tls-proxy-1%s6144KiB / 128MiB\n' "$tab" "$tab"
+  printf '1%sinji-conformance-probe-run-0a1b2c%s30MiB / 64MiB\n' "$tab" "$tab"
+  printf '1%sinji-conformance-pki-init-1%s0B / 0B\n' "$tab" "$tab"
+  printf '2%sinji-conformance-verify-db-1%s52428800B / 256MiB\n' "$tab" "$tab"
 } >"$WORK/stats.tsv"
 check "peaks per service in MiB, highest first; run containers and 0 B left out" "$(peak_memory)" \
   "$(printf 'suite-server 1280\nverify-db 50\ntls-proxy 6')"

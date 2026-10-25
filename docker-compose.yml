@@ -21,7 +21,7 @@
 #   certify.inji.test:18450              Inji Certify over TLS (alias of tls-proxy)
 #   minio:9000                           S3 API of MinIO, path-style requests (bucket in the path, no bucket host names)
 
-name: ps01-harness
+name: inji-conformance
 
 x-logging: &logging
   driver: json-file
@@ -134,7 +134,7 @@ services:
   # ------------------------------------------------------------------------------------------------------------
   # Inji Verify 1.0.x (Apache-2.0). Upstream: inji-verify release-1.0.x docker-compose/docker-compose.yml.
   # The QA image injistackqa/inji-verify-service:1.0.x (commit ad3595f) signs x509_san_dns requests; the
-  # 1.0.0-alpha.1 release image does not (plan research, inji.md section 0).
+  # 1.0.0-alpha.1 release image does not.
   # ------------------------------------------------------------------------------------------------------------
   verify-db:
     profiles: [verify]
@@ -213,8 +213,8 @@ services:
   # the issuer plan without an identity system or a browser login.
   # Image: the QA build injistackqa/inji-certify-with-plugins:1.0.x, built 2026-10-09 from the release-1.0.x branch
   # (label commit_id bbd913e). No 1.0 release image with DPoP exists: the only one, 1.0.0-alpha.1 (2026-07-30), has
-  # no DPoP code. Until 2026-10-14 the default was the develop build d6635da, an ancestor of bbd913e; both give the
-  # same verdicts (docs/test-report.md, "Build comparison"). compose/smoke.sh prints the commit_id label.
+  # no DPoP code. docs/test-report.md ("Build comparison") compares it with the develop build d6635da.
+  # compose/smoke.sh prints the commit_id label.
   # ------------------------------------------------------------------------------------------------------------
   certify-db:
     profiles: [certify]
@@ -360,10 +360,11 @@ services:
       # The image also holds third_party/ and conformance/; runner/Dockerfile.dockerignore limits the context.
       context: .
       dockerfile: runner/Dockerfile
-    image: ${RUNNER_IMAGE:-ps01-harness/runner:local}
+    image: ${RUNNER_IMAGE:-inji-conformance/runner:local}
     user: "${HARNESS_UID:-1000}:${HARNESS_GID:-1000}"
     environment:
       HARNESS_SUITE_URL: https://localhost.emobix.co.uk:18443
+      HARNESS_SUITE_MTLS_URL: https://localhost.emobix.co.uk:18444
       HARNESS_VERIFY_URL: https://verify.inji.test:18451/v1/verify
       HARNESS_PKI_DIR: /pki
       HARNESS_REPORTS_DIR: /reports

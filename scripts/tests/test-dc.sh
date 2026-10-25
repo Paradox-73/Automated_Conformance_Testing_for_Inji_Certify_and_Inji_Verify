@@ -43,7 +43,7 @@ run_dc() {
   shift
   RC=0
   OUT=$(PATH="$WORK/bin:$PATH" STUB_LOG="$WORK/stub.log" HARNESS_RUN_DIR="$run_dir" \
-    HARNESS_COMPOSE_PROJECT=${PROJECT:-ps01-harness} bash "$REPO/scripts/dc.sh" "$@" 2>&1) || RC=$?
+    HARNESS_COMPOSE_PROJECT=${PROJECT:-inji-conformance} bash "$REPO/scripts/dc.sh" "$@" 2>&1) || RC=$?
   LOG=$(cat "$WORK/stub.log" 2>/dev/null || true)
   rm -f "$WORK/stub.log"
 }
@@ -91,7 +91,7 @@ TESTS=$((TESTS + 1))
 name="compose gets the project name, the root compose file and the env file, then the caller's arguments"
 root=$(harness_native_path "$REPO")
 native_run=$(harness_native_path "$run_dir")
-expected=$(printf '%s\n' compose --project-name ps01-harness --project-directory "$root" --file \
+expected=$(printf '%s\n' compose --project-name inji-conformance --project-directory "$root" --file \
   "$root/docker-compose.yml" --env-file "$native_run/env.local" config -q)
 if [[ $(head -n 11 <<<"$LOG") == "$expected" ]]; then ok "$name"; else not_ok "$name" "got: $LOG"; fi
 
@@ -208,7 +208,7 @@ if ((RC == 2)) && [[ -z $LOG && $OUT == *"no such file"* ]]; then ok "$name"; el
 
 # --- refusals -----------------------------------------------------------------------------------------------------
 TESTS=$((TESTS + 1))
-name="a project name outside ps01-* is refused with exit status 2"
+name="a project name outside inji-conformance* is refused with exit status 2"
 PROJECT=other-project run_dc "$WORK/run2" config -q
 if ((RC == 2)) && [[ -z $LOG ]]; then ok "$name"; else not_ok "$name" "exit $RC"; fi
 

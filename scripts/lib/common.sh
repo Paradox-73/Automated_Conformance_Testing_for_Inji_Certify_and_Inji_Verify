@@ -6,7 +6,7 @@
 # Settings (environment variables, all optional):
 #   HARNESS_RUN_DIR          runtime state: downloads, logs, generated keys, the Python venv. Default <repo>/run,
 #                            which .gitignore excludes. Nothing a script writes at run time goes into the repository.
-#   HARNESS_COMPOSE_PROJECT  Docker Compose project name. Default ps01-harness.
+#   HARNESS_COMPOSE_PROJECT  Docker Compose project name. Default inji-conformance.
 #   HARNESS_TOOLS_DIR        extra tool folder searched after PATH (<dir>/bin). Default $HARNESS_RUN_DIR/tools.
 #   NO_COLOR                 any value turns off coloured log output (https://no-color.org).
 #
@@ -24,7 +24,7 @@ fi
 
 HARNESS_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 HARNESS_RUN_DIR=${HARNESS_RUN_DIR:-$HARNESS_ROOT/run}
-HARNESS_COMPOSE_PROJECT=${HARNESS_COMPOSE_PROJECT:-ps01-harness}
+HARNESS_COMPOSE_PROJECT=${HARNESS_COMPOSE_PROJECT:-inji-conformance}
 HARNESS_TOOLS_DIR=${HARNESS_TOOLS_DIR:-$HARNESS_RUN_DIR/tools}
 # Exported so child scripts and containers started from them resolve the same folders.
 export HARNESS_ROOT HARNESS_RUN_DIR HARNESS_COMPOSE_PROJECT HARNESS_TOOLS_DIR
