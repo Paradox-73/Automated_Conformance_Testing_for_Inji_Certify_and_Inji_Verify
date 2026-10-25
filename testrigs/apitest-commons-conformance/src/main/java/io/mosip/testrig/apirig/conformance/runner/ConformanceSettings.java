@@ -91,7 +91,8 @@ public record ConformanceSettings(
     /** {@code ConfigManager.getproperty(key)}, or {@code null} when the rig has no such key or no loaded config. */
     static String rigProperty(String key) {
         try {
-            return ConfigManager.getproperty(key);
+            String value = ConfigManager.getproperty(key); // "" when the key is missing
+            return value == null || value.isBlank() ? null : value;
         } catch (RuntimeException | LinkageError e) {
             return null;
         }
