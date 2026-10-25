@@ -13,7 +13,7 @@ with the api-testrigs; [evidence](docs/evidence/2026-10-25-20261025T105006Z-5fd6
 `CERTIFY_AS_METADATA=as-is` runs Certify as served, where 13 of 15 issuer modules stop at the first check. The fresh-clone run of 2026-10-14
 (`20261014T133851Z-c99cce`) stays in [evidence](docs/evidence/2026-10-14-20261014T133851Z-c99cce/).
 
-**Demo video:** https://youtu.be/ER4DFlzwMs0
+**Demo video:** https://youtu.be/mlXXie1bCXY
 
 ## Judge's path
 
