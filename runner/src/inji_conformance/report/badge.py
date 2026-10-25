@@ -4,6 +4,7 @@ The message lists each component with its counts, for example ``certify 10 ok, 1
 
 - ``ok``: modules that conform; ``gap``: known gaps (listed in the benchmark); ``fail``: regressions;
   ``stale``: stale benchmark entries. Zero counts other than ``ok`` are left out to keep the badge short.
+- ``patched``: the run applied a workaround to what the component publishes (``workarounds`` in results.json).
 
 The colour follows the gate: green when the gate passed with no known gaps or stale entries, amber when it passed
 with them, red when it failed, grey when no gate was applied. White text on each colour has a contrast ratio of at
@@ -84,6 +85,10 @@ def badge_for(run: Run) -> Badge:
                 counts.append(f"{count} {short}")
             words.append(f"{count} {singular if count == 1 else plural}")
         words.append(f"{summary.not_applicable} not applicable")
+        if item.results.workarounds:  # the harness changed what the component publishes (results.json workarounds)
+            counts.append("patched")
+            n = len(item.results.workarounds)
+            words.append(f"{n} harness workaround{'' if n == 1 else 's'} applied")
         parts.append(f"{item.component.value} {', '.join(counts)}")
         sentences.append(f"{item.component.value}: {', '.join(words)}")
 

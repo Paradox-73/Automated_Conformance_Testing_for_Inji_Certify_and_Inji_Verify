@@ -27,7 +27,7 @@ def test_report_with_compare_writes_every_file(capsys, run_a, run_b, tmp_path):
     code, stdout, _ = run(capsys, "report", "--run", str(run_a), "--compare", str(run_b), "--out", str(out))
     assert code == ExitCode.OK
     assert sorted(path.name for path in out.iterdir()) == ["badge.svg", "diff.html", "summary.html", "summary.md"]
-    assert "certify 10 ok, 1 gap | verify 10 ok, 1 gap" in stdout
+    assert "certify 10 ok, 1 gap, patched | verify 10 ok, 1 gap" in stdout
     markdown = (out / "summary.md").read_text(encoding="utf-8")
     assert "| certify | 15 | 10 | 1 | 0 | 4 | 0 |" in markdown
     assert "0 new regressions, 2 fixed" in markdown

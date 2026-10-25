@@ -18,12 +18,14 @@ SVG = "{http://www.w3.org/2000/svg}"
 def test_badge_text_of_a_passing_run_with_known_gaps(run_a):
     result = badge.badge_for(load_run(run_a))
     assert result.label == "conformance"
-    assert result.message == "certify 10 ok, 1 gap | verify 10 ok, 1 gap"
+    # The certify fixture carries the TLS proxy's metadata workaround, so its part says "patched".
+    assert result.message == "certify 10 ok, 1 gap, patched | verify 10 ok, 1 gap"
     assert result.colour == badge.AMBER
     assert result.description.endswith("gate passed")
-    assert "certify: 10 conform, 1 known gap, 0 regressions, 0 stale benchmark entries, 4 not applicable" in (
-        result.description
-    )
+    assert (
+        "certify: 10 conform, 1 known gap, 0 regressions, 0 stale benchmark entries, 4 not applicable, "
+        "1 harness workaround applied"
+    ) in result.description
 
 
 def test_badge_text_of_a_failing_run(run_b):
