@@ -34,7 +34,8 @@ inji-conformance validate --kind expected-failures my-benchmark.json   # when th
 Top level: `schema_version` (`"1"`), `run_id` (UTC start time plus a suffix, for example
 `20261004T193000Z-1a2b3c4`), `component` (`certify` or `verify`), `track` (`gate` or `haip`), `gating` (false for
 the haip readiness track, which never changes the exit code), `suite`, `target`, `plan`, `modules`, `summary`,
-`gate`, and optionally `started_at`, `finished_at`, `notes`.
+`gate`, and optionally `started_at`, `finished_at`, `notes`, `workarounds` (changes the harness made to what the
+component publishes: `name`, `description`, `finding`, `disable`; readers show them next to the gate).
 
 Each module carries:
 

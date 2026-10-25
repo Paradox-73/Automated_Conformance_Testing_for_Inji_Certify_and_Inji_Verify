@@ -136,6 +136,37 @@ def test_html_export_is_extracted_and_mapped_to_test_ids(tmp_path, capsys):
 
 
 @respx.mock
+def test_html_export_pages_are_written_without_private_keys(tmp_path):
+    # Shaped like the suite's export: the configuration is HTML-escaped JSON, the PEM has literal \n escapes.
+    d_value = "9FVvaWhEWj6eLa2oIlvxHoCHUa8LFTXb9SLYEeBnLLc"
+    page = (
+        "<pre>&quot;private_key&quot;: &quot;-----BEGIN "
+        "PRIVATE KEY-----\\nMIGHAgEAMBMGByqGSM49\\n"
+        "-----END "
+        "PRIVATE KEY-----&quot;,\n"
+        f"&quot;kty&quot;: &quot;EC&quot;, &quot;x&quot;: &quot;wCblhOOL4sKlrm3Xkpbk7GAe&quot;, "
+        f"&quot;d&quot;: &quot;{d_value}&quot;</pre>"
+    )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as bundle:
+        bundle.writestr("test-log-happy-flow-AbC123.html", page)
+        bundle.writestr("test-log-happy-flow-AbC123.json", f'{{"d":"{d_value}"}}')
+    respx.get(f"{SUITE}/api/plan/exporthtml/P1").mock(
+        return_value=httpx.Response(200, content=buffer.getvalue(), headers={"content-disposition": 'filename="p.zip"'})
+    )
+    exports = tmp_path / "certify" / "exports"
+    exports.mkdir(parents=True)
+    run.export_html(SuiteClient(SUITE), "P1", exports)
+    written = (exports / "html" / "test-log-happy-flow-AbC123.html").read_text(encoding="utf-8")
+    assert "MIGHAgEA" not in written and d_value not in written
+    assert "-----[redacted] PRIVATE KEY-----" in written and "&quot;d&quot;: &quot;[redacted]&quot;" in written
+    assert "wCblhOOL4sKlrm3Xkpbk7GAe" in written  # public members stay
+    assert json.loads((exports / "html" / "test-log-happy-flow-AbC123.json").read_text(encoding="utf-8")) == {
+        "d": "[redacted]"
+    }
+
+
+@respx.mock
 def test_failed_html_export_is_reported_not_fatal(tmp_path, capsys):
     respx.get(f"{SUITE}/api/plan/exporthtml/P1").mock(return_value=httpx.Response(500))
     assert run.export_html(SuiteClient(SUITE), "P1", tmp_path) == {}

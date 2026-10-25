@@ -7,13 +7,13 @@ Everything that can be set without editing code. Defaults reproduce the measured
 | Variable | Default | Meaning |
 |---|---|---|
 | `HARNESS_RUN_DIR` | `<repo>/run` | Run folder: `env.local`, `pki/`, `reports/`, `testrig/`, logs, the Python venv |
-| `HARNESS_COMPOSE_PROJECT` | `ps01-harness` | Compose project name; must start with `ps01-` |
+| `HARNESS_COMPOSE_PROJECT` | `inji-conformance` | Compose project name; must start with `inji-conformance` |
 | `HARNESS_COMPOSE_FILES` | unset | Comma-separated compose override files, relative to the repository or absolute (for example `demo/regression.compose.yml`) |
 | `HARNESS_TOOLS_DIR` | `$HARNESS_RUN_DIR/tools` | Extra tools in `<dir>/bin` (shellcheck, actionlint, mvn) |
 | `HARNESS_CHECK_STRICT`, `CI` | `0`, unset | `1` / `true`: a missing tool is a check failure |
-| `CERTIFY_AS_METADATA` | `add-authorization-endpoint` | `as-is` serves Inji Certify's OAuth metadata unchanged ([finding](findings/certify-as-metadata-authorization-endpoint.md)) |
+| `CERTIFY_AS_METADATA` | `add-authorization-endpoint` | What the TLS proxy does to Inji Certify's OAuth authorization server metadata. The default adds a placeholder `authorization_endpoint` and records a workaround in `results.json`; `as-is` serves the metadata unchanged. See [Inji Certify metadata workaround](#inji-certify-metadata-workaround) |
 | `VERIFY_KEYSTORE_PATH`, `VERIFY_X509_SAN_DNS_HOST` | the pki-init keystore, `verify.inji.test` | Inji Verify's request signing keystore and its SAN |
-| `TESTRIG_IMAGE` | `ps01-harness/testrig:local` | Image `testrigs/build.sh --image` builds and `run-testrig.sh` runs |
+| `TESTRIG_IMAGE` | `inji-conformance/testrig:local` | Image `testrigs/build.sh --image` builds and `run-testrig.sh` runs |
 | `TESTRIG_MAVEN_ARGS` | empty | Extra Maven options for the jar stage of `testrigs/build.sh --image`, for example `-Dmaven.repo.remote=...`; `MAVEN_ARGS` applies to host builds only |
 | `TESTRIG_ENDPOINT` | the compose service | `env.endpoint` of the rig in `run-testrig.sh`; in invoke mode the runner tests it |
 | `MAVEN_ARGS` | unset | Extra Maven options for host builds of the testrigs and for `check.sh testrigs` |
@@ -22,7 +22,26 @@ Everything that can be set without editing code. Defaults reproduce the measured
 | `MINIO_ROOT_USER` | `harness` | MinIO user; its password `MINIO_ROOT_PASSWORD` is generated into `env.local` |
 | `SMOKE_START_TIMEOUT`, `SMOKE_STATS_INTERVAL` | `420`, `3` | Seconds `compose/smoke.sh` waits for a healthy stack, and between memory samples |
 | `OIDF_SUITE_CLONE`, `OIDF_SUITE_URL` | see [third_party/README.md](../third_party/README.md) | Where `bash third_party/reimport.sh verify` finds the upstream suite |
-| `HARNESS_SUITE_URL`, `HARNESS_VERIFY_URL`, `HARNESS_CERTIFY_URL`, `HARNESS_PKI_DIR`, `HARNESS_REPORTS_DIR` | set by the `runner` service | Where the runner finds the suite, Inji and the keys; only needed when running the runner outside Compose |
+| `HARNESS_SUITE_URL`, `HARNESS_SUITE_MTLS_URL`, `HARNESS_VERIFY_URL`, `HARNESS_CERTIFY_URL`, `HARNESS_PKI_DIR`, `HARNESS_REPORTS_DIR` | set by the `runner` service | Where the runner finds the suite, Inji and the keys; only needed when running the runner outside Compose |
+
+## Inji Certify metadata workaround
+
+Inji Certify's OAuth authorization server metadata has no `authorization_endpoint`, and the suite stops every issuer
+flow module without one ([finding](findings/certify-as-metadata-authorization-endpoint.md)). By default the TLS
+proxy inserts a placeholder (`compose/tls-proxy/certify-as-metadata/add-authorization-endpoint.conf`) and marks the
+response with the header `X-Harness-Shim`. The runner reads that header after the plan and records the change:
+
+- `results.json` gets a `workarounds` entry with the name `certify-as-metadata-authorization-endpoint`, the finding
+  and the setting that turns it off ([results schema](reference/results-schema.md));
+- the runner's last line says `gate passed with 1 workaround: certify-as-metadata-authorization-endpoint`, after a
+  line naming the finding and `CERTIFY_AS_METADATA=as-is`;
+- `summary.html` shows a "Workarounds applied" box under the gate, the gate reads "Gate passed with 1 workaround",
+  and `summary.md` lists the workaround under its heading.
+
+To measure Inji Certify exactly as it publishes its metadata, set `CERTIFY_AS_METADATA=as-is` in `run/env.local`
+or the environment and recreate the proxy. The proxy then serves `compose/tls-proxy/certify-as-metadata/as-is.conf`,
+no workaround is recorded, and 13 of the 15 issuer modules end INTERRUPTED at `CheckServerConfiguration`, so the
+gate fails. That run reproduces the finding; the default run measures everything after it.
 
 ## Images
 

@@ -6,6 +6,12 @@ Expected, Actual, Evidence, Proposed fix), checked by `bash scripts/check.sh doc
 owner `inji` names one of these files in its `issue` field. Problems of the conformance suite itself are in
 [../suite-limitations.md](../suite-limitations.md).
 
+Known gap patched by the harness: the first finding below is not measured as a known gap in the default run, because
+the TLS proxy adds the missing `authorization_endpoint` so the rest of the issuer plan can run. Such a run records
+the change in `results.json` (`workarounds`), and its gate reads "passed with 1 workaround". A gate result for Inji
+Certify is therefore against patched metadata unless the run used `CERTIFY_AS_METADATA=as-is`
+([configuration](../configuration.md#inji-certify-metadata-workaround)).
+
 | Draft | Component | Severity for conformance | Modules |
 |---|---|---|---|
 | [certify-as-metadata-authorization-endpoint.md](certify-as-metadata-authorization-endpoint.md) | Inji Certify | blocks every flow module (the harness works around it) | all issuer flow modules |

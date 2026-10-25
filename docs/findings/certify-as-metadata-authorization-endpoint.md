@@ -12,8 +12,10 @@ of the issuer plan stop at that first condition and nothing about issuance can b
 
 The harness therefore inserts a placeholder `authorization_endpoint` in its TLS proxy by default
 (`CERTIFY_AS_METADATA=add-authorization-endpoint`, `compose/tls-proxy/certify-as-metadata/`), marks the response
-with `X-Harness-Shim`, and records that in every `results.json` (`notes`). `CERTIFY_AS_METADATA=as-is` reproduces
-this finding.
+with `X-Harness-Shim`, and records that in every `results.json` as a `workarounds` entry named
+`certify-as-metadata-authorization-endpoint`. The runner's gate line, `summary.html` and `summary.md` state it next to
+the gate result. `CERTIFY_AS_METADATA=as-is` turns the workaround off and reproduces this finding
+([configuration](../configuration.md#inji-certify-metadata-workaround)).
 
 ## Affected version
 

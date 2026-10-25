@@ -10,7 +10,7 @@ What is removed:
 - PEM private keys (``-----BEGIN ... PRIVATE KEY-----`` to the matching END line, or to the end of the text when
   the END line is missing);
 - private members of a JSON Web Key (``d``, ``p``, ``q``, ``dp``, ``dq``, ``qi``, and ``k`` of a symmetric key) when
-  quoted with a value of 16 or more base64url characters;
+  quoted (``"``, ``\"`` or ``&quot;``) with a value of 16 or more base64url characters;
 - the values of ``client_secret``, ``password``, ``access_token`` and ``refresh_token`` in query strings and form
   bodies.
 
@@ -30,8 +30,12 @@ _PEM_PRIVATE_KEY = re.compile(
     r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY(?: BLOCK)?-----.*?(?:-----END [A-Z0-9 ]*PRIVATE KEY(?: BLOCK)?-----|\Z)",
     re.DOTALL,
 )
-# Escaped quotes (\") appear when a JWK is quoted inside a JSON string, as in a suite log message.
-_JWK_PRIVATE_MEMBER = re.compile(r'(\\?"(?:d|p|q|dp|dq|qi|k)\\?"\s*:\s*\\?")[A-Za-z0-9_-]{16,}(\\?")')
+# Escaped quotes (\") appear when a JWK is quoted inside a JSON string, as in a suite log message; &quot; appears in
+# the suite's HTML export pages.
+_QUOTE = r'(?:\\?"|&quot;)'
+_JWK_PRIVATE_MEMBER = re.compile(
+    rf"({_QUOTE}(?:d|p|q|dp|dq|qi|k){_QUOTE}\s*:\s*{_QUOTE})[A-Za-z0-9_-]{{16,}}({_QUOTE})"
+)
 _FORM_SECRET = re.compile(r"(?i)\b(client_secret|password|access_token|refresh_token)=[^&\s\"'<>]+")
 
 

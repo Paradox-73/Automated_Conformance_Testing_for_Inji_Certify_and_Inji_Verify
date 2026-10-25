@@ -36,6 +36,7 @@ from inji_conformance.model import (
     ModuleResult,
     Review,
     Verdict,
+    Workaround,
 )
 from inji_conformance.report.diff import Change, ModuleChange, RunDiff
 from inji_conformance.report.redact import redact_value
@@ -184,17 +185,20 @@ class Linker:
 
     out_dir: Path
 
-    def to_file(self, target: Path | None) -> str | None:
+    def to_run_file(self, item: ComponentRun, relative: str | None) -> str | None:
+        """A relative href to a file that exists in the run folder, else None: the template then prints plain text.
+
+        No href is made when the page has no relative path to the file (another drive on Windows): an absolute
+        ``file:`` link breaks as soon as the folder is copied.
+        """
+        target = item.locate(relative)
         if target is None:
             return None
         try:
-            relative = os.path.relpath(target.resolve(), self.out_dir.resolve())
-        except ValueError:  # another drive on Windows: no relative path exists
-            return target.resolve().as_uri()
-        return quote(Path(relative).as_posix())
-
-    def to_run_file(self, item: ComponentRun, relative: str | None) -> str | None:
-        return self.to_file(item.locate(relative))
+            relative_href = os.path.relpath(target, self.out_dir.resolve())
+        except ValueError:
+            return None
+        return quote(Path(relative_href).as_posix())
 
 
 def issue_href(issue: str) -> str | None:
@@ -298,7 +302,9 @@ class Row:
     @property
     def has_details(self) -> bool:
         m = self.module
-        return bool(m.description or m.verdict_reason or m.failures or m.benchmark or m.review or m.handoffs)
+        return bool(
+            m.description or m.verdict_reason or m.failures or m.benchmark or m.review or m.handoffs or self.suite_log
+        )
 
 
 @dataclasses.dataclass(frozen=True)
@@ -308,6 +314,12 @@ class CompareView:
     diff_href: str
     highlights: tuple[ModuleChange, ...]
     context_count: int
+
+
+@dataclasses.dataclass(frozen=True)
+class WorkaroundView:
+    component: str
+    workaround: Workaround
 
 
 @dataclasses.dataclass(frozen=True)
@@ -325,6 +337,7 @@ class Header:
     facts: tuple[Fact, ...]
     images: tuple[ImageRow, ...]
     notes: tuple[str, ...]
+    workarounds: tuple[WorkaroundView, ...]
 
 
 def _failure_summary(module: ModuleResult) -> str:
@@ -370,19 +383,28 @@ def _rows(run: Run, linker: Linker) -> list[Row]:
     return [row for _key, row in sorted(keyed, key=lambda pair: pair[0])]
 
 
+def _with_workarounds(view: GateView, count: int) -> GateView:
+    """The gate text names the workarounds: a gate that passed with one passed against patched input."""
+    return dataclasses.replace(view, text=f"{view.text} with {plural(count, 'workaround')}") if count else view
+
+
 def _gate_of_component(item: ComponentRun) -> GateView:
+    count = len(item.results.workarounds)
     if not item.results.gating:
-        return GateView("info", f"Not gating ({item.results.track.value} track)")
+        return _with_workarounds(GateView("info", f"Not gating ({item.results.track.value} track)"), count)
     if item.gate_passed is None:
-        return GateView("none", "Gate not applied")
-    return GateView("passed", "Gate passed") if item.gate_passed else GateView("failed", "Gate failed")
+        return _with_workarounds(GateView("none", "Gate not applied"), count)
+    view = GateView("passed", "Gate passed") if item.gate_passed else GateView("failed", "Gate failed")
+    return _with_workarounds(view, count)
 
 
 def _gate_of_run(run: Run) -> GateView:
     passed = run.gate_passed
+    count = sum(len(item.results.workarounds) for item in run.components)
     if passed is None:
-        return GateView("none", "Gate not applied")
-    return GateView("passed", "Gate passed") if passed else GateView("failed", "Gate failed")
+        return _with_workarounds(GateView("none", "Gate not applied"), count)
+    view = GateView("passed", "Gate passed") if passed else GateView("failed", "Gate failed")
+    return _with_workarounds(view, count)
 
 
 def _wall_time(run: Run, item: ComponentRun) -> float | None:
@@ -494,6 +516,9 @@ def _header(run: Run) -> Header:
         facts=tuple(facts),
         images=tuple(_images(run)),
         notes=tuple(dict.fromkeys(notes)),
+        workarounds=tuple(
+            WorkaroundView(item.component.value, w) for item in run.components for w in item.results.workarounds
+        ),
     )
 
 

@@ -145,6 +145,10 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 /* Comparison box */
 .compare { margin-top: 24px; border-left: 4px solid var(--link); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; }
 .compare ul { margin: 8px 0 0; padding-left: 20px; }
+.workarounds { margin-top: 16px; border-left: 4px solid var(--gap); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+.workarounds h2 { margin-top: 0; }
+.workarounds h2 .icon { color: var(--gap); margin-right: 6px; }
+.workarounds ul { margin: 8px 0 0; padding-left: 20px; }
 
 /* Filters */
 .filters { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 0 0 8px; }
@@ -223,13 +227,22 @@ footer p { margin: 4px 0; }
       <p>Combined run <code>20261004T191000Z-1a2b3c4</code> · track gate · 2026-10-04 19:08:12 UTC to 2026-10-04 19:43:05 UTC (34 min 53 s)</p>
     </div>
     <div class="header-actions">
-      <span class="status gate-passed gate"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span>
+      <span class="status gate-passed gate"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed with 1 workaround</span>
       <a class="badge-link" href="badge.svg"><img src="badge.svg" alt="Badge of this run"></a>
       <button type="button" id="theme-toggle" hidden>Theme: auto</button>
     </div>
   </div>
 </header>
 <main>
+  <section aria-labelledby="workarounds-heading" class="workarounds">
+    <h2 id="workarounds-heading"><svg class="icon" aria-hidden="true"><use href="#i-gap"/></svg>Workarounds applied: 1</h2>
+    <p>The harness changed what Inji publishes so the plan could run. The gate result holds only with these changes.</p>
+    <ul>
+      <li><strong>certify</strong> <code>certify-as-metadata-authorization-endpoint</code>: The TLS proxy added authorization_endpoint to Inji Certify&#39;s OAuth authorization server metadata (X-Harness-Shim: authorization_endpoint added by the TLS proxy)<br>
+        Covers the Inji finding <code>docs/findings/certify-as-metadata-authorization-endpoint.md</code>. Turn it off with <code>CERTIFY_AS_METADATA=as-is</code>.</li>
+    </ul>
+  </section>
+
   <section aria-labelledby="run-heading">
     <h2 id="run-heading">Run</h2>
     <ul class="totals" aria-label="Verdicts of all 26 modules">
@@ -295,7 +308,7 @@ footer p { margin: 4px 0; }
           <li><span class="count">4</span><span class="status status-na"><svg class="icon" aria-hidden="true"><use href="#i-na"/></svg>Not applicable</span></li>
           <li><span class="count">0</span><span class="status status-stale"><svg class="icon" aria-hidden="true"><use href="#i-stale"/></svg>Stale benchmark</span></li>
         </ul>
-        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed</span> · track gate</p>
+        <p><span class="status gate-passed"><svg class="icon" aria-hidden="true"><use href="#i-passed"/></svg>Gate passed with 1 workaround</span> · track gate</p>
         <p>Target <code>https://certify.inji.test:18450</code>, commit <code>d6635da</code></p>
         <p>Suite 5.3.1 · 15 modules · 17 min 44 s</p>
         <p><span class="muted">Plan export not in this folder</span></p>
@@ -369,11 +382,11 @@ footer p { margin: 4px 0; }
             <td>1 (all listed)</td>
             <td class="num">15.1 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0013">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration (live suite)</span></a><a href="../fixtures/run-a/certify/exports/vciexample0013.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration</span></a>            </td>
+<a href="../fixtures/run-a/certify/exports/vciexample0013.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-configuration</span></a>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-configuration-details">
             <td colspan="7">
-              <h3>Failing conditions</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0013</code></p>              <h3>Failing conditions</h3>
               <ul>
                 <li><code>VCIValidateCredentialErrorResponse</code> · FAILURE · block "Verify Credential Endpoint Response" · listed in the benchmark<br>Expected error &#39;unknown_credential_configuration&#39;, got &#39;invalid_credential_request&#39;<br><span class="muted">Requirements: OID4VCI-1FINAL-8.3.1</span>                </li>
               </ul>
@@ -401,11 +414,11 @@ footer p { margin: 4px 0; }
             <td>1 (all listed)</td>
             <td class="num">8.1 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0003">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post (live suite)</span></a><a href="../fixtures/run-a/verify/exports/vpexample0003.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post</span></a>            </td>
+<a href="../fixtures/run-a/verify/exports/vpexample0003.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-method-post</span></a>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-method-post-details">
             <td colspan="7">
-              <h3>Failing conditions</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0003</code></p>              <h3>Failing conditions</h3>
               <ul>
                 <li><code>PostToRequestUriAndExtractRequestObject</code> · FAILURE · block "Authorization endpoint" · listed in the benchmark<br>POST to request_uri returned HTTP 405<br><span class="muted">Requirements: OID4VP-1FINAL-5.10</span>                </li>
               </ul>
@@ -426,14 +439,18 @@ footer p { margin: 4px 0; }
           <tr>
             <td>certify</td>
             <th scope="row" class="module-name">
-              oid4vci-1_0-issuer-metadata-test
+              <button type="button" class="toggle" aria-expanded="true" aria-controls="m-certify-oid4vci-1_0-issuer-metadata-test-details"><span class="chevron" aria-hidden="true"></span>oid4vci-1_0-issuer-metadata-test</button>
             </th>
             <td><code>PASSED</code></td>
             <td><span class="status status-conforms"><svg class="icon" aria-hidden="true"><use href="#i-conforms"/></svg>Conforms</span></td>
             <td>None</td>
             <td class="num">6.7 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0001">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
+          </tr>
+          <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-details">
+            <td colspan="7">
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0001</code></p>            </td>
           </tr>
         </tbody>
         <tbody class="module" id="m-certify-oid4vci-1_0-issuer-happy-flow" data-component="certify" data-verdict="conforms" data-search="certify oid4vci-1_0-issuer-happy-flow conforms">
@@ -447,11 +464,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">8.1 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0003">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow (live suite)</span></a><a href="../fixtures/run-a/certify/exports/vciexample0003.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow</span></a>            </td>
+<a href="../fixtures/run-a/certify/exports/vciexample0003.html">HTML export<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow</span></a>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0003</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 222 ms · 2026-10-04 19:13:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -469,11 +486,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">8.8 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0004">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-additional-requests (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-additional-requests-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0004</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 226 ms · 2026-10-04 19:14:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -491,11 +508,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">9.5 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0005">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-multiple-clients (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-multiple-clients-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0005</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 230 ms · 2026-10-04 19:15:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -513,11 +530,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">10.2 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0006">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-happy-flow-skip-notification (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-happy-flow-skip-notification-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0006</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 234 ms · 2026-10-04 19:16:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -535,11 +552,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">11.6 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0008">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-nonce (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-nonce-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0008</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 242 ms · 2026-10-04 19:18:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -557,11 +574,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">12.3 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0009">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-jwt-proof-signature-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0009</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 246 ms · 2026-10-04 19:19:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -579,11 +596,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">13.7 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0011">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-missing-proof (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-missing-proof-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0011</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 254 ms · 2026-10-04 19:21:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -601,11 +618,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">15.8 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0014">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unknown-credential-identifier (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unknown-credential-identifier-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0014</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 266 ms · 2026-10-04 19:24:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -623,11 +640,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">16.5 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0015">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-on-access-token-in-query (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-on-access-token-in-query-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0015</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Credential offer handed to the suite&#39;s wallet · HTTP 200 · 270 ms · 2026-10-04 19:25:03 UTC<br><span class="muted">POST /v1/certify/pre-authorized-data, then GET credential_offer_endpoint</span>                </li>
               </ul>
@@ -645,11 +662,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">6.7 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0001">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow (live suite)</span></a><a href="../fixtures/run-a/verify/exports/vpexample0001.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow</span></a>            </td>
+<a href="../fixtures/run-a/verify/exports/vpexample0001.html">HTML export<span class="visually-hidden"> of oid4vp-1final-verifier-happy-flow</span></a>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-happy-flow-details">
             <td colspan="7">
-<p>The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it.</p>              <h3>Review</h3>
+<p>The suite acts as a wallet and presents a valid SD-JWT VC; the verifier must accept it.</p><p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0001</code></p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
               <h3>Handoffs</h3>
               <ul>
@@ -670,11 +687,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">7.4 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0002">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-minimal-cnf-jwk (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-minimal-cnf-jwk-details">
             <td colspan="7">
-              <h3>Review</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0002</code></p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>valid</strong>; the module expects <strong>valid</strong>. Evidence image not in this folder.</p>
               <h3>Handoffs</h3>
               <ul>
@@ -695,11 +712,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">8.8 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0004">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-request-uri-fetched-twice (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-request-uri-fetched-twice-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0004</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 152 ms · 2026-10-04 19:34:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -717,11 +734,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">9.5 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0005">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-signature (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-signature-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0005</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 155 ms · 2026-10-04 19:35:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -739,11 +756,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">10.2 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0006">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-credential-signature (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-credential-signature-details">
             <td colspan="7">
-              <h3>Review</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0006</code></p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
               <h3>Handoffs</h3>
               <ul>
@@ -764,11 +781,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">10.9 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0007">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-sd-hash (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-sd-hash-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0007</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 161 ms · 2026-10-04 19:37:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -786,11 +803,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">11.6 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0008">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-nonce (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-nonce-details">
             <td colspan="7">
-              <h3>Review</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0008</code></p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
               <h3>Handoffs</h3>
               <ul>
@@ -811,11 +828,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">12.3 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0009">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-invalid-kb-jwt-aud (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-invalid-kb-jwt-aud-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0009</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 167 ms · 2026-10-04 19:39:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -833,11 +850,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">13.0 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0010">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-past (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-past-details">
             <td colspan="7">
-              <h3>Review</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0010</code></p>              <h3>Review</h3>
               <p>Inji Verify showed <strong>invalid</strong>; the module expects <strong>invalid</strong>. Evidence image not in this folder.</p>
               <h3>Handoffs</h3>
               <ul>
@@ -858,11 +875,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">13.7 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0011">Suite log<span class="visually-hidden"> of oid4vp-1final-verifier-kb-jwt-iat-in-future (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-verify-oid4vp-1final-verifier-kb-jwt-iat-in-future-details">
             <td colspan="7">
-              <h3>Handoffs</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vpexample0011</code></p>              <h3>Handoffs</h3>
               <ul>
                 <li>Authorization request handed to the suite&#39;s wallet · HTTP 200 · 173 ms · 2026-10-04 19:41:05 UTC<br><span class="muted">GET authorization_endpoint with client_id and request_uri from Inji Verify</span>                </li>
               </ul>
@@ -880,11 +897,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">7.4 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0002">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-metadata-test-signed (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-metadata-test-signed-details">
             <td colspan="7">
-              <h3>Benchmark entries</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0002</code></p>              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.2 · issue draft <code>docs/findings/certify-signed-metadata.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: signed credential issuer metadata is optional and is not published.</blockquote>
@@ -904,11 +921,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">10.9 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0007">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-batch-issuance (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-batch-issuance-details">
             <td colspan="7">
-              <h3>Benchmark entries</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0007</code></p>              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-12.2.4 · issue draft <code>docs/findings/certify-batch-issuance.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: the issuer metadata has no batch_credential_issuance, so the suite skips the batch module.</blockquote>
@@ -932,11 +949,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">13.0 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0010">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-invalid-key-attestation-signature (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-invalid-key-attestation-signature-details">
             <td colspan="7">
-              <h3>Benchmark entries</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0010</code></p>              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-F.1 · issue draft <code>docs/findings/certify-key-attestation.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: the credential configuration does not require key attestation, so there is nothing to send an invalid one to.</blockquote>
@@ -960,11 +977,11 @@ footer p { margin: 4px 0; }
             <td>None</td>
             <td class="num">14.4 s</td>
             <td class="links">
-<a href="https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0012">Suite log<span class="visually-hidden"> of oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm (live suite)</span></a>            </td>
+<span class="muted">HTML export not in this folder</span>            </td>
           </tr>
           <tr class="detail-row" id="m-certify-oid4vci-1_0-issuer-fail-unsupported-encryption-algorithm-details">
             <td colspan="7">
-              <h3>Benchmark entries</h3>
+<p>Suite log, only valid while the suite runs: <code>https://localhost.emobix.co.uk:18443/log-detail.html?log=vciexample0012</code></p>              <h3>Benchmark entries</h3>
               <ul>
                 <li>Expected skip · owner inji · spec OID4VCI-1FINAL-8.2 · issue draft <code>docs/findings/certify-credential-encryption.md</code> · the listed problem happened in this run
                   <blockquote>Example entry: credential response encryption is not offered, so the suite skips the unsupported-algorithm module.</blockquote>

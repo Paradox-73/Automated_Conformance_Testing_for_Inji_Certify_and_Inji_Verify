@@ -19,6 +19,21 @@
   </div>
 </header>
 <main>
+  {% if header.workarounds %}
+  {# Right under the gate: the gate result holds only with these changes to what Inji publishes. #}
+  <section aria-labelledby="workarounds-heading" class="workarounds">
+    <h2 id="workarounds-heading">{{ ui.icon("gap") }}Workarounds applied: {{ header.workarounds | length }}</h2>
+    <p>The harness changed what Inji publishes so the plan could run. The gate result holds only with these changes.</p>
+    <ul>
+      {% for view in header.workarounds %}
+      {% set w = view.workaround %}
+      <li><strong>{{ view.component }}</strong> <code>{{ w.name }}</code>: {{ w.description }}<br>
+        Covers the Inji finding <code>{{ w.finding }}</code>. Turn it off with <code>{{ w.disable }}</code>.</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
   <section aria-labelledby="run-heading">
     <h2 id="run-heading">Run</h2>
     <ul class="totals" aria-label="Verdicts of all {{ header.module_total }} modules">
@@ -143,15 +158,15 @@
             <td>{{ row.failure_summary }}</td>
             <td class="num">{{ row.duration }}</td>
             <td class="links">
-              {% if row.suite_log %}<a href="{{ row.suite_log }}">Suite log<span class="visually-hidden"> of {{ row.module.name }} (live suite)</span></a>{% endif %}
-              {% if row.export_href %}<a href="{{ row.export_href }}">HTML export<span class="visually-hidden"> of {{ row.module.name }}</span></a>{% endif %}
-              {% if not row.suite_log and not row.export_href %}<span class="muted">none</span>{% endif %}
+              {% if row.export_href %}<a href="{{ row.export_href }}">HTML export<span class="visually-hidden"> of {{ row.module.name }}</span></a>{% elif row.module.links and row.module.links.export %}<span class="muted">HTML export not in this folder</span>{% else %}<span class="muted">none</span>{% endif %}
             </td>
           </tr>
           {% if row.has_details %}
           <tr class="detail-row" id="{{ row.anchor }}-details">
             <td colspan="7">
               {% if row.module.description %}<p>{{ row.module.description }}</p>{% endif %}
+              {# The suite's log page exists only while the suite container runs, so it is text, not a link. #}
+              {% if row.suite_log %}<p>Suite log, only valid while the suite runs: <code>{{ row.suite_log }}</code></p>{% endif %}
               {% if row.module.verdict_reason %}<p><strong>Why this verdict:</strong> {{ row.module.verdict_reason }}</p>{% endif %}
               {% if row.failures %}
               <h3>Failing conditions</h3>

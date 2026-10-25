@@ -93,6 +93,36 @@ def test_browser_urls_are_visited_and_marked():
     assert not handoff.wants(test)
 
 
+def test_browser_visits_check_the_test_ca_only_for_inji_hosts():
+    handoff = BrowserVisitHandoff(SuiteClient(SUITE), inji_verify=False)
+    calls = []
+
+    class Recorder:
+        def __init__(self, name):
+            self.name = name
+
+        def get(self, url):
+            calls.append((self.name, url))
+            return httpx.Response(200)
+
+        def close(self):
+            calls.append((self.name, "closed"))
+
+    handoff.http, handoff.inji_http = Recorder("suite"), Recorder("inji")
+    respx_mock = respx.mock(assert_all_called=False)
+    with respx_mock:
+        respx_mock.post(url__regex=rf"{SUITE}/api/runner/browser/.*").mock(return_value=httpx.Response(204))
+        for url in ("https://verify.inji.test:18451/cb", "https://localhost.emobix.co.uk:18443/test/a/cb"):
+            handoff.deliver(waiting(browser={"urls": [url], "visited": []}))
+    handoff.close()
+    assert calls == [
+        ("inji", "https://verify.inji.test:18451/cb"),
+        ("suite", "https://localhost.emobix.co.uk:18443/test/a/cb"),
+        ("suite", "closed"),
+        ("inji", "closed"),
+    ]
+
+
 @respx.mock
 def test_configured_test_is_started_only_after_the_grace_period():
     start = respx.post(f"{SUITE}/api/runner/t1").mock(return_value=httpx.Response(200, json={}))

@@ -124,21 +124,58 @@ def test_ids_are_unique(run_a, run_b, tmp_path):
     assert len(ids) == len(set(ids))
 
 
-def test_links_to_exports_are_relative_and_exist(run_a, tmp_path):
+def test_links_to_exports_are_relative_and_exist(copied_runs, tmp_path):
     out = tmp_path / "out"
-    found = _collect(_summary(run_a, out))
+    found = _collect(_summary(copied_runs / "run-a", out))
     exports = [href for href in found.hrefs if href.endswith(".html") and "exports/" in href]
     assert len(exports) == 4
     for href in exports:
-        target = Path(href)
-        if not target.is_absolute() and not href.startswith("file:"):
-            assert (out / target).resolve().is_file()
+        assert not Path(href).is_absolute() and (out / href).resolve().is_file()
 
 
-def test_live_suite_log_links(run_a, tmp_path):
+def test_live_suite_log_is_text_not_a_link(run_a, tmp_path):
+    # The suite's log page is gone once the stack is torn down, so a link would always be dead in a saved report.
+    page = _summary(run_a, tmp_path)
+    assert not [href for href in _collect(page).hrefs if "log-detail.html" in href]
+    shown = re.findall(r"Suite log, only valid while the suite runs: <code>(https://[^<]+)</code>", page)
+    assert len(shown) == 26 and all(url.startswith("https://localhost.emobix.co.uk:18443/") for url in shown)
+
+
+def test_missing_exports_are_text_not_links(copied_runs, tmp_path):
+    # As in a copy of the run folder that left out exports/ (the GitHub Pages evidence keeps only the report).
+    run_dir = copied_runs / "run-a"
+    before = _summary(run_dir, tmp_path / "out").count("HTML export not in this folder")
+    for page in (run_dir / "verify" / "exports").iterdir():
+        page.unlink()
+    page = _summary(run_dir, tmp_path / "out")
+    exports = [href for href in _collect(page).hrefs if "exports/" in href]
+    assert len(exports) == 2 and all("certify/exports/" in href for href in exports)
+    assert page.count("HTML export not in this folder") == before + 2
+
+
+def test_no_link_without_a_relative_path(run_a, tmp_path, monkeypatch):
+    # Another drive on Windows: an absolute file: link would break as soon as the folder is copied.
+    def no_relative_path(*_args):
+        raise ValueError("path is on mount 'E:', start on mount 'C:'")
+
+    monkeypatch.setattr(html.os.path, "relpath", no_relative_path)
     hrefs = _collect(_summary(run_a, tmp_path)).hrefs
-    logs = [href for href in hrefs if "log-detail.html?log=" in href]
-    assert len(logs) == 26 and all(href.startswith("https://localhost.emobix.co.uk:18443/") for href in logs)
+    assert not [href for href in hrefs if "exports/" in href or href.startswith("file:")]
+
+
+def test_workaround_is_shown_next_to_the_gate(run_a, tmp_path):
+    page = _summary(run_a, tmp_path)
+    assert 'gate-passed gate">' in page and "Gate passed with 1 workaround</span>" in page
+    section = page[page.index('<section aria-labelledby="workarounds-heading"') :]
+    assert page.index("workarounds-heading") < page.index('id="run-heading"')  # first thing under the header
+    assert "Workarounds applied: 1" in section
+    assert "<code>docs/findings/certify-as-metadata-authorization-endpoint.md</code>" in section
+    assert "<code>CERTIFY_AS_METADATA=as-is</code>" in section
+
+
+def test_no_workaround_section_without_workarounds(run_b, tmp_path):
+    page = _summary(run_b, tmp_path)
+    assert "workarounds-heading" not in page and "Gate failed</span>" in page and "with 0" not in page
 
 
 def test_never_shows_the_suite_configuration(run_a, tmp_path):

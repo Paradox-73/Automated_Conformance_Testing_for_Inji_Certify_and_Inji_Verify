@@ -69,10 +69,11 @@ from inji_conformance.handoff import (
     VerificationEvidenceHandoff,
     utc_now,
 )
-from inji_conformance.inji_certify import CertifyClient, CertifyError
+from inji_conformance.inji_certify import CertifyClient, CertifyError, as_metadata_workaround
 from inji_conformance.inji_certify import seed as seed_certify
 from inji_conformance.inji_verify import VerifyClient
 from inji_conformance.model import Component, ExitCode, RunMode, Track
+from inji_conformance.report.redact import redact
 from inji_conformance.suite import SuiteClient, SuiteError
 
 # Settings from the environment; the compose runner service sets the first four.
@@ -85,6 +86,7 @@ ENV_REPORTS_DIR = "HARNESS_REPORTS_DIR"
 ENV_HOME = "INJI_CONFORMANCE_HOME"  # folder holding third_party/ and conformance/ (the image sets it)
 
 DEFAULT_SUITE_URL = "https://localhost.emobix.co.uk:18443"
+DEFAULT_SUITE_MTLS_URL = "https://localhost.emobix.co.uk:18444"
 DEFAULT_VERIFY_URL = "https://verify.inji.test:18451/v1/verify"
 DEFAULT_CERTIFY_URL = "https://certify.inji.test:18450"  # issuer identifier: an origin, the APIs are below /v1/certify
 DEFAULT_TIMEOUT_MINUTES = 30.0
@@ -336,6 +338,8 @@ def cmd_gate(args: argparse.Namespace) -> int:
         print(f"warning: benchmark entry matches no module of this run: {benchmark.entry_label(entry)}")
     for line in classified.gate.messages:
         print(line)
+    for line in workaround_lines(classified):
+        print(line)
     if args.junit:
         Path(args.junit).parent.mkdir(parents=True, exist_ok=True)
         Path(args.junit).write_text(benchmark.junit_xml(classified), encoding="utf-8", newline="\n")
@@ -490,7 +494,7 @@ def run_component(
         env = {
             **os.environ,
             "CONFORMANCE_SERVER": suite_url + "/",
-            "CONFORMANCE_SERVER_MTLS": os.environ.get(ENV_SUITE_MTLS_URL, suite_url.replace(":18443", ":18444")) + "/",
+            "CONFORMANCE_SERVER_MTLS": os.environ.get(ENV_SUITE_MTLS_URL, DEFAULT_SUITE_MTLS_URL).rstrip("/") + "/",
             "CONFORMANCE_DEV_MODE": "1",
             # The script stops the whole plan after three modules in a row that did not reach FINISHED. Against
             # Inji, a module is INTERRUPTED by every failing condition inside a request it answers, so that would
@@ -515,7 +519,7 @@ def run_component(
         responder = Responder(
             suite,
             alias,
-            [*handoffs, BrowserVisitHandoff(suite), StartTestHandoff(suite)],
+            [*handoffs, BrowserVisitHandoff(suite, inji_verify=tls_verify(pki_dir)), StartTestHandoff(suite)],
             log_path=folder / "logs" / "handoffs.jsonl",
         )
         (folder / "logs" / "handoffs.jsonl").write_text("", encoding="utf-8")
@@ -556,9 +560,7 @@ def run_component(
             results = outage_instead_of_regression(results, first_down(services))
         shim = certify.as_metadata_shim() if certify is not None else None
         if shim:
-            results = dataclasses.replace(
-                results, notes=(*results.notes, f"Inji Certify's authorization server metadata was changed: {shim}")
-            )
+            results = dataclasses.replace(results, workarounds=(*results.workarounds, as_metadata_workaround(shim)))
     finally:
         suite.close()
         for client in (verify, certify):
@@ -755,7 +757,11 @@ def export_html(suite: SuiteClient, plan_id: str, exports: Path) -> dict[str, st
                 # Only plain file names: an export never has folders, and this keeps "../" out of the run folder.
                 if "/" in member or "\\" in member or member.startswith("."):
                     continue
-                (target / member).write_bytes(bundle.read(member))
+                data = bundle.read(member)
+                if member.endswith((".html", ".json")):
+                    # The pages quote the rendered configuration: the run's private keys must not reach the disk.
+                    data = redact(data.decode("utf-8", errors="replace")).encode("utf-8")
+                (target / member).write_bytes(data)
                 if member.startswith("test-log-") and member.endswith(".html"):
                     test_id = member[: -len(".html")].rsplit("-", 1)[-1]
                     pages[test_id] = exports.parent.name + "/exports/html/" + member
@@ -861,4 +867,26 @@ def print_summary(results: model.Results, path: Path) -> None:
     for line in gate.messages if gate else ():
         print(line)
     state = "not applied" if not results.gating else ("passed" if gate and gate.passed else "failed")
-    print(f"results: {path} ({results.summary.total if results.summary else 0} modules, gate {state})")
+    for line in workaround_lines(results):
+        print(line)
+    print(
+        f"results: {path} ({results.summary.total if results.summary else 0} modules, "
+        f"gate {state}{workaround_suffix(results)})"
+    )
+
+
+def workaround_suffix(results: model.Results) -> str:
+    """`` with 1 workaround: <name>`` for the gate line, or empty when the run had none."""
+    count = len(results.workarounds)
+    if not count:
+        return ""
+    return f" with {count} workaround{'' if count == 1 else 's'}: " + ", ".join(w.name for w in results.workarounds)
+
+
+def workaround_lines(results: model.Results) -> list[str]:
+    """Two lines per workaround: what changed, then the Inji finding it covers and how to turn it off."""
+    lines = []
+    for w in results.workarounds:
+        lines.append(f"workaround applied: {w.description}")
+        lines.append(f"  covers the Inji finding {w.finding}; turn it off with {w.disable}")
+    return lines

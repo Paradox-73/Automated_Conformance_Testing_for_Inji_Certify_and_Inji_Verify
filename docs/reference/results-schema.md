@@ -34,7 +34,8 @@ The exports (the zips and the extracted HTML pages) hold the suite configuration
 | `modules[]` | per module: `name`, `test_id`, `status`, `result`, `verdict`, `verdict_reason`, `failures[]` (condition, severity, message, block, requirement ids, `expected`), `benchmark[]` (the entries that apply, `matched`), `review` (expected and observed verdict, evidence image), `handoffs[]` (kind, HTTP status, time, detail, error), `links` (suite log, HTML export page), `duration_s` |
 | `summary` | counts per verdict |
 | `gate` | `passed`, `exit_code`, `allow_stale`, `benchmark_files`, `messages` (the first is `gate: <n> regressions, <n> known gaps, <n> stale`) |
-| `notes` | anything a reader must know, for example the TLS proxy's change to Inji Certify's metadata, failed responder polls |
+| `notes` | anything else a reader must know, for example failed responder polls |
+| `workarounds[]` | optional; changes the harness made to what Inji publishes so the plan can run: `name`, `description`, `finding` (repository path of the Inji finding), `disable` (the setting that turns it off). The default Inji Certify run has one: `{"name": "certify-as-metadata-authorization-endpoint", "description": "The TLS proxy changed Inji Certify's OAuth authorization server metadata: authorization_endpoint added by the TLS proxy", "finding": "docs/findings/certify-as-metadata-authorization-endpoint.md", "disable": "CERTIFY_AS_METADATA=as-is"}`. Reports show it next to the gate. Files written before this field record the same change as a note |
 
 Check a file:
 

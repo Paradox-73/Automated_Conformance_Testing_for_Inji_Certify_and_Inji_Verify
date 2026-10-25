@@ -31,6 +31,13 @@ def test_report_with_compare_writes_every_file(capsys, run_a, run_b, tmp_path):
     markdown = (out / "summary.md").read_text(encoding="utf-8")
     assert "| certify | 15 | 10 | 1 | 0 | 4 | 0 |" in markdown
     assert "0 new regressions, 2 fixed" in markdown
+    assert markdown.startswith("### Inji conformance: gate passed with 1 workaround\n")
+    assert (
+        "- Workaround (certify): The TLS proxy added authorization_endpoint" in markdown
+        and "`docs/findings/certify-as-metadata-authorization-endpoint.md`; "
+        "turn it off with `CERTIFY_AS_METADATA=as-is`."
+        in markdown
+    )
     for path in out.iterdir():
         text = path.read_text(encoding="utf-8")
         assert "\r\n" not in text

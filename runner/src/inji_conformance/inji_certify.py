@@ -30,6 +30,8 @@ from typing import Any
 
 import httpx
 
+from inji_conformance.model import Workaround
+
 OFFER_SCHEME = "openid-credential-offer://"
 
 
@@ -183,6 +185,16 @@ class CertifyClient:
                 errors[0].get("errorCode") if errors else None,
             )
         return Offer(offer_url=offer_url, offer_uri=credential_offer_uri(offer_url), tx_code=tx_code)
+
+
+def as_metadata_workaround(shim: str) -> Workaround:
+    """The results.json record of the TLS proxy's change to the authorization server metadata (header ``shim``)."""
+    return Workaround(
+        name="certify-as-metadata-authorization-endpoint",
+        description=f"The TLS proxy changed Inji Certify's OAuth authorization server metadata: {shim}",
+        finding="docs/findings/certify-as-metadata-authorization-endpoint.md",
+        disable="CERTIFY_AS_METADATA=as-is",
+    )
 
 
 def _json(response: httpx.Response) -> Any:

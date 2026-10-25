@@ -465,3 +465,26 @@ def test_build_results_for_an_issuer_run(tmp_path, schema_dir, capsys):
     summary = capsys.readouterr().out
     assert "[credential_offer HTTP 204 85 ms, tx_code HTTP 204 85 ms]" in summary
     assert "(3 modules, gate not applied)" in summary
+
+
+def test_gate_output_names_the_metadata_workaround(certify_results, tmp_path, capsys):
+    from inji_conformance.inji_certify import as_metadata_workaround
+
+    certify_results.pop("workarounds")
+    results = model.Results.from_dict(certify_results)
+    run.print_summary(results, tmp_path / "results.json")
+    assert "workaround" not in capsys.readouterr().out
+
+    shimmed = model.Results.from_dict(
+        {**certify_results, "workarounds": [as_metadata_workaround("authorization_endpoint added").to_dict()]}
+    )
+    run.print_summary(shimmed, tmp_path / "results.json")
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[-3:] == [
+        "workaround applied: The TLS proxy changed Inji Certify's OAuth authorization server metadata: "
+        "authorization_endpoint added",
+        "  covers the Inji finding docs/findings/certify-as-metadata-authorization-endpoint.md; "
+        "turn it off with CERTIFY_AS_METADATA=as-is",
+        f"results: {tmp_path / 'results.json'} (15 modules, gate passed with 1 workaround: "
+        "certify-as-metadata-authorization-endpoint)",
+    ]

@@ -489,10 +489,17 @@ class BrowserVisitHandoff:
 
     kind = HandoffKind.BROWSER_VISIT
 
-    def __init__(self, suite: SuiteClient, http: httpx.Client | None = None):
+    def __init__(self, suite: SuiteClient, http: httpx.Client | None = None, *, inji_verify: bool | str = False):
         self.suite = suite
+        # The suite's own URLs carry its self-signed certificate; the Inji hosts (*.inji.test) carry the run's test CA
+        # (inji_verify: its file, from run.tls_verify), so only those are checked.
         self.http = http or httpx.Client(verify=False, timeout=30.0, follow_redirects=True)
+        self.inji_http = http or httpx.Client(verify=inji_verify, timeout=30.0, follow_redirects=True)
         self._visited: set[tuple[str, str]] = set()
+
+    def close(self) -> None:
+        self.http.close()
+        self.inji_http.close()
 
     def _pending(self, test: TestView) -> list[str]:
         visited = set(test.browser.get("visited") or [])
@@ -511,7 +518,8 @@ class BrowserVisitHandoff:
         at = utc_now()
         started = time.monotonic()
         try:
-            status = self.http.get(url).status_code
+            host = urllib.parse.urlsplit(url).hostname or ""
+            status = (self.inji_http if host.endswith(".inji.test") else self.http).get(url).status_code
             error = None
         except httpx.HTTPError as exc:
             status, error = None, f"{type(exc).__name__}: {exc}"
@@ -587,6 +595,10 @@ class Responder(threading.Thread):
         self._stop_event.set()
         if self.is_alive():
             self.join(timeout)
+        for handoff in self.handoffs:
+            close = getattr(handoff, "close", None)
+            if close is not None:
+                close()
 
     def run(self) -> None:
         while not self._stop_event.is_set():

@@ -467,6 +467,16 @@ class Gate(Document):
 
 
 @dataclasses.dataclass(frozen=True)
+class Workaround(Document):
+    """A change the harness made to what the component publishes so the plan can run, and how to turn it off."""
+
+    name: str
+    description: str
+    finding: str  # repository path of the finding that explains the gap the workaround covers
+    disable: str  # the setting that turns the workaround off, for example CERTIFY_AS_METADATA=as-is
+
+
+@dataclasses.dataclass(frozen=True)
 class Results(Document):
     """A whole ``results.json`` file."""
 
@@ -484,6 +494,7 @@ class Results(Document):
     started_at: str | None = None
     finished_at: str | None = None
     notes: tuple[str, ...] = ()
+    workarounds: tuple[Workaround, ...] = ()
 
     kind: ClassVar[DocumentKind] = DocumentKind.RESULTS
 

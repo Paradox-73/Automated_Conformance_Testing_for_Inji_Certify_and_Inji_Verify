@@ -90,11 +90,23 @@ def write_text(path: Path, text: str) -> None:
 def markdown_summary(run: runs.Run, run_diff: diff.RunDiff | None = None) -> str:
     """Counts per component as a Markdown table (for ``$GITHUB_STEP_SUMMARY`` and pull request comments)."""
     gate = {True: "passed", False: "failed", None: "not applied"}[run.gate_passed]
+    workarounds = [(item, w) for item in run.components for w in item.results.workarounds]
+    if workarounds:
+        gate += f" with {html.plural(len(workarounds), 'workaround')}"
     lines = [
         f"### Inji conformance: gate {gate}",
         "",
         f"Run `{run.run_id}`",
         "",
+    ]
+    if workarounds:
+        lines += [
+            f"- Workaround ({item.component.value}): {w.description}. Covers the Inji finding `{w.finding}`; "
+            f"turn it off with `{w.disable}`."
+            for item, w in workarounds
+        ]
+        lines.append("")
+    lines += [
         "| Component | Modules | Conforms | Known gap | Regression | Not applicable | Stale benchmark |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ]

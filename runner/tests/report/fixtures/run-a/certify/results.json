@@ -426,6 +426,14 @@
   "notes": [
     "Report test fixture built from the contract examples by build_fixtures.py; not a measured run."
   ],
+  "workarounds": [
+    {
+      "name": "certify-as-metadata-authorization-endpoint",
+      "description": "The TLS proxy added authorization_endpoint to Inji Certify's OAuth authorization server metadata (X-Harness-Shim: authorization_endpoint added by the TLS proxy)",
+      "finding": "docs/findings/certify-as-metadata-authorization-endpoint.md",
+      "disable": "CERTIFY_AS_METADATA=as-is"
+    }
+  ],
   "summary": {
     "total": 15,
     "conforms": 10,

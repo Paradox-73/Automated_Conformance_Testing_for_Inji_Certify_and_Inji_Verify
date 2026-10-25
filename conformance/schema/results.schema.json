@@ -94,6 +94,21 @@
       "description": "Free-text notes about the run, for people.",
       "type": "array",
       "items": {"type": "string", "minLength": 1}
+    },
+    "workarounds": {
+      "description": "Changes the harness made to what the component publishes so the plan can run. Each one covers a gap in Inji that a finding explains, and can be turned off. Readers show them next to the gate: a gate that passed with a workaround passed against patched input.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "finding", "disable"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"description": "Short identifier, for example certify-as-metadata-authorization-endpoint.", "type": "string", "minLength": 1},
+          "description": {"description": "What was changed, for people.", "type": "string", "minLength": 1},
+          "finding": {"description": "Repository path of the finding that explains the Inji gap, for example docs/findings/certify-as-metadata-authorization-endpoint.md.", "type": "string", "minLength": 1},
+          "disable": {"description": "The setting that turns the workaround off, for example CERTIFY_AS_METADATA=as-is.", "type": "string", "minLength": 1}
+        }
+      }
     }
   },
   "$defs": {
