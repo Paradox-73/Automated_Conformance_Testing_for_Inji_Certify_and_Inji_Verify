@@ -27,17 +27,9 @@ inji-conformance validate run/reports/<run id>/manifest.json run/reports/<run id
 Subcommands of `inji-conformance`: `run`, `seed`, `gate`, `report`, `diff`, `validate`. Options and the full table
 are in [reference/cli.md](reference/cli.md).
 
-| Exit code | Meaning |
-|---|---|
-| 0 | gate passed, file valid, runs the same |
-| 1 | regression or stale benchmark entry; invalid file |
-| 2 | usage or configuration error |
-| 3 | environment problem (Docker, ports, a service did not answer, no module results) |
-| 4 | time limit reached; results are still written |
-| 5 | internal error of the harness |
-| 16 | `diff`: the runs differ |
-
-Only 1 says something about Inji's conformance, so a CI job can retry on 3 and 5.
+Exit codes: 0 passed, 1 regression or stale benchmark entry, 2 usage, 3 environment, 4 time limit, 5 harness bug,
+16 `diff` found differences. Only 1 says something about Inji's conformance, so a CI job can retry on 3 and 5. The
+one full table is in [reference/cli.md](reference/cli.md#exit-codes).
 
 ## Files the runner writes
 
