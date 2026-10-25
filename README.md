@@ -99,13 +99,13 @@ and documentation; one `PASS`, `FAIL` or `SKIP` line each, exit 1 on any failure
 
 ## Team Badmosip
 
-| Member | GitHub | Main work |
+| Member | GitHub | Area |
 |---|---|---|
-| Kanav Bhardwaj | [Paradox-73](https://github.com/Paradox-73) | compose stack, results contract, runner, verifier handoffs, TestNG bridge, report and diff |
-| Nikunj Mahajan | [nikunj169](https://github.com/nikunj169) | benchmark gate, api-testrig integration, CI workflow, findings and docs |
-| Ivan Bhargava | [Ivan825](https://github.com/Ivan825) | Inji Certify issuer path: seeding, credential offer handoff, issuer plan |
-| Ishaan Sodhi | - | Inji Verify schema fix, `dc.sh` profiles, PKI tests |
-| Harsh Modi | - | team member |
+| Kanav Bhardwaj | [Paradox-73](https://github.com/Paradox-73) | runner and architecture |
+| Ivan Bhargava | [Ivan825](https://github.com/Ivan825) | Inji Certify issuer path |
+| Nikunj Mahajan | [nikunj169](https://github.com/nikunj169) | Inji Verify verifier path and HTML report |
+| Ishaan Sodhi | [aloofdevil](https://github.com/aloofdevil) | api-testrig integration and CI |
+| Harsh Modi | [h4rshmodi007](https://github.com/h4rshmodi007) | findings, documentation and demo |
 
 ## Licences and imported code
 
