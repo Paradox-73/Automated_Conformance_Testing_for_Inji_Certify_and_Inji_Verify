@@ -1,0 +1,29 @@
+# Exact versions of the runner's dependencies, used with "pip install -c runner/constraints.txt" by the runner and
+# testrig images, CI and scripts/check.sh, so every build installs what was tested. pyproject.toml keeps the ranges.
+# Taken from the runner image built on 2026-10-24 (pip freeze) plus the dev extra of the test venv. To update:
+# install ./runner[dev] without constraints in a fresh Python 3.12 venv, run the checks, and copy "pip freeze" here.
+anyio==4.15.1
+attrs==26.1.0
+certifi==2026.10.23
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.20
+Jinja2==3.1.6
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+MarkupSafe==3.0.4
+pillow==13.0.0
+pyparsing==3.3.3
+referencing==0.37.0
+rpds-py==2026.9.1
+typing_extensions==4.16.0
+# dev extra
+colorama==0.4.6
+iniconfig==2.3.1
+packaging==26.3
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==8.4.2
+respx==0.23.1
+ruff==0.16.10

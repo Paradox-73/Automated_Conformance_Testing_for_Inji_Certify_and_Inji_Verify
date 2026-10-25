@@ -353,14 +353,15 @@ check_runner() {
     venv_python=$(harness_venv_python "$venv") || fail "no interpreter in $venv after creating it"
   fi
 
-  # Reinstall only when pyproject.toml changed; the install is editable, so source edits need no reinstall.
+  # Reinstall only when pyproject.toml or constraints.txt changed; the install is editable (source edits need none).
   stamp_file=$venv/.runner-pyproject.sha256
   want=$("$venv_python" -c \
-    'import hashlib, sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' runner/pyproject.toml)
+    'import hashlib, sys; print(hashlib.sha256(b"".join(open(f, "rb").read() for f in sys.argv[1:])).hexdigest())' \
+    runner/pyproject.toml runner/constraints.txt)
   have=$(cat "$stamp_file" 2>/dev/null || true)
   if [[ $want != "$have" ]]; then
     log_info "installing the runner and its dev dependencies into $venv"
-    run_indented "$venv_python" -m pip install --quiet --disable-pip-version-check --editable "./runner[dev]" ||
+    run_indented "$venv_python" -m pip install --quiet --disable-pip-version-check -c runner/constraints.txt --editable "./runner[dev]" ||
       fail "pip install of runner[dev] failed"
     printf '%s\n' "$want" >"$stamp_file"
   fi

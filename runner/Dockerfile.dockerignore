@@ -2,6 +2,7 @@
 *
 !runner/pyproject.toml
 !runner/README.md
+!runner/constraints.txt
 !runner/src/
 !third_party/oidf-conformance-suite/
 !conformance/

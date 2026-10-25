@@ -38,10 +38,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /opt/harness
-COPY runner/pyproject.toml runner/README.md runner/
+COPY runner/pyproject.toml runner/README.md runner/constraints.txt runner/
 COPY runner/src runner/src
 RUN python3 -m venv /opt/harness/venv \
-    && /opt/harness/venv/bin/pip install --no-compile ./runner \
+    && /opt/harness/venv/bin/pip install --no-compile -c runner/constraints.txt ./runner \
     && rm -rf runner/build
 COPY third_party/oidf-conformance-suite third_party/oidf-conformance-suite
 COPY conformance conformance

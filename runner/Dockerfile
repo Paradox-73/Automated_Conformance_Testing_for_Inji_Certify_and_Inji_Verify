@@ -14,9 +14,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /opt/harness
 
 # Dependencies and package first, so a change to plans or schemas does not reinstall them.
-COPY runner/pyproject.toml runner/README.md runner/
+COPY runner/pyproject.toml runner/README.md runner/constraints.txt runner/
 COPY runner/src runner/src
-RUN pip install --no-compile ./runner \
+RUN pip install --no-compile -c runner/constraints.txt ./runner \
     && rm -rf runner/build
 
 COPY third_party/oidf-conformance-suite third_party/oidf-conformance-suite
