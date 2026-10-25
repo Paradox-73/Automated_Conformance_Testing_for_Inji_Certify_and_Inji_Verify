@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MPL-2.0
 package io.mosip.testrig.apirig.conformance.results;
 
 /** A {@code results.json} file is missing, unreadable, or does not follow results.schema.json version 1. */

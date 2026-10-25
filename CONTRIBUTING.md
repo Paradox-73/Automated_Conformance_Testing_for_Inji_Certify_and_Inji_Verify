@@ -107,7 +107,8 @@ Pieces on their own, for development:
   `*.p12`, `*.jks`, `*.keystore`, suite configurations with keys, or raw suite exports (they contain the private
   keys of the suite configuration). Upstream test fixtures that carry such material are listed in
   `.gitguardian.yaml` with a reason. `bash scripts/check.sh secrets` must pass.
-- **Licences**: OSI-approved licences only. Team code is MIT ([LICENSE](LICENSE)); imported code keeps its own
+- **Licences**: OSI-approved licences only. Team code is MPL-2.0 ([LICENSE](LICENSE)); new team source files start
+  with `SPDX-License-Identifier: MPL-2.0`; imported code keeps its own
   (suite scripts MIT, Inji testrigs and configuration Apache-2.0). Check the licence before adding a dependency or
   an image.
 - **Line endings**: LF everywhere (`.editorconfig`), checked by `bash scripts/check.sh eol`.

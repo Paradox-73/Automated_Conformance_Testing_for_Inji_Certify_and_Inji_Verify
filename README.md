@@ -109,7 +109,8 @@ and documentation; one `PASS`, `FAIL` or `SKIP` line each, exit 1 on any failure
 
 ## Licences and imported code
 
-Team code is MIT ([LICENSE](LICENSE)). Imported code keeps its licence and is imported unchanged in its own commit:
+Team code is MPL-2.0 ([LICENSE](LICENSE)), the licence MOSIP and Inji use, so it can move into their repositories
+without a licence change. Imported code keeps its licence and is imported unchanged in its own commit:
 
 | Folder | Source | Licence |
 |---|---|---|

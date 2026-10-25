@@ -11,12 +11,12 @@ patch series.
 
 | Path | Purpose | Licence | Status |
 |---|---|---|---|
-| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
-| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MIT | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
-| `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MIT | done |
-| `pom.xml` | Maven aggregator for the three projects | MIT | done |
-| `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MIT | done (2026-10-14) |
-| `upstream-patches/` | The team's changes to the imported rigs, as `git format-patch` series | MIT | done; they apply to both upstream commits |
+| `inji-certify-api-test/` | MOSIP's TestNG API tests for Inji Certify (Maven project `apitest-injicertify`, Java 21, apitest-commons 1.6.0) | Apache-2.0; team files MPL-2.0 | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
+| `inji-verify-api-test/` | MOSIP's TestNG API tests for Inji Verify (Maven project `apitest-injiverify`, Java 21, apitest-commons 1.5.0) | Apache-2.0; team files MPL-2.0 | imported; plus `OpenIDConformanceTest`, `ConformanceRigRunner`, two suite XMLs; `pom.xml` changed (one dependency line, the duplicate javadoc plugin merged; notice at its top) |
+| `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MPL-2.0 | done |
+| `pom.xml` | Maven aggregator for the three projects | MPL-2.0 | done |
+| `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MPL-2.0 | done (2026-10-14) |
+| `upstream-patches/` | The team's changes to the imported rigs, as `git format-patch` series | MPL-2.0 | done; they apply to both upstream commits |
 
 ## Provenance of the imported testrigs
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  SPDX-License-Identifier: MIT
+  SPDX-License-Identifier: MPL-2.0
   Maven aggregator for the testrigs folder. It only lists the modules so one command builds the conformance bridge
   together with the rigs that use it; each module keeps its own pom (the rigs are upstream projects and stay
   standalone). Build the bridge and the Inji Verify rig:
@@ -22,8 +22,8 @@
 
   <licenses>
     <license>
-      <name>MIT</name>
-      <url>https://opensource.org/license/mit</url>
+      <name>MPL-2.0</name>
+      <url>https://mozilla.org/MPL/2.0/</url>
     </license>
   </licenses>
 

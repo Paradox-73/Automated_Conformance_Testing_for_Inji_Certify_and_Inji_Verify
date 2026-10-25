@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MPL-2.0
 // Test stand-in for the conformance runner, started by RunnerInvokerTest with the java source launcher.
 // Usage: java FakeRunner.java copy SOURCE OUT COMPONENT EXIT | java FakeRunner.java fail EXIT | java FakeRunner.java sleep
 import java.nio.file.Files;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <!--
-  SPDX-License-Identifier: MIT
+  SPDX-License-Identifier: MPL-2.0
   One row per OpenID conformance test module of the verifier plan run against Inji Verify (TC_OIDF_VERIFY_nn).
   Included from injiverifyConformanceMasterTestSuite.xml; see OpenIDConformanceTest for the settings.
 -->

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <!--
-  SPDX-License-Identifier: MIT
+  SPDX-License-Identifier: MPL-2.0
   OpenID Foundation conformance results for Inji Verify, in the stock master/child shape of this rig:
   EmailableReport leaves out every suite whose name contains "Master Suite" and reports the child suites, so the
   rows live in injiverifyConformanceSuite.xml. The stock InjiTestRunner also runs this file (its name contains

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MPL-2.0
 package io.mosip.testrig.apirig.conformance.results;
 
 import java.io.IOException;

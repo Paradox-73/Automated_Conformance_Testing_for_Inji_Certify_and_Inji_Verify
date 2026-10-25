@@ -42,7 +42,7 @@ index 0000000..df838e7
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injiverify/testrunner/ConformanceRigRunner.java
 @@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: MIT
++// SPDX-License-Identifier: MPL-2.0
 +package io.inji.testrig.apirig.injiverify.testrunner;
 +
 +import java.nio.file.Path;
@@ -129,7 +129,7 @@ index 0000000..3c5dd8a
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injiverify/testscripts/OpenIDConformanceTest.java
 @@ -0,0 +1,72 @@
-+// SPDX-License-Identifier: MIT
++// SPDX-License-Identifier: MPL-2.0
 +package io.inji.testrig.apirig.injiverify.testscripts;
 +
 +import org.apache.log4j.Level;
@@ -210,7 +210,7 @@ index 0000000..916040e
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 +<!--
-+  SPDX-License-Identifier: MIT
++  SPDX-License-Identifier: MPL-2.0
 +  OpenID Foundation conformance results for Inji Verify, in the stock master/child shape of this rig:
 +  EmailableReport leaves out every suite whose name contains "Master Suite" and reports the child suites, so the
 +  rows live in injiverifyConformanceSuite.xml. The stock InjiTestRunner also runs this file (its name contains
@@ -233,7 +233,7 @@ index 0000000..0457469
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 +<!--
-+  SPDX-License-Identifier: MIT
++  SPDX-License-Identifier: MPL-2.0
 +  One row per OpenID conformance test module of the verifier plan run against Inji Verify (TC_OIDF_VERIFY_nn).
 +  Included from injiverifyConformanceMasterTestSuite.xml; see OpenIDConformanceTest for the settings.
 +-->

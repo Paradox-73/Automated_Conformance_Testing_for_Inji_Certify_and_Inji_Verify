@@ -6,7 +6,7 @@ other rig report. Written as a candidate addition to
 [API Test Commons](https://github.com/mosip/mosip-functional-tests/tree/master/apitest-commons) (package
 `io.mosip.testrig.apirig.conformance`), so it depends only on what every rig already has.
 
-- Licence: MIT (team code). Java 21. Maven coordinates
+- Licence: MPL-2.0 (team code). Java 21. Maven coordinates
   `io.mosip.testrig.apitest.commons:apitest-commons-conformance:0.1.0-SNAPSHOT`.
 - `apitest-commons` is a `provided` dependency: each rig keeps its own version (Inji Verify 1.5.0, Inji Certify
   1.6.0). The library uses only API present in both: `TestCaseDTO`, `GlobalConstants`, `ConfigManager`.
@@ -106,7 +106,7 @@ start `FakeRunner.java` with the JDK's source launcher, so they need neither Pyt
 
 ## Inji Verify rig integration
 
-Files added to the imported rig [`../inji-verify-api-test`](../inji-verify-api-test) (all MIT, new files except
+Files added to the imported rig [`../inji-verify-api-test`](../inji-verify-api-test) (all MPL-2.0, new files except
 one line in `pom.xml`):
 
 | File | Purpose |

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MPL-2.0
 package io.inji.testrig.apirig.injicertify.testrunner;
 
 import java.nio.file.Path;
