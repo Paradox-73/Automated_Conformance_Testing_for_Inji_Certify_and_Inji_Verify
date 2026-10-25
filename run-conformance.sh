@@ -59,7 +59,8 @@ Examples:
   HARNESS_COMPOSE_FILES=demo/regression.compose.yml ./run-conformance.sh --component certify --runner-only
 
 Exit codes: 0 gate passed, 1 gate failed (regression or stale benchmark entry), 2 usage or configuration error,
-3 environment not ready (Docker, ports, a service that did not start), 4 time limit reached.
+3 environment not ready (Docker, ports, a service that did not start, a testrig that could not run), 4 time limit
+reached, 5 internal error of the harness. A regression (1) is never replaced by another code.
 
 Output in $HARNESS_RUN_DIR/reports/<run id>/: manifest.json, <component>/results.json, report/summary.html,
 report/badge.svg, logs/, and with the testrig step testrig/<component>/.
@@ -170,7 +171,7 @@ if ((!RUNNER_ONLY)); then
     rig_code=${PIPESTATUS[0]}
     set -e
     log_info "testrig $component exit code $rig_code"
-    ((rig_code <= EXIT_CODE)) || EXIT_CODE=$rig_code
+    EXIT_CODE=$(stack_merge_exit_code "$EXIT_CODE" "$rig_code")
   done
 fi
 

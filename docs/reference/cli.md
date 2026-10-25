@@ -47,6 +47,7 @@ running, as for `diff`, `gate`, `report` and `validate`); on the host: `run/venv
 | 16 | `diff`: the runs differ |
 
 Only 1 says something about Inji's conformance. A CI job can therefore tell a regression (1) apart from an outage or a
-crash (3, 5) and retry the latter. `./run-conformance.sh` exits with the highest code of the runner and the testrig
-steps, so an outage in one component hides a regression in the other; the per-component `results.json` and the
-report keep both.
+crash (3, 5) and retry the latter. `./run-conformance.sh` merges the runner's code with each testrig step's
+(`stack_merge_exit_code` in `scripts/lib/stack.sh`): a 1 from either side always wins, a testrig that could not run
+(its own code 2) counts as 3, and otherwise the higher code wins. The per-component `results.json` and the report
+keep every code.

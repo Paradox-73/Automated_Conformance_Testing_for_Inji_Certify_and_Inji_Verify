@@ -65,6 +65,21 @@ stack_preflight() {
   log_info "preflight ok: Docker Compose $compose, $((memory / 1024 / 1024)) MiB, ports free: $(stack_ports "$@" | tr '\n' ' ')"
 }
 
+# stack_merge_exit_code RUNNER RIG: the run's exit code from the runner's and one testrig's. A regression (1) from
+# either side wins, because only 1 is about Inji and CI retries on 3. The rig's 2 ("could not run") is an
+# environment problem, so it becomes 3; otherwise the larger code wins.
+stack_merge_exit_code() {
+  local runner=$1 rig=$2
+  ((rig == 2)) && rig=3
+  if ((runner == 1 || rig == 1)); then
+    echo 1
+  elif ((rig > runner)); then
+    echo "$rig"
+  else
+    echo "$runner"
+  fi
+}
+
 # stack_new_run_id: UTC start time plus 6 random hex characters, the format of inji_conformance.run.new_run_id.
 stack_new_run_id() {
   printf '%s-%s\n' "$(date -u +%Y%m%dT%H%M%SZ)" "$(od -An -N3 -tx1 /dev/urandom | tr -d ' \n')"
