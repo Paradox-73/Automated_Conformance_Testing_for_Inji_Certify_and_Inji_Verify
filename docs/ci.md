@@ -7,7 +7,8 @@ same steps on a developer machine.
 
 | Event | Jobs |
 |---|---|
-| push, pull request | checks, conformance (certify and verify), combined |
+| push to `main`, pull request, except changes only below `docs/` or to `*.md` files | checks, conformance (certify and verify), combined |
+| push to `main` or pull request that changes only docs | `docs.yml`: `bash scripts/check.sh eol secrets docs`, no Docker |
 | release published, weekly schedule (Monday 03:17 UTC), `workflow_dispatch` | the same, plus full-stack |
 | `workflow_call` from an Inji repository | the same as dispatch, with that repository's image; full-stack unless `full_stack: false` |
 
@@ -30,7 +31,7 @@ Artifacts are uploaded with `if: always()`, so a failed gate still leaves its re
 ## Inji release pipelines
 
 [.github/examples/inji-release-caller.yml](../.github/examples/inji-release-caller.yml) is the workflow an Inji
-repository adds: after its release build it calls this workflow (`uses: ...full-stack-conformance.yml@main`) with the
+repository adds: after its release build it calls this workflow (`uses: ...full-stack-conformance.yml@<tag>`) with the
 image it just pushed, so a release that regresses fails in the Inji repository's own checks.
 
 A called workflow runs in the caller's repository: `actions/checkout` without arguments would check out
@@ -44,11 +45,14 @@ inji-certify or inji-verify. Every job therefore checks out the harness by name:
 
 To add the hook to an Inji repository:
 
-1. Copy `.github/examples/inji-release-caller.yml` to `.github/workflows/` in inji-certify or inji-verify.
-2. Set `workflows:` to the name of the workflow that builds and pushes the image.
-3. In inji-verify, replace `component: certify` with `component: verify` and `certify_image` with `verify_image`.
-4. Pin `@<tag or commit>` in `uses:` and the same value in `harness_ref`.
-5. Run it once with `workflow_dispatch` and a known digest; the run's summary shows the gate.
+1. Host the harness in the `inji` or `mosip` GitHub organisation and cut a release tag there. An Inji release
+   pipeline must not run code from a personal account's moving branch; the example pins `v1.0.0` of the current
+   repository until that move.
+2. Copy `.github/examples/inji-release-caller.yml` to `.github/workflows/` in inji-certify or inji-verify.
+3. Set `workflows:` to the name of the workflow that builds and pushes the image.
+4. In inji-verify, replace `component: certify` with `component: verify` and `certify_image` with `verify_image`.
+5. Pin `@<tag or commit>` in `uses:` and the same value in `harness_ref`; set `harness_repository` to the organisation's copy.
+6. Run it once with `workflow_dispatch` and a known digest; the run's summary shows the gate.
 
 The diff against the last successful run reads the harness repository's runs; when the caller's token cannot read
 them, the diff is left out and the rest of the job is unchanged.

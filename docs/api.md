@@ -110,15 +110,15 @@ All calls with their purpose: [api-automation.md](api-automation.md).
 
 ## GitHub Actions workflow
 
-`.github/workflows/full-stack-conformance.yml` runs on push, pull request, release, a weekly schedule, manual
-dispatch and `workflow_call`. An Inji repository calls it after a release build:
+`.github/workflows/full-stack-conformance.yml` runs on pushes to `main` and pull requests that change more than
+docs, release, a weekly schedule, manual dispatch and `workflow_call`. An Inji repository calls it after a release build:
 
 ```yaml
 jobs:
   conformance:
-    uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@main
+    uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@v1.0.0
     with:
-      harness_ref: main
+      harness_ref: v1.0.0
       component: certify
       track: gate
       strict: true

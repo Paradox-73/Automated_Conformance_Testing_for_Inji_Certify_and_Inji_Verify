@@ -1,0 +1,27 @@
+# Checks for changes that touch only documentation; full-stack-conformance.yml ignores those paths, so a docs-only
+# push or pull request does not start the Docker stack.
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", "**/*.md"]
+  pull_request:
+    paths: ["docs/**", "**/*.md"]
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: bash scripts/check.sh eol secrets docs
+        env:
+          CI: "true"
+        run: bash scripts/check.sh eol secrets docs

@@ -1,6 +1,12 @@
 # Example for an Inji repository (inji-certify or inji-verify): after its release build pushed a new image, run the
 # OpenID conformance harness against that exact image digest. Copy this file to .github/workflows/ in the Inji
 # repository and set the image name. The harness repository must be readable by the calling repository.
+#
+# Pin a release tag (or a commit SHA) of the harness, never a branch: the called workflow runs inside Inji's release
+# pipeline. Steps for the Inji team before adoption:
+#   1. move or fork the harness into the inji (or mosip) GitHub organisation and review it there;
+#   2. replace the repository name below and in harness_repository with the organisation's copy;
+#   3. cut a release tag there and put it in both places below (uses: ...@<tag> and harness_ref).
 name: openid-conformance
 
 on:
@@ -14,14 +20,20 @@ on:
         type: string
         required: true
 
+# The called workflow reads earlier runs' artifacts for its diff step; without actions: read the diff is skipped.
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   conformance:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@main
+    uses: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify/.github/workflows/full-stack-conformance.yml@v1.0.0
     with:
       # The called jobs run in this repository, so they check out the harness by name; keep harness_ref equal to
-      # the ref after "@" in the uses: line above (a release tag or commit pins both).
-      harness_ref: main
+      # the tag after "@" in the uses: line above, and harness_repository equal to the repository there.
+      harness_repository: Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify
+      harness_ref: v1.0.0
       component: certify   # verify in inji-verify
       track: gate
       strict: true
