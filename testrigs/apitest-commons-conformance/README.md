@@ -39,7 +39,9 @@ EmailableReport (unchanged)   mosip-<env.user>-injiverify-conformance-<date>-ful
 ## Settings
 
 Each key is read as a JVM system property (`-Dkey=value`), then as an environment variable with the same name (the
-apitest-commons `ConfigManager` convention), then as an upper-case environment variable (`CONFORMANCE_RESULTS_FILE`).
+apitest-commons `ConfigManager` convention), then as an upper-case environment variable (`CONFORMANCE_RESULTS_FILE`),
+and last in the rig's own properties (`ConfigManager.getproperty`, for example a `conformance.results.file` line in
+`injiVerify.properties`), so a deployment can keep them with the rig's other settings.
 
 | Key | Default | Meaning |
 |---|---|---|
@@ -107,7 +109,7 @@ start `FakeRunner.java` with the JDK's source launcher, so they need neither Pyt
 ## Inji Verify rig integration
 
 Files added to the imported rig [`../inji-verify-api-test`](../inji-verify-api-test) (all MPL-2.0, new files except
-one line in `pom.xml`):
+one dependency in `pom.xml`):
 
 | File | Purpose |
 |---|---|
@@ -120,7 +122,7 @@ one line in `pom.xml`):
 Run it from `testrigs/inji-verify-api-test` after the build (the jar path is the rig's shaded jar):
 
 ```bash
-java -Dmodules=injiverify -Denv.user=ps01 -Denv.endpoint=https://verify.inji.test:18451 \
+java -Dmodules=injiverify -Denv.user=inji-conformance -Denv.endpoint=https://verify.inji.test:18451 \
      -Denv.testLevel=smokeAndRegression \
      -Dconformance.results.file=../../conformance/schema/examples/results-verify.example.json \
      -Dconformance.report.dir="${HARNESS_RUN_DIR:-../../run}/rig-try" \
@@ -147,7 +149,7 @@ Run on 2026-10-04 on the team laptop (Windows 11, JDK 21.0.12, Maven 3.9.9), fro
 | Check | Result |
 |---|---|
 | `mvn -B -f testrigs/pom.xml -pl apitest-commons-conformance,inji-verify-api-test -am package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true` | BUILD SUCCESS in 8 min 23 s; 51 JUnit tests, 0 failures |
-| `ConformanceRigRunner` with `results-verify.example.json` | exit 0; `mosip-ps01-injiverify-conformance-2026-10-04_16-40-full-report_T-11_P-10_S-0_F-0_I-0_KI-1.html`, rows `TC_OIDF_VERIFY_01` to `_11` |
+| `ConformanceRigRunner` with `results-verify.example.json` | exit 0; `mosip-inji-conformance-injiverify-conformance-2026-10-04_16-40-full-report_T-11_P-10_S-0_F-0_I-0_KI-1.html`, rows `TC_OIDF_VERIFY_01` to `_11` |
 | `ConformanceRigRunner` with `results-verify-regression.example.json` | exit 1; `...-full-report_T-11_P-9_S-0_F-1_I-0_KI-1.html` and `...-error-report_T-2_S-0_F-1_I-0_KI-1.html` |
 | `ConformanceRigRunner` with no `conformance.*` setting | exit 0; `...-full-report_T-1_P-0_S-0_F-0_I-1_KI-0.html` (one Ignored row) |
 

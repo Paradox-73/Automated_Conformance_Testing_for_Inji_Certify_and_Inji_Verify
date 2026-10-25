@@ -1,6 +1,6 @@
 <!--
   Changed by the inji-conformance-harness project (Apache-2.0 section 4(b) notice):
-  2026-10-04 added the apitest-commons-conformance dependency (one line);
+  2026-10-04 added the apitest-commons-conformance dependency;
   2026-10-14 merged the two maven-javadoc-plugin declarations into one (same version, executions and
   configuration), because newer Maven rejects a duplicate plugin declaration as an error.
 -->
@@ -103,7 +103,11 @@
 			<artifactId>apitest-commons</artifactId>
 			<version>1.5.0</version>
 		</dependency>
-		<dependency><groupId>io.mosip.testrig.apitest.commons</groupId><artifactId>apitest-commons-conformance</artifactId><version>0.1.0-SNAPSHOT</version></dependency>
+		<dependency>
+			<groupId>io.mosip.testrig.apitest.commons</groupId>
+			<artifactId>apitest-commons-conformance</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 		
 	<build>

@@ -84,7 +84,7 @@ credential endpoint before any sender-constraint check, so the gate keeps `dpop`
 | TC-16 | `bash testrigs/run-testrig.sh certify --invoke` | 0 | `mosip-ps01-injicertify-conformance-2026-10-13_21-54-full-report_T-15_P-3_S-0_F-0_I-3_KI-9.html`, listed in MinIO `automationtests/injicertify/` |
 | TC-17 | `bash testrigs/run-testrig.sh verify --invoke` | 0 | `mosip-ps01-injiverify-conformance-2026-10-13_21-57-full-report_T-11_P-11_S-0_F-0_I-0_KI-0.html`, listed in MinIO `automationtests/injiverify/` |
 | TC-16, TC-17 (rerun) | the same two commands on the Windows machine, 2026-10-14, after invoke mode began passing `--target {target}` (`env.endpoint`) and the rig began running as the compose services' user | 0, 0 | `..._T-15_P-3_S-0_F-0_I-3_KI-9.html` and `..._T-11_P-11_S-0_F-0_I-0_KI-0.html`, both in MinIO; runner targets `https://certify.inji.test:18450` and `https://verify.inji.test:18451/v1/verify` ([evidence](evidence/2026-10-14-testrig-invoke/)). The first attempt, before the user fix, failed in both rigs with `Permission denied: /pki/suite-signing.jwk.json` |
-| TC-18 | `git apply --check --directory=api-test` of `testrigs/upstream-patches/` on inji-certify `203b143` and inji-verify `6a6ab3b` | 0 | all three patches apply |
+| TC-18 | `git apply --check --directory=api-test` of `testrigs/upstream-patches/` on inji-certify `203b143` and inji-verify `6a6ab3b` | 0 | all three patches apply (2026-10-14); rerun 2026-10-25 with one patch per rig: both apply and reproduce the rig folders |
 
 The rig reports of TC-19 are in [evidence](evidence/2026-10-14-20261014T133851Z-c99cce/testrig/).
 

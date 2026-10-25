@@ -1,62 +1,96 @@
-From 1ff1a86c71149252aa665eda2c34d44a8cfead3d Mon Sep 17 00:00:00 2001
 From: nikunj169 <nikunjmahajan9937@gmail.com>
-Date: Wed, 14 Oct 2026 03:29:40 +0530
-Subject: [PATCH] feat: Inji Certify rig integration, testrig image and report
- upload (WP-12)
+Date: Sun, 25 Oct 2026 12:00:00 +0530
+Subject: [PATCH] Add an OpenID conformance TestNG suite to the Inji Certify api-testrig
 
-- Inji Certify rig: OpenIDConformanceTest (one row per issuer module,
-  TC_OIDF_CERTIFY_nn), the two conformance suite files and
-  ConformanceRigRunner. The runner leaves out what InjiTestRunner does before
-  any test that needs a full MOSIP deployment: health checker, Keycloak
-  users, OTP listener and setup, partner setup, database cleanup. Of the
-  per-row checks only the skip list and run scope apply.
-- Bridge: RigRun.applyUploadSettings puts push-reports-to-s3 and the s3-*
-  keys into apitest-commons' configuration. apitest-commons lets the
-  environment replace only keys its property files have, and the rigs have
-  none of these, so the upload never ran before (measured 2026-10-14).
-- testrigs/build.sh: both shaded jars with the host's Maven (JDK 21 or
-  newer), else in the maven:3.9.11-eclipse-temurin-21 image; --image builds
-  ps01-harness/testrig:local from testrigs/Dockerfile (Temurin 21 JRE,
-  Python 3 with the runner, both jars and suite files).
-- testrigs/run-testrig.sh certify|verify --results FILE | --invoke: the rig
-  in the image on the compose network, upload to MinIO when it runs.
+The rig gains one TestNG row per test module of the OpenID Foundation
+conformance suite's issuer plan (TC_OIDF_CERTIFY_nn), read from the results.json that
+the conformance runner writes, so the outcome lands in the rig's stock
+EmailableReport and its S3 upload next to the other API tests.
 
-Measured 2026-10-14 (stack certify or verify plus reports):
-bash testrigs/build.sh --image: jars in 95 s (warm cache), image built
-bash testrigs/run-testrig.sh certify --invoke: exit 0, report
-  ..._T-15_P-3_S-0_F-0_I-3_KI-9.html; MinIO automationtests/injicertify/ lists it
-bash testrigs/run-testrig.sh verify --invoke: exit 0, report
-  ..._T-11_P-11_S-0_F-0_I-0_KI-0.html; MinIO automationtests/injiverify/ lists it
-bash scripts/check.sh testrigs: PASS
+- OpenIDConformanceTest: one row per conformance test module; a module the
+  benchmark lists as an expected failure becomes a Known Issue row.
+- ConformanceRigRunner: runs only the conformance suite files, without the
+  steps of InjiTestRunner that need a full MOSIP deployment (health checker,
+  Keycloak users, OTP listener, partner setup, database cleanup); exits 1
+  when a row fails.
+- testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml and
+  injicertifyConformanceSuite.xml.
+- pom.xml: the apitest-commons-conformance dependency, and the two
+  maven-javadoc-plugin declarations merged into one (newer Maven rejects a
+  duplicate plugin declaration).
+
+Build dependency: the rig now depends on
+io.mosip.testrig.apitest.commons:apitest-commons-conformance:0.1.0-SNAPSHOT,
+the OpenID conformance bridge (14 classes, apitest-commons and TestNG as
+provided dependencies). It is proposed for API Test Commons
+(mosip-functional-tests) and is in no Maven repository yet. Install it into
+the local Maven repository before building this rig:
+
+  git clone https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git inji-conformance-harness
+  mvn -B -f inji-conformance-harness/testrigs/apitest-commons-conformance/pom.xml install
+  mvn -B -f api-test/pom.xml package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
 
 Signed-off-by: nikunj169 <nikunjmahajan9937@gmail.com>
 ---
- pom.xml                                       |  1 +
+ pom.xml                                       | 20 ++--
  .../testrunner/ConformanceRigRunner.java      | 93 +++++++++++++++++++
  .../testscripts/OpenIDConformanceTest.java    | 81 ++++++++++++++++
  .../injicertifyConformanceMasterTestSuite.xml | 17 ++++
  .../injicertifyConformanceSuite.xml           | 14 +++
- 5 files changed, 206 insertions(+)
- create mode 100644 testrigs/inji-certify-api-test/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
- create mode 100644 testrigs/inji-certify-api-test/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
- create mode 100644 testrigs/inji-certify-api-test/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
- create mode 100644 testrigs/inji-certify-api-test/testNgXmlFiles/injicertifyConformanceSuite.xml
+ 5 files changed, 217 insertions(+), 8 deletions(-)
 
 diff --git a/pom.xml b/pom.xml
-index 1758969..44aa0ae 100644
+index 1758969b656d4bd7433260cbbc1203d2abf96dcf..14e304af3ac5e261f9e37da1370d1aba7a6aa01f 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -74,6 +74,7 @@
+@@ -1,3 +1,9 @@
++<!--
++  Changed by the inji-conformance-harness project (Apache-2.0 section 4(b) notice):
++  2026-10-14 added the apitest-commons-conformance dependency;
++  2026-10-14 merged the two maven-javadoc-plugin declarations into one (same version, executions and
++  configuration), because newer Maven rejects a duplicate plugin declaration as an error.
++-->
+ <project xmlns="http://maven.apache.org/POM/4.0.0"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -74,6 +80,11 @@
  			<artifactId>apitest-commons</artifactId>
  			<version>1.6.0</version>
  		</dependency>
-+		<dependency><groupId>io.mosip.testrig.apitest.commons</groupId><artifactId>apitest-commons-conformance</artifactId><version>0.1.0-SNAPSHOT</version></dependency>
++		<dependency>
++			<groupId>io.mosip.testrig.apitest.commons</groupId>
++			<artifactId>apitest-commons-conformance</artifactId>
++			<version>0.1.0-SNAPSHOT</version>
++		</dependency>
  		<dependency>
  			<groupId>com.github.openjson</groupId>
  			<artifactId>openjson</artifactId>
+@@ -119,6 +130,7 @@
+ 			<plugin>
+ 				<groupId>org.apache.maven.plugins</groupId>
+ 				<artifactId>maven-javadoc-plugin</artifactId>
++				<version>${maven.javadoc.version}</version>
+ 				<executions>
+ 					<execution>
+ 						<id>attach-javadocs</id>
+@@ -140,14 +152,6 @@
+ 					<argLine>-Dfile.encoding=UTF-8</argLine>
+ 				</configuration>
+ 			</plugin>
+-			<plugin>
+-				<groupId>org.apache.maven.plugins</groupId>
+-				<artifactId>maven-javadoc-plugin</artifactId>
+-				<version>${maven.javadoc.version}</version>
+-				<configuration>
+-					<doclint>none</doclint>
+-				</configuration>
+-			</plugin>
+ 			<plugin>
+ 				<groupId>pl.project13.maven</groupId>
+ 				<artifactId>git-commit-id-plugin</artifactId>
 diff --git a/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java b/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
 new file mode 100644
-index 0000000..30d3982
+index 0000000000000000000000000000000000000000..2f80ce106d50b9ac980b04de289bf850c1722384
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injicertify/testrunner/ConformanceRigRunner.java
 @@ -0,0 +1,93 @@
@@ -92,7 +126,7 @@ index 0000000..30d3982
 + * the run could not start or TestNG wrote no results. The stock runner exits 0 or, on a start-up failure, 1.
 + *
 + * <pre>
-+ * java -Dmodules=injicertify -Denv.user=ps01 -Denv.endpoint=https://certify.inji.test:18450 \
++ * java -Dmodules=injicertify -Denv.user=inji-conformance -Denv.endpoint=https://certify.inji.test:18450 \
 + *      -Denv.testLevel=smokeAndRegression -Dconformance.results.file=results.json \
 + *      -cp apitest-injicertify-...-jar-with-dependencies.jar \
 + *      io.inji.testrig.apirig.injicertify.testrunner.ConformanceRigRunner
@@ -155,7 +189,7 @@ index 0000000..30d3982
 +}
 diff --git a/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java b/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
 new file mode 100644
-index 0000000..9abf080
+index 0000000000000000000000000000000000000000..b4f33142e4bd841525a79b01de9202792ad5bf34
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injicertify/testscripts/OpenIDConformanceTest.java
 @@ -0,0 +1,81 @@
@@ -242,7 +276,7 @@ index 0000000..9abf080
 +}
 diff --git a/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml b/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
 new file mode 100644
-index 0000000..8a2294f
+index 0000000000000000000000000000000000000000..d5cab21e7e06978c1cf796e19535b6c2334cbe83
 --- /dev/null
 +++ b/testNgXmlFiles/injicertifyConformanceMasterTestSuite.xml
 @@ -0,0 +1,17 @@
@@ -265,7 +299,7 @@ index 0000000..8a2294f
 +</suite>
 diff --git a/testNgXmlFiles/injicertifyConformanceSuite.xml b/testNgXmlFiles/injicertifyConformanceSuite.xml
 new file mode 100644
-index 0000000..74579c2
+index 0000000000000000000000000000000000000000..3a1442d4e0bae4b0c33a26daa627fc233f0fc6d3
 --- /dev/null
 +++ b/testNgXmlFiles/injicertifyConformanceSuite.xml
 @@ -0,0 +1,14 @@

@@ -3,13 +3,13 @@
 #
 # Build the testrig image, or the two Inji api-testrig jars with the conformance bridge on the host.
 #
-#   bash testrigs/build.sh --image    the image ps01-harness/testrig:local (TESTRIG_IMAGE overrides); the jars are
+#   bash testrigs/build.sh --image    the image inji-conformance/testrig:local (TESTRIG_IMAGE overrides); the jars are
 #                                     compiled inside the image build, so only Docker is needed (any OS)
 #   bash testrigs/build.sh            the jars on the host: testrigs/inji-*-api-test/target/apitest-inji*-jar-with-dependencies.jar
 #
 # Host jars use the host's Maven when it runs on JDK 21 or newer (the rigs compile for release 21), else the
 # maven:3.9-eclipse-temurin-21 image with the checkout bind-mounted and a named volume as the Maven repository
-# (ps01-harness-m2). That container path is slow on Windows and macOS bind mounts; prefer --image there. MAVEN_ARGS
+# (inji-conformance-m2). That container path is slow on Windows and macOS bind mounts; prefer --image there. MAVEN_ARGS
 # adds options to host builds, for example a settings file with a mirror; TESTRIG_MAVEN_ARGS adds options to the
 # Maven stage of --image (a host settings-file path does not exist inside the build, so the two are separate).
 
@@ -21,7 +21,7 @@ source "$SCRIPT_DIR/../scripts/lib/common.sh"
 
 readonly MAVEN_IMAGE=maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237
 readonly MODULES=apitest-commons-conformance,inji-verify-api-test,inji-certify-api-test
-readonly IMAGE=${TESTRIG_IMAGE:-ps01-harness/testrig:local}
+readonly IMAGE=${TESTRIG_IMAGE:-inji-conformance/testrig:local}
 
 image=0
 case ${1:-} in
@@ -59,10 +59,10 @@ else
   harness_require_cmd docker "install JDK 21 and Maven 3.9, or Docker"
   log_info "no Maven on JDK 21 or newer on the host: building in $MAVEN_IMAGE"
   # A new named volume belongs to root; hand it to the calling user, who runs the build.
-  harness_no_pathconv docker run --rm -u 0 -v ps01-harness-m2:/var/maven/.m2 "$MAVEN_IMAGE" \
+  harness_no_pathconv docker run --rm -u 0 -v inji-conformance-m2:/var/maven/.m2 "$MAVEN_IMAGE" \
     chown "$(id -u):$(id -g)" /var/maven/.m2
   harness_no_pathconv docker run --rm -u "$(id -u):$(id -g)" -e MAVEN_CONFIG=/var/maven/.m2 \
-    -v ps01-harness-m2:/var/maven/.m2 -v "$(harness_native_path "$HARNESS_ROOT"):/src" -w /src \
+    -v inji-conformance-m2:/var/maven/.m2 -v "$(harness_native_path "$HARNESS_ROOT"):/src" -w /src \
     "$MAVEN_IMAGE" mvn -Duser.home=/var/maven "${args[@]}"
 fi
 for jar in testrigs/inji-certify-api-test/target/apitest-injicertify-*-jar-with-dependencies.jar \

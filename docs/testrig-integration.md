@@ -8,8 +8,8 @@ stock `EmailableReport`, uploaded to MinIO like any other rig report. Library de
 
 | Rig | Added | Row ids |
 |---|---|---|
-| Inji Certify (`testrigs/inji-certify-api-test`, upstream `203b143`) | `OpenIDConformanceTest`, `ConformanceRigRunner`, `injicertifyConformanceMasterTestSuite.xml`, `injicertifyConformanceSuite.xml`, one `pom.xml` dependency line (and the duplicate javadoc plugin merged) | `TC_OIDF_CERTIFY_01` to `_15` |
-| Inji Verify (`testrigs/inji-verify-api-test`, upstream `6a6ab3b`) | the same four files and line (WP-11), and the upload settings call | `TC_OIDF_VERIFY_01` to `_11` |
+| Inji Certify (`testrigs/inji-certify-api-test`, upstream `203b143`) | `OpenIDConformanceTest`, `ConformanceRigRunner`, `injicertifyConformanceMasterTestSuite.xml`, `injicertifyConformanceSuite.xml`, the bridge dependency in `pom.xml` (and the duplicate javadoc plugin merged) | `TC_OIDF_CERTIFY_01` to `_15` |
+| Inji Verify (`testrigs/inji-verify-api-test`, upstream `6a6ab3b`) | the same four files and dependency | `TC_OIDF_VERIFY_01` to `_11` |
 
 `OpenIDConformanceTest` has the shape of the rigs' other scripts (`ITest`, a `testcaselist` data provider,
 `@AfterMethod` naming each row). It reads `env.endpoint` like every rig test. Rows come from a `results.json`
@@ -49,7 +49,7 @@ bash scripts/dc.sh run --rm minio-mc ls local/automationtests/injicertify/
 bash scripts/dc.sh --profile '*' down -v
 ```
 
-- `testrigs/build.sh --image` builds `ps01-harness/testrig:local` from `testrigs/Dockerfile` in two stages. The
+- `testrigs/build.sh --image` builds `inji-conformance/testrig:local` from `testrigs/Dockerfile` in two stages. The
   first stage (`maven:3.9.11-eclipse-temurin-21`) compiles both shaded jars (about 390 MB each) from the sources in
   the build context, with the Maven repository in a BuildKit cache mount. The second stage (Temurin 21 JRE, Python 3
   with the runner, both jars and suite files; 2.1 GB) is the image. Only Docker is needed on the host, on any OS.
@@ -82,6 +82,6 @@ variables (`PUSH_REPORTS_TO_S3`, `S3_HOST`, `S3_ACCOUNT`, `S3_REGION`, `S3_USER_
 
 ## Upstream patches
 
-`testrigs/upstream-patches/` holds the team's rig changes as `git format-patch` series; on 2026-10-14
-`git apply --check --directory=api-test` succeeded on clean checkouts of both upstream commits
-([testrigs/upstream-patches/README.md](../testrigs/upstream-patches/README.md)).
+`testrigs/upstream-patches/` holds the team's rig changes as one patch per rig, with the steps to install the
+bridge library into the local Maven repository and build a patched rig; on 2026-10-25 both patches applied to the
+upstream trees ([testrigs/upstream-patches/README.md](../testrigs/upstream-patches/README.md)).

@@ -2,7 +2,7 @@
 # Built from the repository root; the first stage compiles the two shaded jars from the sources, so the host needs
 # neither a JDK nor Maven:
 #
-#   docker build -f testrigs/Dockerfile -t ps01-harness/testrig:local .     (or: bash testrigs/build.sh --image)
+#   docker build -f testrigs/Dockerfile -t inji-conformance/testrig:local .     (or: bash testrigs/build.sh --image)
 #
 # Layout, as the rigs' stock images and RigRun.suiteFile expect (working directory /home/<module>):
 #   /home/injicertify/apitest-injicertify-*-jar-with-dependencies.jar, /home/injicertify/testNgXmlFiles/

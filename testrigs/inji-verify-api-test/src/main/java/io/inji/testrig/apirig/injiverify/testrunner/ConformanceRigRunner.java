@@ -28,7 +28,7 @@ import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
  * the run could not start or TestNG wrote no results. The stock runner always exits 0.
  *
  * <pre>
- * java -Dmodules=injiverify -Denv.user=ps01 -Denv.endpoint=https://verify.inji.test:18451 \
+ * java -Dmodules=injiverify -Denv.user=inji-conformance -Denv.endpoint=https://verify.inji.test:18451 \
  *      -Denv.testLevel=smokeAndRegression -Dconformance.results.file=results.json \
  *      -cp apitest-injiverify-...-jar-with-dependencies.jar \
  *      io.inji.testrig.apirig.injiverify.testrunner.ConformanceRigRunner

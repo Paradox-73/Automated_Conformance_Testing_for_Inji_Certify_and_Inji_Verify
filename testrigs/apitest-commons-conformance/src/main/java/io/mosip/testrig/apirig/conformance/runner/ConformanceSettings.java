@@ -7,6 +7,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
+import io.mosip.testrig.apirig.utils.ConfigManager;
+
 /**
  * Where a rig's conformance rows come from, read from JVM system properties or environment variables.
  *
@@ -23,7 +25,9 @@ import java.util.function.UnaryOperator;
  *
  * <p>Each key is looked up as a system property ({@code -Dconformance.results.file=...}), then as an environment
  * variable with the same name (the apitest-commons {@code ConfigManager} convention), then as an environment
- * variable in upper snake case ({@code CONFORMANCE_RESULTS_FILE}), which every shell can set.
+ * variable in upper snake case ({@code CONFORMANCE_RESULTS_FILE}), which every shell can set, and last in the rig's
+ * own properties ({@code ConfigManager.getproperty}, for example {@code injiVerify.properties}), so a deployment
+ * can keep these settings where it keeps the rig's other settings.
  *
  * @param component      {@code certify} or {@code verify}
  * @param resultsFile    consume mode: the results file; {@code null} otherwise
@@ -76,9 +80,27 @@ public record ConformanceSettings(
         return runnerCommand != null ? Mode.INVOKE : Mode.NOT_CONFIGURED;
     }
 
-    /** Settings from this JVM's system properties and environment; the target defaults to {@code env.endpoint}. */
+    /**
+     * Settings from this JVM's system properties, its environment and the rig's properties; the target defaults to
+     * {@code env.endpoint}.
+     */
     public static ConformanceSettings fromEnvironment(String component) {
-        return from(component, System::getProperty, System::getenv);
+        return from(component, System::getProperty, System::getenv, ConformanceSettings::rigProperty);
+    }
+
+    /** {@code ConfigManager.getproperty(key)}, or {@code null} when the rig has no such key or no loaded config. */
+    static String rigProperty(String key) {
+        try {
+            return ConfigManager.getproperty(key);
+        } catch (RuntimeException | LinkageError e) {
+            return null;
+        }
+    }
+
+    /** {@link #from(String, UnaryOperator, UnaryOperator, UnaryOperator)} without rig properties. */
+    public static ConformanceSettings from(
+            String component, UnaryOperator<String> properties, UnaryOperator<String> environment) {
+        return from(component, properties, environment, key -> null);
     }
 
     /**
@@ -87,11 +109,12 @@ public record ConformanceSettings(
      * @param component  {@code certify} or {@code verify}
      * @param properties system property lookup
      * @param environment environment variable lookup
+     * @param rigConfig  the rig's own properties, consulted last
      * @throws IllegalArgumentException when the timeout is not a positive whole number
      */
-    public static ConformanceSettings from(
-            String component, UnaryOperator<String> properties, UnaryOperator<String> environment) {
-        Lookup lookup = new Lookup(properties, environment);
+    public static ConformanceSettings from(String component, UnaryOperator<String> properties,
+            UnaryOperator<String> environment, UnaryOperator<String> rigConfig) {
+        Lookup lookup = new Lookup(properties, environment, rigConfig);
         Path resultsFile = lookup.path(RESULTS_FILE);
         String command = lookup.value(RUNNER_COMMAND);
         String target = lookup.value(TARGET);
@@ -136,8 +159,12 @@ public record ConformanceSettings(
         };
     }
 
-    /** Lookup order: system property, environment variable of the same name, environment variable in upper case. */
-    private record Lookup(UnaryOperator<String> properties, UnaryOperator<String> environment) {
+    /**
+     * Lookup order: system property, environment variable of the same name, environment variable in upper case, the
+     * rig's properties.
+     */
+    private record Lookup(
+            UnaryOperator<String> properties, UnaryOperator<String> environment, UnaryOperator<String> rigConfig) {
         String value(String key) {
             String value = properties.apply(key);
             if (isBlank(value)) {
@@ -145,6 +172,9 @@ public record ConformanceSettings(
             }
             if (isBlank(value)) {
                 value = environment.apply(key.replace('.', '_').toUpperCase(Locale.ROOT));
+            }
+            if (isBlank(value)) {
+                value = rigConfig.apply(key);
             }
             return isBlank(value) ? null : value.trim();
         }

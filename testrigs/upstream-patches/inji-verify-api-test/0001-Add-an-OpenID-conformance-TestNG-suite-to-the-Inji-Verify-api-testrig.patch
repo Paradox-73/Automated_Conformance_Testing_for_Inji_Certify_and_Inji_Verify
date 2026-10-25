@@ -1,47 +1,99 @@
-From 511baf9df86892cbd9850c24106b09c0d2361908 Mon Sep 17 00:00:00 2001
 From: Paradox_73 <kanavbhardwaj86412a@gmail.com>
-Date: Sun, 4 Oct 2026 16:52:08 +0530
-Subject: [PATCH 1/2] feat: TestNG bridge for conformance results and Inji
- Verify rig integration
+Date: Sun, 25 Oct 2026 12:00:00 +0530
+Subject: [PATCH] Add an OpenID conformance TestNG suite to the Inji Verify api-testrig
 
-apitest-commons-conformance reads results.json v1, runs the conformance
-runner with a time limit when asked, and maps each module verdict to a
-TestNG pass, failure, Known Issue or Ignored row in the stock
-EmailableReport. The Inji Verify rig gains OpenIDConformanceTest, a
-conformance master suite and ConformanceRigRunner, which exits 1 when a
-row fails. testrigs/pom.xml aggregates the bridge and both rigs.
+The rig gains one TestNG row per test module of the OpenID Foundation
+conformance suite's verifier plan (TC_OIDF_VERIFY_nn), read from the results.json that
+the conformance runner writes, so the outcome lands in the rig's stock
+EmailableReport and its S3 upload next to the other API tests.
+
+- OpenIDConformanceTest: one row per conformance test module; a module the
+  benchmark lists as an expected failure becomes a Known Issue row.
+- ConformanceRigRunner: runs only the conformance suite files, without the
+  steps of InjiTestRunner that need a full MOSIP deployment (health checker,
+  Keycloak users, OTP listener, partner setup, database cleanup); exits 1
+  when a row fails.
+- testNgXmlFiles/injiverifyConformanceMasterTestSuite.xml and
+  injiverifyConformanceSuite.xml.
+- pom.xml: the apitest-commons-conformance dependency, and the two
+  maven-javadoc-plugin declarations merged into one (newer Maven rejects a
+  duplicate plugin declaration).
+
+Build dependency: the rig now depends on
+io.mosip.testrig.apitest.commons:apitest-commons-conformance:0.1.0-SNAPSHOT,
+the OpenID conformance bridge (14 classes, apitest-commons and TestNG as
+provided dependencies). It is proposed for API Test Commons
+(mosip-functional-tests) and is in no Maven repository yet. Install it into
+the local Maven repository before building this rig:
+
+  git clone https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git inji-conformance-harness
+  mvn -B -f inji-conformance-harness/testrigs/apitest-commons-conformance/pom.xml install
+  mvn -B -f api-test/pom.xml package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
 
 Signed-off-by: Paradox_73 <kanavbhardwaj86412a@gmail.com>
 ---
- pom.xml                                       |  1 +
- .../testrunner/ConformanceRigRunner.java      | 81 +++++++++++++++++++
- .../testscripts/OpenIDConformanceTest.java    | 72 +++++++++++++++++
+ pom.xml                                       | 20 +++--
+ .../testrunner/ConformanceRigRunner.java      | 82 +++++++++++++++++++
+ .../testscripts/OpenIDConformanceTest.java    | 72 ++++++++++++++++
  .../injiverifyConformanceMasterTestSuite.xml  | 17 ++++
  testNgXmlFiles/injiverifyConformanceSuite.xml | 14 ++++
- 5 files changed, 185 insertions(+)
- create mode 100644 testrigs/inji-verify-api-test/src/main/java/io/inji/testrig/apirig/injiverify/testrunner/ConformanceRigRunner.java
- create mode 100644 testrigs/inji-verify-api-test/src/main/java/io/inji/testrig/apirig/injiverify/testscripts/OpenIDConformanceTest.java
- create mode 100644 testrigs/inji-verify-api-test/testNgXmlFiles/injiverifyConformanceMasterTestSuite.xml
- create mode 100644 testrigs/inji-verify-api-test/testNgXmlFiles/injiverifyConformanceSuite.xml
+ 5 files changed, 197 insertions(+), 8 deletions(-)
 
 diff --git a/pom.xml b/pom.xml
-index 484ac8c..87a75f2 100644
+index 484ac8c1a584b99d36152e1ba7dd6262d52f9d77..f6ba84e6d017b80690805ed879b2553a69b4edc8 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -97,6 +97,7 @@
+@@ -1,3 +1,9 @@
++<!--
++  Changed by the inji-conformance-harness project (Apache-2.0 section 4(b) notice):
++  2026-10-04 added the apitest-commons-conformance dependency;
++  2026-10-14 merged the two maven-javadoc-plugin declarations into one (same version, executions and
++  configuration), because newer Maven rejects a duplicate plugin declaration as an error.
++-->
+ <project xmlns="http://maven.apache.org/POM/4.0.0"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -97,6 +103,11 @@
  			<artifactId>apitest-commons</artifactId>
  			<version>1.5.0</version>
  		</dependency>
-+		<dependency><groupId>io.mosip.testrig.apitest.commons</groupId><artifactId>apitest-commons-conformance</artifactId><version>0.1.0-SNAPSHOT</version></dependency>
++		<dependency>
++			<groupId>io.mosip.testrig.apitest.commons</groupId>
++			<artifactId>apitest-commons-conformance</artifactId>
++			<version>0.1.0-SNAPSHOT</version>
++		</dependency>
  	</dependencies>
  		
  	<build>
+@@ -109,6 +120,7 @@
+ 			<plugin>
+ 				<groupId>org.apache.maven.plugins</groupId>
+ 				<artifactId>maven-javadoc-plugin</artifactId>
++				<version>${maven.javadoc.version}</version>
+ 				<executions>
+ 					<execution>
+ 						<id>attach-javadocs</id>
+@@ -130,14 +142,6 @@
+ 					<argLine>-Dfile.encoding=UTF-8</argLine>
+ 				</configuration>
+ 			</plugin>
+-			<plugin>
+-				<groupId>org.apache.maven.plugins</groupId>
+-				<artifactId>maven-javadoc-plugin</artifactId>
+-				<version>${maven.javadoc.version}</version>
+-				<configuration>
+-					<doclint>none</doclint>
+-				</configuration>
+-			</plugin>
+ 			<plugin>
+ 				<groupId>pl.project13.maven</groupId>
+ 				<artifactId>git-commit-id-plugin</artifactId>
 diff --git a/src/main/java/io/inji/testrig/apirig/injiverify/testrunner/ConformanceRigRunner.java b/src/main/java/io/inji/testrig/apirig/injiverify/testrunner/ConformanceRigRunner.java
 new file mode 100644
-index 0000000..df838e7
+index 0000000000000000000000000000000000000000..519243ad8a4c057e96faa5ffe8750f07aede4cc8
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injiverify/testrunner/ConformanceRigRunner.java
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,82 @@
 +// SPDX-License-Identifier: MPL-2.0
 +package io.inji.testrig.apirig.injiverify.testrunner;
 +
@@ -72,7 +124,7 @@ index 0000000..df838e7
 + * the run could not start or TestNG wrote no results. The stock runner always exits 0.
 + *
 + * <pre>
-+ * java -Dmodules=injiverify -Denv.user=ps01 -Denv.endpoint=https://verify.inji.test:18451 \
++ * java -Dmodules=injiverify -Denv.user=inji-conformance -Denv.endpoint=https://verify.inji.test:18451 \
 + *      -Denv.testLevel=smokeAndRegression -Dconformance.results.file=results.json \
 + *      -cp apitest-injiverify-...-jar-with-dependencies.jar \
 + *      io.inji.testrig.apirig.injiverify.testrunner.ConformanceRigRunner
@@ -114,6 +166,7 @@ index 0000000..df838e7
 +		AdminTestUtil.init();
 +		InjiVerifyConfigManager.init();
 +		RigRun.keepReportCopyIn(reportDir);
++		LOGGER.info("report upload settings: " + RigRun.applyUploadSettings());
 +		InjiTestRunner.suiteSetup(runType);
 +		SkipTestCaseHandler.loadTestcaseToBeSkippedList("testCaseSkippedList.txt");
 +		BaseTestCase.setReportName(OpenIDConformanceTest.REPORT_MODULE);
@@ -125,7 +178,7 @@ index 0000000..df838e7
 +}
 diff --git a/src/main/java/io/inji/testrig/apirig/injiverify/testscripts/OpenIDConformanceTest.java b/src/main/java/io/inji/testrig/apirig/injiverify/testscripts/OpenIDConformanceTest.java
 new file mode 100644
-index 0000000..3c5dd8a
+index 0000000000000000000000000000000000000000..44a6165ae31788ad022f3cfcbda75067264a58dd
 --- /dev/null
 +++ b/src/main/java/io/inji/testrig/apirig/injiverify/testscripts/OpenIDConformanceTest.java
 @@ -0,0 +1,72 @@
@@ -203,7 +256,7 @@ index 0000000..3c5dd8a
 +}
 diff --git a/testNgXmlFiles/injiverifyConformanceMasterTestSuite.xml b/testNgXmlFiles/injiverifyConformanceMasterTestSuite.xml
 new file mode 100644
-index 0000000..916040e
+index 0000000000000000000000000000000000000000..e0f3c01134a9023134f1e3a801dd84099ea84cfb
 --- /dev/null
 +++ b/testNgXmlFiles/injiverifyConformanceMasterTestSuite.xml
 @@ -0,0 +1,17 @@
@@ -226,7 +279,7 @@ index 0000000..916040e
 +</suite>
 diff --git a/testNgXmlFiles/injiverifyConformanceSuite.xml b/testNgXmlFiles/injiverifyConformanceSuite.xml
 new file mode 100644
-index 0000000..0457469
+index 0000000000000000000000000000000000000000..590496799d00f35d12e792dabf622960513c6ee3
 --- /dev/null
 +++ b/testNgXmlFiles/injiverifyConformanceSuite.xml
 @@ -0,0 +1,14 @@

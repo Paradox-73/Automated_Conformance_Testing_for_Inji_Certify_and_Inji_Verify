@@ -17,7 +17,7 @@
 # Upload: when the MinIO service of the reports profile is running, the rig's stock EmailableReport uploads the
 # report to the bucket automationtests (s3-host http://minio:9000, user MINIO_ROOT_USER, password MINIO_ROOT_PASSWORD
 # from $HARNESS_RUN_DIR/env.local). Otherwise upload is off. TESTRIG_IMAGE picks the image (default
-# ps01-harness/testrig:local, built by "bash testrigs/build.sh --image"). TESTRIG_ENDPOINT overrides the rig's
+# inji-conformance/testrig:local, built by "bash testrigs/build.sh --image"). TESTRIG_ENDPOINT overrides the rig's
 # env.endpoint (default https://certify.inji.test:18450 or https://verify.inji.test:18451, the compose services).
 
 set -euo pipefail
@@ -26,7 +26,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=../scripts/lib/common.sh
 source "$SCRIPT_DIR/../scripts/lib/common.sh"
 
-readonly IMAGE=${TESTRIG_IMAGE:-ps01-harness/testrig:local}
+readonly IMAGE=${TESTRIG_IMAGE:-inji-conformance/testrig:local}
 readonly NETWORK=${HARNESS_COMPOSE_PROJECT}_default
 
 usage() { sed -n '4,22p' "$0" | sed 's/^# \{0,1\}//'; }
@@ -65,7 +65,7 @@ out=${out:-$(harness_run_dir testrig)/$module-$(date -u +%Y%m%dT%H%M%SZ)}
 mkdir -p "$out"
 out=$(cd "$out" && pwd)
 
-java_props=(-Dmodules="$module" -Denv.user=ps01 -Denv.endpoint="$endpoint" -Denv.testLevel=smokeAndRegression
+java_props=(-Dmodules="$module" -Denv.user=inji-conformance -Denv.endpoint="$endpoint" -Denv.testLevel=smokeAndRegression
   -Dconformance.report.dir=/out)
 mounts=(-v "$(harness_native_path "$out"):/out")
 if [[ $mode == consume ]]; then
@@ -106,7 +106,7 @@ harness_no_pathconv docker run --rm --network "$NETWORK" -u "$(harness_container
 code=$?
 set -e
 
-report=$(find "$out" -maxdepth 1 -name "mosip-ps01-$module-conformance-*-full-report_*.html" -print | sort | tail -n 1)
+report=$(find "$out" -maxdepth 1 -name "mosip-*-$module-conformance-*-full-report_*.html" -print | sort | tail -n 1)
 {
   printf 'testrig %s exit code %s\n' "$module" "$code"
   if [[ -n $report ]]; then

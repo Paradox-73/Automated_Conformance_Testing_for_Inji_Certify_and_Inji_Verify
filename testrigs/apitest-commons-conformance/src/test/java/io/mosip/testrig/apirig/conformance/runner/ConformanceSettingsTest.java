@@ -65,6 +65,26 @@ class ConformanceSettingsTest {
     }
 
     @Test
+    void theRigPropertiesComeLast() {
+        Map<String, String> rig = Map.of(
+                ConformanceSettings.RESULTS_FILE, "from-rig.json",
+                ConformanceSettings.TARGET, "https://rig");
+        ConformanceSettings onlyRig = ConformanceSettings.from("verify", Map.<String, String>of()::get,
+                Map.<String, String>of()::get, rig::get);
+        assertEquals(Path.of("from-rig.json"), onlyRig.resultsFile());
+        assertEquals("https://rig", onlyRig.target());
+
+        ConformanceSettings envWins = ConformanceSettings.from("verify", Map.<String, String>of()::get,
+                Map.of("CONFORMANCE_TARGET", "https://env")::get, rig::get);
+        assertEquals("https://env", envWins.target());
+    }
+
+    @Test
+    void aRigWithoutLoadedPropertiesCountsAsUnset() {
+        assertNull(ConformanceSettings.rigProperty("conformance.no.such.key"));
+    }
+
+    @Test
     void blankValuesCountAsUnset() {
         ConformanceSettings s = settings(Map.of(ConformanceSettings.RESULTS_FILE, "  "), Map.of());
         assertNull(s.resultsFile());

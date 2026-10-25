@@ -1,28 +1,47 @@
-# Upstream patch series
+# Upstream patches
 
-The team's changes to the two imported api-testrigs, as `git format-patch` series that apply to the upstream
-repositories, so they can be offered to Inji as pull requests. One folder per rig; each patch is one team commit
-that touched the rig, with its message and author.
+The team's changes to the two imported api-testrigs, one patch per rig, ready to offer to Inji as pull requests.
+Each patch is the whole difference between the rig folder and its upstream import, with a commit message written
+for the upstream repository.
 
-| Folder | Applies to | Patches |
+| Folder | Applies to | Patch |
 |---|---|---|
-| `inji-certify-api-test/` | [inji/inji-certify](https://github.com/inji/inji-certify) `203b143`, folder `api-test/` | Certify rig integration (`OpenIDConformanceTest`, `ConformanceRigRunner`, two suite files, one `pom.xml` line) |
-| `inji-verify-api-test/` | [inji/inji-verify](https://github.com/inji/inji-verify) `6a6ab3b`, folder `api-test/` | Verify rig integration (WP-11), then the report upload settings call (WP-12) |
+| `inji-certify-api-test/` | [inji/inji-certify](https://github.com/inji/inji-certify) `203b143`, folder `api-test/` | OpenID conformance TestNG suite for the Inji Certify rig (`OpenIDConformanceTest`, `ConformanceRigRunner`, two suite files, `pom.xml`) |
+| `inji-verify-api-test/` | [inji/inji-verify](https://github.com/inji/inji-verify) `6a6ab3b`, folder `api-test/` | the same for the Inji Verify rig |
 
-The rigs depend on `apitest-commons-conformance` (`../apitest-commons-conformance`), which belongs in API Test
-Commons upstream; until then it is installed with `mvn -f testrigs/pom.xml -pl apitest-commons-conformance install`.
+## Build a patched rig
+
+Both patches add the dependency `io.mosip.testrig.apitest.commons:apitest-commons-conformance:0.1.0-SNAPSHOT`, the
+bridge library in [`../apitest-commons-conformance`](../apitest-commons-conformance). It is meant for API Test
+Commons (`mosip-functional-tests`) and is in no Maven repository yet, so install it into the local Maven repository
+(`~/.m2`) first. It needs JDK 21 and Maven 3.9 and builds on its own (no parent pom):
+
+```bash
+git clone https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git inji-conformance-harness
+mvn -B -f inji-conformance-harness/testrigs/apitest-commons-conformance/pom.xml install
+
+git -C <inji-verify clone> -c core.autocrlf=false checkout 6a6ab3b
+git -C <inji-verify clone> apply --directory=api-test \
+  "$PWD"/inji-conformance-harness/testrigs/upstream-patches/inji-verify-api-test/*.patch
+mvn -B -f <inji-verify clone>/api-test/pom.xml package -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
+```
+
+The same steps work for inji-certify at `203b143` with the `inji-certify-api-test` patch. Until the bridge is
+published, an upstream merge must come after the bridge lands in API Test Commons (or the 14 bridge classes are
+copied into each rig).
 
 ## Make them again
 
-From the repository root, after a commit that changes a rig (`9d07328` and `f307a88` are the import commits):
+After a commit that changes a rig, regenerate the diff below each patch's header. Keep everything above the first
+`---` line (the commit message) and replace the rest with the output of (`9d07328` and `f307a88` are the import
+commits):
 
 ```bash
-rm -rf testrigs/upstream-patches/inji-*-api-test
-git format-patch --no-signature --relative=testrigs/inji-certify-api-test \
-  -o testrigs/upstream-patches/inji-certify-api-test 9d07328..HEAD -- testrigs/inji-certify-api-test
-git format-patch --no-signature --relative=testrigs/inji-verify-api-test \
-  -o testrigs/upstream-patches/inji-verify-api-test f307a88..HEAD -- testrigs/inji-verify-api-test
+git diff --stat=72 --relative=testrigs/inji-certify-api-test 9d07328 -- testrigs/inji-certify-api-test
+git diff --full-index --relative=testrigs/inji-certify-api-test 9d07328 -- testrigs/inji-certify-api-test
 ```
+
+and the same with `inji-verify-api-test` and `f307a88`.
 
 ## Check them
 
@@ -33,5 +52,6 @@ git -C <inji-certify clone> checkout 203b143
 git -C <inji-certify clone> apply --check --directory=api-test <this repo>/testrigs/upstream-patches/inji-certify-api-test/*.patch
 ```
 
-Measured on 2026-10-14: `git apply --check --directory=api-test` succeeded for the one Certify patch on `203b143`
-and for both Verify patches, applied in order, on `6a6ab3b`.
+Measured on 2026-10-25 against the import commits' trees (`git archive 9d07328:testrigs/inji-certify-api-test`, the
+same bytes as upstream `203b143:api-test`, and `f307a88` for Verify): both patches apply, and the patched trees equal
+`testrigs/inji-*-api-test` file for file.
