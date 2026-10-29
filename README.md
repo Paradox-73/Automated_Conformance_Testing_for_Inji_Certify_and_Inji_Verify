@@ -33,7 +33,17 @@ with the api-testrigs; [evidence](docs/evidence/2026-10-25-20261025T105006Z-5fd6
 
 ## Quick start
 
-Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. From a clean clone:
+Docker with Compose v2 (4 GiB for Docker), bash 4.4+, git. Clone with long paths on: some imported Inji test-data
+paths are longer than the 260 characters Windows Git allows by default, and without the option the checkout fails
+with "Filename too long".
+
+<!-- run 2026-10-29 -->
+```bash
+git clone -c core.longpaths=true https://github.com/Paradox-73/Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify.git
+cd Automated_Conformance_Testing_for_Inji_Certify_and_Inji_Verify
+```
+
+Then, from the clean clone:
 
 <!-- run 2026-10-14 -->
 ```bash
@@ -88,7 +98,7 @@ The HTML report passes an automated accessibility check (axe-core, 0 violations,
 | [docs/test-report.md](docs/test-report.md), [docs/test-cases.md](docs/test-cases.md), [docs/test-data.md](docs/test-data.md) | what was run and measured |
 | [docs/findings/](docs/findings/README.md), [docs/suite-limitations.md](docs/suite-limitations.md) | Inji gaps found; suite-side limitations |
 | [docs/reference/cli.md](docs/reference/cli.md), [docs/reference/results-schema.md](docs/reference/results-schema.md) | commands; results and manifest files |
-| [demo/](demo/README.md), [docs/demo/](docs/demo/video-storyboard.md) | demo script, video storyboard, deck outline |
+| [demo/](demo/README.md), [docs/demo/](docs/demo/video-storyboard.md), [docs/demo/deck.pdf](docs/demo/deck.pdf) | demo script, video storyboard, deck outline, slide deck |
 | [CONTRIBUTING.md](CONTRIBUTING.md), [docs/submission-checklist.md](docs/submission-checklist.md) | how to contribute; where each deliverable of the problem statement is |
 | [docs/manual-test-checklist.md](docs/manual-test-checklist.md), [docs/manual-test-results-template.md](docs/manual-test-results-template.md) | the checks only a person can do (fresh clone per OS, report review, video dry run) and the form to report them |
 
