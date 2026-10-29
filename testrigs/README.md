@@ -16,6 +16,10 @@ one patch per rig.
 | `apitest-commons-conformance/` | Bridge library: reads the runner's results, runs the runner, maps each conformance test module to a TestNG result | MPL-2.0 | done |
 | `pom.xml` | Maven aggregator for the three projects | MPL-2.0 | done |
 | `Dockerfile`, `build.sh`, `run-testrig.sh` | Testrig image and entry points | MPL-2.0 | done (2026-10-14) |
+
+Java 21, not the Java 11 the problem statement names: the upstream rigs imported here (inji-certify `203b143`,
+inji-verify `6a6ab3b`) already set `maven.compiler.source` and `target` to 21, so a Java 11 compiler rejects them.
+The testrig image brings its own Java 21 runtime, so running the harness needs no Java on the host.
 | `upstream-patches/` | The team's changes to the imported rigs, one patch per rig | MPL-2.0 | done; they apply to both upstream commits |
 
 ## Provenance of the imported testrigs
